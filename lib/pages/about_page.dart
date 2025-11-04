@@ -8,7 +8,7 @@ class AboutPage extends StatelessWidget{
       body: const Padding(
         padding: EdgeInsets.all(16),
         child: const Text(
-          'CampusNotes+ is a student-focused notes marketplace emphasizing affordability, offline access and direct buyer-seller interactions.'
+          'CampusNotes+ is a student-focused notes marketplace emphasizing affordability, offline access and, direct buyer-seller interactions.'
         ),
       ),
     );
