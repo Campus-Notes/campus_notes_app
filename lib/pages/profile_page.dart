@@ -19,7 +19,7 @@ class ProfilePage extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 28,
-                backgroundColor: AppColors.primary.withOpacity(0.12),
+                backgroundColor: AppColors.primary.withValues(alpha: 0.12),
                 child: const Icon(Icons.person, color: AppColors.primary),
               ),
               const SizedBox(width: 12),
@@ -36,7 +36,7 @@ class ProfilePage extends StatelessWidget {
           const SizedBox(height: 16),
           Row(
             children: [
-              Expanded(
+              const Expanded(
                 child: _StatCard(
                   label: 'Rewards',
                   value: '$rewards pts',
@@ -134,7 +134,7 @@ class _StatCard extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
-          color: AppColors.primary.withOpacity(0.06),
+          color: AppColors.primary.withValues(alpha: 0.06),
           borderRadius: BorderRadius.circular(12),
         ),
         child: Row(
@@ -144,7 +144,7 @@ class _StatCard extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(label, style: TextStyle(color: AppColors.muted)),
+                Text(label, style: const TextStyle(color: AppColors.muted)),
                 const SizedBox(height: 4),
                 Text(value, style: const TextStyle(fontWeight: FontWeight.w800)),
               ],

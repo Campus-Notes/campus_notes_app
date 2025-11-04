@@ -12,7 +12,7 @@ class AppTheme {
   static ThemeData material(ThemeData base) {
     final inputBorder = OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: BorderSide(color: const Color(0xFFE5E7EB)),
+      borderSide: const BorderSide(color:  Color(0xFFE5E7EB)),
     );
 
     return base.copyWith(
@@ -23,7 +23,7 @@ class AppTheme {
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
         fillColor: Colors.white,
-        hintStyle: TextStyle(color: AppColors.muted),
+        hintStyle: const TextStyle(color: AppColors.muted),
         contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14), 
         border: inputBorder,
         enabledBorder: inputBorder,

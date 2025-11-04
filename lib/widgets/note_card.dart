@@ -13,7 +13,7 @@ class NoteCard extends StatelessWidget {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: BorderSide(color: const Color(0xFFE5E7EB))),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color:  Color(0xFFE5E7EB))),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => NoteDetailPage(note: item))),
@@ -27,7 +27,7 @@ class NoteCard extends StatelessWidget {
                 height: 72,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: AppColors.primary.withOpacity(0.08),
+                  color: AppColors.primary.withValues(alpha: 0.08),
                 ),
                 child: const Icon(Icons.description, color: AppColors.primary),
               ),
@@ -38,7 +38,7 @@ class NoteCard extends StatelessWidget {
                   children: [
                     Text(item.title, style: const TextStyle(fontWeight: FontWeight.w700)),
                     const SizedBox(height: 4),
-                    Text(item.subject, style: TextStyle(color: AppColors.muted)),
+                    Text(item.subject, style: const TextStyle(color: AppColors.muted)),
                     const SizedBox(height: 8),
                     Row(
                       children: [
@@ -46,7 +46,7 @@ class NoteCard extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(item.rating.toStringAsFixed(1), style: const TextStyle(fontWeight: FontWeight.w600)),
                         const SizedBox(width: 12),
-                        Text('${item.pages} pages', style: TextStyle(color: AppColors.muted)),
+                        Text('${item.pages} pages', style: const TextStyle(color: AppColors.muted)),
                         const Spacer(),
                         Text('₹${item.price.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.w800)),
                       ],

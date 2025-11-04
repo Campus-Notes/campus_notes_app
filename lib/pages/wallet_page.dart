@@ -6,7 +6,7 @@ class WalletPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final balance = 250.0; 
+    const balance = 250.0; 
     return Scaffold(
       appBar: AppBar(title: const Text('Wallet')),
       body: Padding(
@@ -15,7 +15,7 @@ class WalletPage extends StatelessWidget {
           children: [
             Container(
               padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.07), borderRadius: BorderRadius.circular(12)),
+              decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.07), borderRadius: BorderRadius.circular(12)),
               child: Row(
                 children: [
                   const Icon(Icons.account_balance_wallet_outlined, size: 28),

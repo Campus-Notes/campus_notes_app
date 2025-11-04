@@ -77,7 +77,7 @@ class _NotesManagementPageState extends State<NotesManagementPage> {
                   leading: Container(
                     width: 44,
                     height: 44,
-                    decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.08), borderRadius: BorderRadius.circular(8)),
+                    decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(8)),
                     child: const Icon(Icons.description, color: AppColors.primary),
                   ),
                   title: Text(n['title'] as String),
