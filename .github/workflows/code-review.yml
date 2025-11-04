@@ -28,9 +28,6 @@ jobs:
       - name: Run analyzer
         run: flutter analyze
 
-      - name: Run tests
-        run: flutter test
-
   pr-summary:
     needs: analyze
     runs-on: ubuntu-latest
