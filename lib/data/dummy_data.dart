@@ -87,7 +87,7 @@ final dummyMessages = <Message>[
   Message(
     id: 'm1',
     sender: 'Ananya',
-    text: 'Hi! These cover graphs?',
+    text: 'Hi! These cover graphs',
     time: DateTime(2025, 1, 1, 10, 12),
   ),
   Message(
