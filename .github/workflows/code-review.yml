@@ -27,22 +27,3 @@ jobs:
 
       - name: Run analyzer
         run: flutter analyze
-
-  pr-summary:
-    needs: analyze
-    runs-on: ubuntu-latest
-    if: github.event.pull_request.draft == false
-    steps:
-      - uses: actions/checkout@v3
-
-      - name: PR Summary (Copilot)
-        uses: AllyW/copilot-pr-review@v0.1.37
-        with:
-          AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_EVENT: ${{ toJson(github.event) }}
-          APIKEY: ${{ secrets.GEMINI_API_KEY }}
-          ENDPOINT: "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent"
-          code_suggest: false
-          pr_summary: true
-          pr_reset: false
-          review_filter: true
