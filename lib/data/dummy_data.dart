@@ -123,7 +123,7 @@ class PurchaseItem {
 final dummyPurchases = [
   PurchaseItem(
     id: 'p1',
-    title: 'Data Structures: Exam Cheatsheet',
+    title: 'Data Structures: Exam Cheatsheet ',
     subject: 'CS - Data Structures',
     date: DateTime(2025, 1, 2),
     amount: 59,
