@@ -48,7 +48,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                     decoration: BoxDecoration(
-                      color: isMe ? AppColors.primary.withOpacity(0.12) : const Color(0xFFF3F4F6),
+                      color: isMe ? AppColors.primary.withValues(alpha: 0.12) : const Color(0xFFF3F4F6),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(m.text),

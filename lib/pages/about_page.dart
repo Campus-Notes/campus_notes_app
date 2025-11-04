@@ -7,8 +7,8 @@ class AboutPage extends StatelessWidget{
       appBar: AppBar(title: const Text('About')),
       body: const Padding(
         padding: EdgeInsets.all(16),
-        child: const Text(
-          'CampusNotes+ is a student-focused notes marketplace emphasizing affordability, offline access and, direct buyer-seller interactions.'
+        child: Text(
+          'CampusNotes+ is a student-focused notes marketplace emphasizing affordability, offline access, and direct buyer-seller interactions.'
         ),
       ),
     );

@@ -15,7 +15,7 @@ class PrivacyPolicyPage extends StatelessWidget {
           children: [
             Text(
               'Last Updated: ${DateTime.now().toLocal().toString().split(' ').first}',
-              style: TextStyle(color: AppColors.muted, fontSize: 12),
+              style: const TextStyle(color: AppColors.muted, fontSize: 12),
             ),
             const SizedBox(height: 16),
             const Text(

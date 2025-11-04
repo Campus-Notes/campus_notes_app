@@ -26,7 +26,7 @@ class NoteDetailPage extends StatelessWidget {
                 width: 60,
                 height: 76,
                 decoration: BoxDecoration(
-                  color: AppColors.primary.withOpacity(0.08),
+                  color: AppColors.primary.withValues(alpha: 0.08),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: const Icon(Icons.description, color: AppColors.primary),
@@ -36,7 +36,7 @@ class NoteDetailPage extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(note.subject, style: TextStyle(color: AppColors.muted)),
+                    Text(note.subject, style: const TextStyle(color:  AppColors.muted)),
                     const SizedBox(height: 6),
                     Row(
                       children: [
@@ -44,7 +44,7 @@ class NoteDetailPage extends StatelessWidget {
                         const SizedBox(width: 4),
                         Text(note.rating.toStringAsFixed(1), style: const TextStyle(fontWeight: FontWeight.w600)),
                         const SizedBox(width: 8),
-                        Text('• ${note.pages} pages', style: TextStyle(color: AppColors.muted)),
+                        Text('• ${note.pages} pages', style: const TextStyle(color: AppColors.muted)),
                       ],
                     ),
                     const SizedBox(height: 6),

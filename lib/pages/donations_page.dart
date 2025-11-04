@@ -5,7 +5,7 @@ class DonationsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final items = const [
+    const items = [
       {'title': 'Donate your free notes', 'desc': 'Help juniors by donating your notes for free.'},
       {'title': 'Sponsor a student', 'desc': 'Contribute small amounts to support access.'},
     ];

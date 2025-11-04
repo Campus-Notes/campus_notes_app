@@ -30,7 +30,7 @@ class _SearchFiltersState extends State<SearchFilters> {
               setState(() => selectedSubject = s);
               widget.onChange(selectedSubject, selectedTag);
             },
-            selectedColor: AppColors.primary.withOpacity(0.12),
+            selectedColor: AppColors.primary.withValues(alpha: 0.12),
             side: const BorderSide(color: Color(0xFFE5E7EB)),
           ),
         for (final t in tags)
@@ -41,7 +41,7 @@ class _SearchFiltersState extends State<SearchFilters> {
               setState(() => selectedTag = t);
               widget.onChange(selectedSubject, selectedTag);
             },
-            selectedColor: AppColors.primary.withOpacity(0.12),
+            selectedColor: AppColors.primary.withValues(alpha: 0.12),
             side: const BorderSide(color: Color(0xFFE5E7EB)),
           ),
       ],

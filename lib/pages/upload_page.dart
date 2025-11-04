@@ -72,7 +72,7 @@ class _UploadPageState extends State<UploadPage> {
                 leading: Container(
                   width: 44,
                   height: 44,
-                  decoration: BoxDecoration(color: AppColors.primary.withOpacity(0.08), borderRadius: BorderRadius.circular(8)),
+                  decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(8)),
                   child: const Icon(Icons.attach_file, color: AppColors.primary),
                 ),
                 title: Text(_pickedFileName ?? 'Attach PDF/DOCX/PPT'),

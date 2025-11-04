@@ -26,7 +26,7 @@ class PurchasesPage extends StatelessWidget{
               width: 44,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: AppColors.primary.withOpacity(0.08)
+                color: AppColors.primary.withValues(alpha: 0.08)
               ),
               child: const Icon(Icons.description, color: AppColors.primary),
             ),
