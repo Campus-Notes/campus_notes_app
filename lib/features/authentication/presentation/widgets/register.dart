@@ -12,8 +12,9 @@ class RegisterWidget extends StatefulWidget {
 
 class _RegisterWidgetState extends State<RegisterWidget> {
   final _formKey = GlobalKey<FormState>();
-  final _nameController = TextEditingController();
+  final _firstNameController = TextEditingController();
   final _emailController = TextEditingController();
+  final _universityController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
   bool _obscurePassword = true;
@@ -22,8 +23,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
   @override
   void dispose() {
-    _nameController.dispose();
+    _firstNameController.dispose();
     _emailController.dispose();
+    _universityController.dispose();
     _passwordController.dispose();
     _confirmController.dispose();
     super.dispose();
@@ -40,8 +42,11 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
     final auth = Provider.of<AuthController>(context, listen: false);
     auth.register(
-      _nameController.text.trim(),
+      _firstNameController.text.trim(),
+      '', // Empty last name
       _emailController.text.trim(),
+      '', // Empty mobile
+      _universityController.text.trim(),
       _passwordController.text,
       _confirmController.text,
     );
@@ -53,235 +58,273 @@ class _RegisterWidgetState extends State<RegisterWidget> {
       builder: (context, auth, child) {
         return Form(
           key: _formKey,
-          child: Column(
-            children: [
-              // Full Name field
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: TextFormField(
-                  controller: _nameController,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.person_outline,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      size: 20,
-                    ),
-                    hintText: 'Full Name',
-                    hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      fontSize: 16,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
+          child: SingleChildScrollView(
+            child: Column(
+              children: [
+                // First Name field
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(15),
                   ),
-                  validator: (v) => v?.trim().isEmpty == true ? 'Enter name' : null,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Email field
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: TextFormField(
-                  controller: _emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.email_outlined,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      size: 20,
-                    ),
-                    hintText: 'Email Address',
-                    hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      fontSize: 16,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                  ),
-                  validator: (v) {
-                    if (v?.trim().isEmpty == true) return 'Enter email';
-                    final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
-                    return emailRegex.hasMatch(v!) ? null : 'Invalid email';
-                  },
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Password field
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: TextFormField(
-                  controller: _passwordController,
-                  obscureText: _obscurePassword,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.lock_outline,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      size: 20,
-                    ),
-                    hintText: 'Password',
-                    hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      fontSize: 16,
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscurePassword 
-                          ? Icons.visibility_outlined 
-                          : Icons.visibility_off_outlined,
+                  child: TextFormField(
+                    controller: _firstNameController,
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.person_outline,
                         color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         size: 20,
                       ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      hintText: 'Full Name',
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontSize: 16,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
+                    validator: (v) => v?.trim().isEmpty == true ? 'Enter your name' : null,
                   ),
-                  validator: (v) => v!.length < 8 ? 'Min 8 characters' : null,
                 ),
-              ),
-              const SizedBox(height: 16),
-
-              // Confirm Password field
-              Container(
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surface,
-                  borderRadius: BorderRadius.circular(15),
-                ),
-                child: TextFormField(
-                  controller: _confirmController,
-                  obscureText: _obscureConfirmPassword,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
-                  decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.lock_outline,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      size: 20,
-                    ),
-                    hintText: 'Confirm Password',
-                    hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      fontSize: 16,
-                    ),
-                    suffixIcon: IconButton(
-                      icon: Icon(
-                        _obscureConfirmPassword 
-                          ? Icons.visibility_outlined 
-                          : Icons.visibility_off_outlined,
+                const SizedBox(height: 16),
+            
+                // Email field
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.email_outlined,
                         color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         size: 20,
                       ),
-                      onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                  ),
-                  validator: (v) => v != _passwordController.text ? 'Passwords do not match' : null,
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // Terms & Conditions
-              Row(
-                children: [
-                  Checkbox(
-                    value: _agree,
-                    onChanged: (v) => setState(() => _agree = v ?? false),
-                    checkColor: Theme.of(context).colorScheme.onPrimary,
-                    activeColor: AppColors.greenButton,
-                    side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
-                  ),
-                  Flexible(
-                    child: Text(
-                      'I agree to the Terms of Service and Privacy Policy',
-                      style: TextStyle(
-                        fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurface,
+                      hintText: 'Email Address',
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontSize: 16,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
                       ),
                     ),
+                    validator: (v) {
+                      if (v?.trim().isEmpty == true) return 'Enter email';
+                      final emailRegex = RegExp(r'^[^@\s]+@[^@\s]+\.[^@\s]+$');
+                      return emailRegex.hasMatch(v!) ? null : 'Invalid email';
+                    },
                   ),
-                ],
-              ),
-              const SizedBox(height: 20),
-
-              // Create Account Button
-              SizedBox(
-                width: double.infinity,
-                height: 50,
-                child: ElevatedButton(
-                  onPressed: auth.isLoading ? null : _submit,
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColors.greenButton,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
+                ),
+                const SizedBox(height: 16),
+            
+                // University field
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: TextFormField(
+                    controller: _universityController,
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.school_outlined,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        size: 20,
+                      ),
+                      hintText: 'University Name',
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontSize: 16,
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
                     ),
-                    elevation: 0,
+                    validator: (v) => v?.trim().isEmpty == true ? 'Enter university name' : null,
                   ),
-                  child: auth.isLoading
-                      ? SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            strokeWidth: 2,
-                          ),
-                        )
-                      : Text(
-                          'Create Account',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
+                ),
+                const SizedBox(height: 16),
+            
+                // Password field
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: TextFormField(
+                    controller: _passwordController,
+                    obscureText: _obscurePassword,
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.lock_outline,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        size: 20,
+                      ),
+                      hintText: 'Password',
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontSize: 16,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscurePassword 
+                            ? Icons.visibility_outlined 
+                            : Icons.visibility_off_outlined,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          size: 20,
                         ),
+                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                    ),
+                    validator: (v) => v!.length < 8 ? 'Min 8 characters' : null,
+                  ),
                 ),
-              ),
-            ],
+                const SizedBox(height: 16),
+            
+                // Confirm Password field
+                Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  child: TextFormField(
+                    controller: _confirmController,
+                    obscureText: _obscureConfirmPassword,
+                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    decoration: InputDecoration(
+                      prefixIcon: Icon(
+                        Icons.lock_outline,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        size: 20,
+                      ),
+                      hintText: 'Confirm Password',
+                      hintStyle: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        fontSize: 16,
+                      ),
+                      suffixIcon: IconButton(
+                        icon: Icon(
+                          _obscureConfirmPassword 
+                            ? Icons.visibility_outlined 
+                            : Icons.visibility_off_outlined,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          size: 20,
+                        ),
+                        onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                      ),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none,
+                      ),
+                      filled: true,
+                      fillColor: Colors.transparent,
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 16,
+                      ),
+                    ),
+                    validator: (v) => v != _passwordController.text ? 'Passwords do not match' : null,
+                  ),
+                ),
+                const SizedBox(height: 16),
+            
+                // Terms & Conditions
+                Row(
+                  children: [
+                    Checkbox(
+                      value: _agree,
+                      onChanged: (v) => setState(() => _agree = v ?? false),
+                      checkColor: Theme.of(context).colorScheme.onPrimary,
+                      activeColor: AppColors.greenButton,
+                      side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+                    ),
+                    Flexible(
+                      child: Text(
+                        'I agree to the Terms of Service and Privacy Policy',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Theme.of(context).colorScheme.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 20),
+            
+                // Create Account Button
+                SizedBox(
+                  width: double.infinity,
+                  height: 50,
+                  child: ElevatedButton(
+                    onPressed: auth.isLoading ? null : _submit,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.greenButton,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15),
+                      ),
+                      elevation: 0,
+                    ),
+                    child: auth.isLoading
+                        ? SizedBox(
+                            height: 20,
+                            width: 20,
+                            child: CircularProgressIndicator(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              strokeWidth: 2,
+                            ),
+                          )
+                        : Text(
+                            'Create Account',
+                            style: TextStyle(
+                              color: Theme.of(context).colorScheme.onPrimary,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

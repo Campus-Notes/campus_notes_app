@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../data/dummy_data.dart';
 import 'chat_thread_page.dart';
+import '../../../../common_widgets/app_bar.dart';
 
 class ChatListPage extends StatelessWidget {
   const ChatListPage({super.key});
@@ -8,7 +9,12 @@ class ChatListPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Chats')),
+      appBar: const CustomAppBar(
+        text: 'Chats',
+        sideIcon: Icons.edit_outlined,
+        showBackButton: false,
+        usePremiumBackIcon: true,
+      ),
       body: ListView.separated(
         padding: const EdgeInsets.all(8),
         itemCount: dummyThreads.length,

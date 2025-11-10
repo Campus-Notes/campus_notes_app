@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../data/services/auth_services.dart';
+import '../../data/models/user_model.dart';
 // features/authentication/presentation/controller/auth_controller.dart
 // features/authentication/presentation/controller/auth_controller.dart
 
@@ -72,7 +73,7 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> register(String name, String email, String password, String confirmPassword) async {
+  Future<void> register(String firstName, String lastName, String email, String mobile, String university, String password, String confirmPassword) async {
     _isLoading = true;
     _error = null;
     _justRegistered = false; 
@@ -85,7 +86,15 @@ class AuthController extends ChangeNotifier {
       return;
     }
 
-    final result = await _authService.register(name: name, email: email, password: password);
+    final result = await _authService.register(
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      mobile: mobile,
+      university: university,
+      password: password,
+    );
+    
     if (result == null) {
       _isLoggedIn = true;
       _justRegistered = true; 
@@ -103,5 +112,81 @@ class AuthController extends ChangeNotifier {
     _justRegistered = false;
     _justLoggedOut = true;
     notifyListeners();
+  }
+
+  Future<UserModel?> getCurrentUser() async {
+    return await _authService.getCurrentUserData();
+  }
+
+  Future<String?> updateProfile({
+    required String firstName,
+    required String lastName,
+    required String mobile,
+    required String university,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    final result = await _authService.updateProfile(
+      firstName: firstName,
+      lastName: lastName,
+      mobile: mobile,
+      university: university,
+    );
+
+    if (result != null) {
+      _error = result;
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return result;
+  }
+
+  Future<String?> changePassword({
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    final result = await _authService.changePassword(
+      oldPassword: oldPassword,
+      newPassword: newPassword,
+    );
+
+    if (result != null) {
+      _error = result;
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return result;
+  }
+
+  Future<String?> updateBankDetails({
+    String? upiId,
+    String? bankAccountNumber,
+    String? ifscCode,
+  }) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    final result = await _authService.updateBankDetails(
+      upiId: upiId,
+      bankAccountNumber: bankAccountNumber,
+      ifscCode: ifscCode,
+    );
+
+    if (result != null) {
+      _error = result;
+    }
+
+    _isLoading = false;
+    notifyListeners();
+    return result;
   }
 }

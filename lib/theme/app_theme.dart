@@ -7,8 +7,9 @@ class AppColors {
   static const Color primaryDark = Color(0xFF4F46E5);
   static const Color primaryLight = Color(0xFF818CF8);
   
-  static const Color darkBackground = Color(0xFF1C1C1E);
-  static const Color darkSurface = Color(0xFF2C2C2E);
+  static const Color darkBackground = Color(0xFF121212);
+  static const Color darkSurface = Color(0xFF1E1E1E);
+  static const Color darkCard = Color(0xFF2C2C2E);
   static const Color darkText = Colors.white;
   static const Color darkSecondaryText = Color(0xFF8E8E93);
   static const Color greenButton = Color(0xFF34C759);
@@ -58,13 +59,13 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.backgroundLight,
       textTheme: _buildTextTheme(AppColors.textPrimaryLight),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.surfaceLight,
+        backgroundColor: AppColors.backgroundLight,
         foregroundColor: AppColors.textPrimaryLight,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.poppins(
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.bold,
           color: AppColors.textPrimaryLight,
         ),
       ),
@@ -72,9 +73,9 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primary,
           foregroundColor: Colors.white,
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.poppins(
             fontSize: 16,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.bold,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -86,9 +87,9 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primary,
           side: const BorderSide(color: AppColors.borderLight),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.poppins(
             fontSize: 16,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -111,13 +112,14 @@ class AppTheme {
         ),
         filled: true,
         fillColor: AppColors.surfaceLight,
-        hintStyle: GoogleFonts.inter(
+        hintStyle: GoogleFonts.nunito(
           color: AppColors.textSecondaryLight,
         ),
       ),
       cardTheme: CardThemeData(
         color: AppColors.surfaceLight,
-        elevation: 1,
+        elevation: 2,
+        shadowColor: Colors.black.withValues(alpha: 0.1),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -148,13 +150,13 @@ class AppTheme {
       scaffoldBackgroundColor: AppColors.backgroundDark,
       textTheme: _buildTextTheme(AppColors.textPrimaryDark),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.surfaceDark,
+        backgroundColor: AppColors.backgroundDark,
         foregroundColor: AppColors.textPrimaryDark,
         elevation: 0,
         surfaceTintColor: Colors.transparent,
-        titleTextStyle: GoogleFonts.inter(
+        titleTextStyle: GoogleFonts.poppins(
           fontSize: 18,
-          fontWeight: FontWeight.w600,
+          fontWeight: FontWeight.bold,
           color: AppColors.textPrimaryDark,
         ),
       ),
@@ -162,9 +164,9 @@ class AppTheme {
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.primaryLight,
           foregroundColor: Colors.black,
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.poppins(
             fontSize: 16,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.bold,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -176,9 +178,9 @@ class AppTheme {
         style: OutlinedButton.styleFrom(
           foregroundColor: AppColors.primaryLight,
           side: const BorderSide(color: AppColors.borderDark),
-          textStyle: GoogleFonts.inter(
+          textStyle: GoogleFonts.poppins(
             fontSize: 16,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w600,
           ),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
@@ -201,13 +203,14 @@ class AppTheme {
         ),
         filled: true,
         fillColor: AppColors.surfaceDark,
-        hintStyle: GoogleFonts.inter(
+        hintStyle: GoogleFonts.nunito(
           color: AppColors.textSecondaryDark,
         ),
       ),
       cardTheme: CardThemeData(
         color: AppColors.surfaceDark,
-        elevation: 1,
+        elevation: 2,
+        shadowColor: Colors.black.withValues(alpha: 0.3),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(12),
         ),
@@ -223,77 +226,86 @@ class AppTheme {
 
   static TextTheme _buildTextTheme(Color textColor) {
     return TextTheme(
-      displayLarge: GoogleFonts.inter(
+      // Display styles (largest headings) - Poppins Bold
+      displayLarge: GoogleFonts.poppins(
         fontSize: 32,
         fontWeight: FontWeight.bold,
         color: textColor,
       ),
-      displayMedium: GoogleFonts.inter(
+      displayMedium: GoogleFonts.poppins(
         fontSize: 28,
         fontWeight: FontWeight.bold,
         color: textColor,
       ),
-      displaySmall: GoogleFonts.inter(
+      displaySmall: GoogleFonts.poppins(
         fontSize: 24,
         fontWeight: FontWeight.bold,
         color: textColor,
       ),
-      headlineLarge: GoogleFonts.inter(
+      
+      // Headline styles (section headings) - Poppins Bold
+      headlineLarge: GoogleFonts.poppins(
         fontSize: 22,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.bold,
         color: textColor,
       ),
-      headlineMedium: GoogleFonts.inter(
+      headlineMedium: GoogleFonts.poppins(
         fontSize: 20,
-        fontWeight: FontWeight.w600,
+        fontWeight: FontWeight.bold,
         color: textColor,
       ),
-      headlineSmall: GoogleFonts.inter(
+      headlineSmall: GoogleFonts.poppins(
         fontSize: 18,
+        fontWeight: FontWeight.bold,
+        color: textColor,
+      ),
+      
+      // Title styles (card titles, button text) - Poppins Bold
+      titleLarge: GoogleFonts.poppins(
+        fontSize: 16,
+        fontWeight: FontWeight.bold,
+        color: textColor,
+      ),
+      titleMedium: GoogleFonts.poppins(
+        fontSize: 14,
         fontWeight: FontWeight.w600,
         color: textColor,
       ),
-      titleLarge: GoogleFonts.inter(
-        fontSize: 16,
+      titleSmall: GoogleFonts.poppins(
+        fontSize: 12,
         fontWeight: FontWeight.w600,
         color: textColor,
       ),
-      titleMedium: GoogleFonts.inter(
-        fontSize: 14,
-        fontWeight: FontWeight.w500,
-        color: textColor,
-      ),
-      titleSmall: GoogleFonts.inter(
-        fontSize: 12,
-        fontWeight: FontWeight.w500,
-        color: textColor,
-      ),
-      bodyLarge: GoogleFonts.inter(
+      
+      // Body styles (regular text) - Nunito Regular
+      bodyLarge: GoogleFonts.nunito(
         fontSize: 16,
         fontWeight: FontWeight.normal,
         color: textColor,
       ),
-      bodyMedium: GoogleFonts.inter(
+      bodyMedium: GoogleFonts.nunito(
         fontSize: 14,
         fontWeight: FontWeight.normal,
         color: textColor,
       ),
-      bodySmall: GoogleFonts.inter(
+      bodySmall: GoogleFonts.nunito(
         fontSize: 12,
         fontWeight: FontWeight.normal,
         color: textColor,
       ),
-      labelLarge: GoogleFonts.inter(
+      
+      // Label styles (labels, captions) - Nunito Regular
+      labelLarge: GoogleFonts.nunito(
         fontSize: 14,
         fontWeight: FontWeight.w500,
         color: textColor,
       ),
-      labelMedium: GoogleFonts.inter(
+      labelMedium: GoogleFonts.nunito(
         fontSize: 12,
         fontWeight: FontWeight.w500,
         color: textColor,
       ),
-      labelSmall: GoogleFonts.inter(
+      labelSmall: GoogleFonts.nunito(
         fontSize: 10,
         fontWeight: FontWeight.w500,
         color: textColor,

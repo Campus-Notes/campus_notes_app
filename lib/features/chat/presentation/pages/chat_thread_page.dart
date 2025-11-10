@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../data/dummy_data.dart';
 import '../../../../theme/app_theme.dart';
+import '../../../../common_widgets/app_bar.dart';
 
 class ChatThreadPage extends StatefulWidget {
   const ChatThreadPage({super.key, required this.peerName});
@@ -32,7 +33,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(widget.peerName)),
+      appBar: CustomAppBar(
+        text: widget.peerName,
+        sideIcon: Icons.videocam_outlined,
+        usePremiumBackIcon: true,
+      ),
       body: Column(
         children: [
           Expanded(

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../routes/route_names.dart';
 import '../../../../theme/app_theme.dart';
+import '../../../../common_widgets/app_bar.dart';
 
 class HelpSupportPage extends StatelessWidget {
   const HelpSupportPage({super.key});
@@ -8,7 +9,10 @@ class HelpSupportPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Help & Support')),
+      appBar: const CustomAppBar(
+        text: 'Help & Support',
+        usePremiumBackIcon: true,
+      ),
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [

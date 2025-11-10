@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_bar.dart';
 
 class NotificationPage extends StatelessWidget{
   const NotificationPage({super.key});
@@ -10,15 +11,10 @@ class NotificationPage extends StatelessWidget{
       {'title': 'Exam reminder: DS on 12th', 'time': '3d'},
     ];
     return Scaffold(
-      appBar: AppBar(
-        leading: const Icon(Icons.arrow_back),
-        title: const Text(
-          'Notifications',
-          style: TextStyle(
-            fontWeight: FontWeight.w800,
-          ),
-        ),
-        centerTitle: true,
+      appBar: const CustomAppBar(
+        text: 'Notifications',
+        sideIcon: Icons.clear_all,
+        usePremiumBackIcon: true,
       ),
       body: ListView.separated(
         padding: const EdgeInsets.all(12.0),
