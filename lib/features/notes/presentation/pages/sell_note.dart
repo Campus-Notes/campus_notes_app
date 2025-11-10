@@ -247,7 +247,7 @@ class _UploadPageState extends State<UploadPage> {
                           }
                         });
                       },
-                      activeColor: Colors.green[600],
+                      thumbColor: WidgetStateProperty.all(Colors.green[600]),
                       activeTrackColor: Colors.green[200],
                     ),
                   ],
