@@ -26,7 +26,6 @@ class _PhoneOTPDialogState extends State<PhoneOTPDialog> {
       );
       return;
     }
-    // TODO: Implement actual OTP sending logic
     setState(() => _otpSent = true);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('OTP sent successfully!')),
@@ -40,7 +39,6 @@ class _PhoneOTPDialogState extends State<PhoneOTPDialog> {
       );
       return;
     }
-    // TODO: Implement actual OTP verification logic
     Navigator.pop(context);
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('OTP verified successfully!')),

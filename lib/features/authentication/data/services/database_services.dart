@@ -26,4 +26,78 @@ class DatabaseService {
       return null;
     }
   }
+
+  Future<bool> updateUserProfile({
+    required String uid,
+    required String firstName,
+    required String lastName,
+    required String mobile,
+    required String university,
+  }) async {
+    try {
+      await usersCollection.doc(uid).update({
+        'firstName': firstName,
+        'lastName': lastName,
+        'mobile': mobile,
+        'university': university,
+      });
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> updateBankDetails({
+    required String uid,
+    String? upiId,
+    String? bankAccountNumber,
+    String? ifscCode,
+  }) async {
+    try {
+      final Map<String, dynamic> updates = {};
+      
+      if (upiId != null) {
+        updates['upiId'] = upiId;
+        updates['isUPIProvided'] = upiId.isNotEmpty;
+      }
+      
+      if (bankAccountNumber != null && ifscCode != null) {
+        updates['bankAccountNumber'] = bankAccountNumber;
+        updates['ifscCode'] = ifscCode;
+        updates['isBankDetailsProvided'] = bankAccountNumber.isNotEmpty && ifscCode.isNotEmpty;
+      }
+      
+      if (updates.isNotEmpty) {
+        await usersCollection.doc(uid).update(updates);
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> updateWalletAndPoints({
+    required String uid,
+    double? walletBalance,
+    int? points,
+  }) async {
+    try {
+      final Map<String, dynamic> updates = {};
+      
+      if (walletBalance != null) {
+        updates['walletBalance'] = walletBalance;
+      }
+      
+      if (points != null) {
+        updates['points'] = points;
+      }
+      
+      if (updates.isNotEmpty) {
+        await usersCollection.doc(uid).update(updates);
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
 }

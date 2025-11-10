@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../../common_widgets/app_bar.dart';
 
 class ReportIssuePage extends StatefulWidget {
   const ReportIssuePage({super.key});
@@ -21,14 +22,18 @@ class _ReportIssuePageState extends State<ReportIssuePage> {
 
   void _submit() {
     if (_formKey.currentState!.validate()) {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Issue reported ')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Issue reported successfully!')));
+      Navigator.pop(context);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Report Issue')),
+      appBar: const CustomAppBar(
+        text: 'Report Issue',
+        usePremiumBackIcon: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Form(

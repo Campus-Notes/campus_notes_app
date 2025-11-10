@@ -24,4 +24,5 @@ abstract class AppRoutes {
   static const settings    = '/settings'; 
   static const userProfile = '/user_profile';
   static const changePassword = '/change_password';
+  static const bankDetails = '/bank_details';
 }

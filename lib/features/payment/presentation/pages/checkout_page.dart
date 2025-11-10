@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../../../data/dummy_data.dart';
+import '../../../../common_widgets/app_bar.dart';
 
 class CheckoutPage extends StatelessWidget {
   const CheckoutPage({super.key, required this.note});
@@ -15,7 +16,11 @@ class CheckoutPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final total = note.price;
     return Scaffold(
-      appBar: AppBar(title: const Text('Checkout')),
+      appBar: const CustomAppBar(
+        text: 'Checkout',
+        sideIcon: Icons.security_outlined,
+        usePremiumBackIcon: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

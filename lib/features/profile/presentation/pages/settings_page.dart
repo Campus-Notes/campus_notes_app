@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../routes/route_names.dart';
 import '../../../../services/theme_service.dart';
+import '../../../../common_widgets/app_bar.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -17,7 +18,10 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Settings')),
+      appBar: const CustomAppBar(
+        text: 'Settings',
+        usePremiumBackIcon: true,
+      ),
       body: ListView(
         children: [
           Consumer<ThemeService>(
@@ -26,8 +30,14 @@ class _SettingsPageState extends State<SettingsPage> {
                 children: [
                   ListTile(
                     leading: Icon(themeService.themeModeIcon),
-                    title: const Text('Theme'),
-                    subtitle: Text('Current: ${themeService.themeModeString}'),
+                    title: Text(
+                      'Theme',
+                      style: Theme.of(context).textTheme.bodyLarge,
+                    ),
+                    subtitle: Text(
+                      'Current: ${themeService.themeModeString}',
+                      style: Theme.of(context).textTheme.bodyMedium,
+                    ),
                     trailing: DropdownButton<ThemeMode>(
                       value: themeService.themeMode,
                       underline: const SizedBox.shrink(),
@@ -81,31 +91,52 @@ class _SettingsPageState extends State<SettingsPage> {
           SwitchListTile(
             value: examReminders,
             onChanged: (v) => setState(() => examReminders = v),
-            title: const Text('Exam reminders'),
-            subtitle: const Text('Receive upcoming exam alerts'),
+            title: Text(
+              'Exam reminders',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            subtitle: Text(
+              'Receive upcoming exam alerts',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
             secondary: const Icon(Icons.alarm),
           ),
           SwitchListTile(
             value: chatNotifications,
             onChanged: (v) => setState(() => chatNotifications = v),
-            title: const Text('Chat notifications'),
-            subtitle: const Text('New messages from buyers/sellers'),
+            title: Text(
+              'Chat notifications',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            subtitle: Text(
+              'New messages from buyers/sellers',
+              style: Theme.of(context).textTheme.bodyMedium,
+            ),
             secondary: const Icon(Icons.chat_bubble_outline),
           ),
           const Divider(),
           ListTile(
             leading: const Icon(Icons.help_outline),
-            title: const Text('Help & Support'),
+            title: Text(
+              'Help & Support',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
             onTap: () => Navigator.of(context).pushNamed(AppRoutes.helpSupport), 
           ),
           ListTile(
             leading: const Icon(Icons.privacy_tip_outlined),
-            title: const Text('Privacy Policy'),
+            title: Text(
+              'Privacy Policy',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
             onTap: () => Navigator.of(context).pushNamed(AppRoutes.privacyPolicy), 
           ),
           ListTile(
             leading: const Icon(Icons.description_outlined),
-            title: const Text('Terms of Service'),
+            title: Text(
+              'Terms of Service',
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
             onTap: () => ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Terms of Service')),
             ),
