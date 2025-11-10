@@ -91,8 +91,8 @@ class _FormfieldState extends State<Formfield>
                   boxShadow: [
                     BoxShadow(
                       color: _isFocused 
-                        ? AppColors.primary.withOpacity(0.15)
-                        : Colors.grey.withOpacity(0.1),
+                        ? AppColors.primary.withValues(alpha: 0.15)
+                        : Colors.grey.withValues(alpha: 0.1),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -118,7 +118,7 @@ class _FormfieldState extends State<Formfield>
                       margin: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: _isFocused 
-                          ? AppColors.primary.withOpacity(0.1)
+                          ? AppColors.primary.withValues(alpha: 0.1)
                           : Colors.grey[100],
                         borderRadius: BorderRadius.circular(12),
                       ),

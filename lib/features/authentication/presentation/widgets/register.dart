@@ -67,12 +67,12 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.person_outline,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       size: 20,
                     ),
                     hintText: 'Full Name',
                     hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       fontSize: 16,
                     ),
                     border: OutlineInputBorder(
@@ -104,12 +104,12 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.email_outlined,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       size: 20,
                     ),
                     hintText: 'Email Address',
                     hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       fontSize: 16,
                     ),
                     border: OutlineInputBorder(
@@ -145,12 +145,12 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       size: 20,
                     ),
                     hintText: 'Password',
                     hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       fontSize: 16,
                     ),
                     suffixIcon: IconButton(
@@ -158,7 +158,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                         _obscurePassword 
                           ? Icons.visibility_outlined 
                           : Icons.visibility_off_outlined,
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         size: 20,
                       ),
                       onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
@@ -192,12 +192,12 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       size: 20,
                     ),
                     hintText: 'Confirm Password',
                     hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       fontSize: 16,
                     ),
                     suffixIcon: IconButton(
@@ -205,7 +205,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                         _obscureConfirmPassword 
                           ? Icons.visibility_outlined 
                           : Icons.visibility_off_outlined,
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         size: 20,
                       ),
                       onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
@@ -234,7 +234,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                     onChanged: (v) => setState(() => _agree = v ?? false),
                     checkColor: Theme.of(context).colorScheme.onPrimary,
                     activeColor: AppColors.greenButton,
-                    side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+                    side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                   ),
                   Flexible(
                     child: Text(

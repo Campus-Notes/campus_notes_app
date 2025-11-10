@@ -52,12 +52,12 @@ class _LoginWidgetState extends State<LoginWidget> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.email_outlined,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       size: 20,
                     ),
                     hintText: 'Email Address',
                     hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       fontSize: 16,
                     ),
                     border: OutlineInputBorder(
@@ -88,12 +88,12 @@ class _LoginWidgetState extends State<LoginWidget> {
                   decoration: InputDecoration(
                     prefixIcon: Icon(
                       Icons.lock_outline,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       size: 20,
                     ),
                     hintText: 'Password',
                     hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                       fontSize: 16,
                     ),
                     suffixIcon: IconButton(
@@ -101,7 +101,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                         _obscurePassword 
                           ? Icons.visibility_outlined 
                           : Icons.visibility_off_outlined,
-                        color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         size: 20,
                       ),
                       onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
@@ -129,7 +129,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                     onChanged: (value) => setState(() => _rememberMe = value ?? false),
                     checkColor: Theme.of(context).colorScheme.onPrimary,
                     activeColor: AppColors.greenButton,
-                    side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6)),
+                    side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
                   ),
                   Text(
                     'Remember me',
@@ -143,7 +143,7 @@ class _LoginWidgetState extends State<LoginWidget> {
                     onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Forgot password?'))
                     ),
-                    child: Text(
+                    child: const Text(
                       'Forgot Password?',
                       style: TextStyle(
                         color: AppColors.blueLink,
@@ -191,7 +191,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               Text(
                 'Or login with',
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                   fontSize: 14,
                 ),
               ),
@@ -268,7 +268,7 @@ class _LoginWidgetState extends State<LoginWidget> {
   void _showPhoneOTPDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder: (context) => PhoneOTPDialog(),
+      builder: (context) => const PhoneOTPDialog(),
     );
   }
 }

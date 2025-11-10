@@ -16,7 +16,7 @@ class PopularNoteCard extends StatelessWidget {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Theme.of(context).colorScheme.outline.withOpacity(0.2)),
+          side: BorderSide(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
@@ -79,11 +79,11 @@ class PopularNoteCard extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(Icons.star, size: 12, color: AppColors.success),
+                                const Icon(Icons.star, size: 12, color: AppColors.success),
                                 const SizedBox(width: 2),
                                 Text(
                                   note.rating.toStringAsFixed(1),
-                                  style: TextStyle(
+                                  style: const TextStyle(
                                     fontSize: 11,
                                     fontWeight: FontWeight.w600,
                                     color: AppColors.success,
@@ -93,7 +93,7 @@ class PopularNoteCard extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          Icon(Icons.description, size: 12, color: AppColors.muted),
+                          const Icon(Icons.description, size: 12, color: AppColors.muted),
                           const SizedBox(width: 2),
                           Text(
                             '${note.pages}p',

@@ -96,14 +96,14 @@ Widget build(BuildContext context) {
                     'Sign in-up to enjoy the best managing experience',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                   const SizedBox(height: 40),
                   
                   Container(
                     decoration: BoxDecoration(
-                      color: Theme.of(context).colorScheme.surface.withOpacity(0.8),
+                      color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
                       borderRadius: BorderRadius.circular(25),
                     ),
                     child: TabBar(

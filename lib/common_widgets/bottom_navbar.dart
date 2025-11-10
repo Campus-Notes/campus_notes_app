@@ -56,7 +56,7 @@ class _MainShellState extends State<MainShell> {
                   blurRadius: 20,
                   spreadRadius: -5,
                   offset: const Offset(0, 10),
-                  color: Colors.black.withOpacity(0.15),
+                  color: Colors.black.withValues(alpha: 0.15),
                 )
               ],
             ),

@@ -67,7 +67,7 @@ class ModeSelector extends StatelessWidget {
               icon,
               color: isSelected 
                 ? AppColors.primary 
-                : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               size: 20,
             ),
             const SizedBox(width: 8),
@@ -76,7 +76,7 @@ class ModeSelector extends StatelessWidget {
               style: TextStyle(
                 color: isSelected 
                   ? AppColors.primary 
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                  : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),

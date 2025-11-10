@@ -51,7 +51,7 @@ class CategorySelector extends StatelessWidget {
             ),
             child: Icon(
               icon,
-              color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+              color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
               size: 28,
             ),
           ),

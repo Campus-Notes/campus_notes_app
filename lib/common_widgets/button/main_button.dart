@@ -84,7 +84,7 @@ class _PremiumButtonState extends State<PremiumButton>
                     ? LinearGradient(
                         colors: [
                           AppColors.primary,
-                          AppColors.primary.withOpacity(0.8),
+                          AppColors.primary.withValues(alpha: 0.8),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
@@ -108,8 +108,8 @@ class _PremiumButtonState extends State<PremiumButton>
                     color: widget.isSecondary
                       ? Colors.transparent
                       : isEnabled
-                        ? AppColors.primary.withOpacity(0.3)
-                        : Colors.grey.withOpacity(0.2),
+                        ? AppColors.primary.withValues(alpha: 0.3)
+                        : Colors.grey.withValues(alpha: 0.2),
                     blurRadius: 15,
                     offset: const Offset(0, 5),
                   ),

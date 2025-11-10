@@ -108,10 +108,10 @@ class _FileUploadState extends State<FileUpload>
                         boxShadow: [
                           BoxShadow(
                             color: hasFile 
-                              ? Colors.green.withOpacity(0.1)
+                              ? Colors.green.withValues(alpha: 0.1)
                               : _isHovered 
-                                ? AppColors.primary.withOpacity(0.1)
-                                : Colors.grey.withOpacity(0.05),
+                                ? AppColors.primary.withValues(alpha: 0.1)
+                                : Colors.grey.withValues(alpha: 0.05),
                             blurRadius: 15,
                             offset: const Offset(0, 5),
                           ),
@@ -126,7 +126,7 @@ class _FileUploadState extends State<FileUpload>
                               color: hasFile 
                                 ? Colors.green[100]
                                 : _isHovered
-                                  ? AppColors.primary.withOpacity(0.1)
+                                  ? AppColors.primary.withValues(alpha: 0.1)
                                   : Colors.grey[200],
                               shape: BoxShape.circle,
                             ),

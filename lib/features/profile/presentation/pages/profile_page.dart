@@ -57,7 +57,7 @@ class ProfilePage extends StatelessWidget {
                 children: [
                   Row(
                     children: [
-                      Expanded(
+                      const Expanded(
                         child: StatCard(
                           label: 'Rewards',
                           value: '$rewards pts',

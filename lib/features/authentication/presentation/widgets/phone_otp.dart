@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 
 class PhoneOTPDialog extends StatefulWidget {
+  const PhoneOTPDialog({super.key});
+
   @override
-  _PhoneOTPDialogState createState() => _PhoneOTPDialogState();
+  State<PhoneOTPDialog> createState() => _PhoneOTPDialogState();
 }
 
 class _PhoneOTPDialogState extends State<PhoneOTPDialog> {
