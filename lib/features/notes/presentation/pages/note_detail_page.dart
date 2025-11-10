@@ -9,90 +9,373 @@ class NoteDetailPage extends StatelessWidget {
 
   void _addToCart(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${note.title} added to cart! ')),
+      SnackBar(content: Text('${note.title} added to cart!')),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text(note.title)),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Row(
-            children: [
-              Container(
-                width: 60,
-                height: 76,
-                decoration: BoxDecoration(
-                  color: AppColors.primary.withValues(alpha: 0.08),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: const Icon(Icons.description, color: AppColors.primary),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(note.subject, style: const TextStyle(color:  AppColors.muted)),
-                    const SizedBox(height: 6),
-                    Row(
-                      children: [
-                        Icon(Icons.star, size: 16, color: Colors.amber[600]),
-                        const SizedBox(width: 4),
-                        Text(note.rating.toStringAsFixed(1), style: const TextStyle(fontWeight: FontWeight.w600)),
-                        const SizedBox(width: 8),
-                        Text('• ${note.pages} pages', style: const TextStyle(color: AppColors.muted)),
-                      ],
-                    ),
-                    const SizedBox(height: 6),
-                    Text('By ${note.seller}', style: const TextStyle(fontWeight: FontWeight.w600)),
-                  ],
-                ),
-              ),
-              Text(
-                '₹${note.price.toStringAsFixed(0)}',
-                style: const TextStyle(fontWeight: FontWeight.w800, fontSize: 18),
-              ),
-            ],
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.transparent,
+        elevation: 0,
+        leading: IconButton(
+          onPressed: () => Navigator.of(context).pop(),
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+        ),
+        actions: [
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.favorite_border, color: Colors.black),
           ),
-          const SizedBox(height: 16),
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFE5E7EB)),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+          IconButton(
+            onPressed: () {},
+            icon: const Icon(Icons.share, color: Colors.black),
+          ),
+        ],
+      ),
+      body: Column(
+        children: [
+          Expanded(
+            child: ListView(
+              padding: EdgeInsets.zero,
               children: [
-                const Text('Preview ', style: TextStyle(fontWeight: FontWeight.w700)),
-                const SizedBox(height: 8),
-                Container(
-                  height: 160,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF9FAFB),
-                    borderRadius: BorderRadius.circular(8),
+                // Large image card
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    height: 240,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(20),
+                      image: const DecorationImage(
+                        image: NetworkImage(
+                          'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800',
+                        ),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: Container(
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(20),
+                        gradient: LinearGradient(
+                          begin: Alignment.topCenter,
+                          end: Alignment.bottomCenter,
+                          colors: [
+                            Colors.transparent,
+                            Colors.black.withValues(alpha: 0.3),
+                          ],
+                        ),
+                      ),
+                    ),
                   ),
-                  child: const Center(child: Text('Preview A few pages here...')),
+                ),
+                
+                const SizedBox(height: 20),
+                
+                // Note details
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Title
+                      Text(
+                        note.title,
+                        style: const TextStyle(
+                          fontSize: 22,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 12),
+                      
+                      // Rating and discount badge
+                      Row(
+                        children: [
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.amber[50],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Row(
+                              children: [
+                                Icon(Icons.star, size: 16, color: Colors.amber[700]),
+                                const SizedBox(width: 4),
+                                Text(
+                                  note.rating.toStringAsFixed(1),
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w700,
+                                    color: Colors.amber[900],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                            decoration: BoxDecoration(
+                              color: Colors.green[50],
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                            child: Text(
+                              'Discount 5%',
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.green[700],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Price
+                      Text(
+                        '₹${note.price.toStringAsFixed(2)}',
+                        style: const TextStyle(
+                          fontSize: 28,
+                          fontWeight: FontWeight.w800,
+                          color: Colors.black,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Status badges
+                      Row(
+                        children: [
+                          _buildStatusBadge(
+                            icon: Icons.check_circle,
+                            label: 'Delivered',
+                            iconColor: Colors.green,
+                          ),
+                          const SizedBox(width: 16),
+                          _buildStatusBadge(
+                            icon: Icons.access_time,
+                            label: 'Time ${note.pages} min',
+                            iconColor: Colors.orange,
+                          ),
+                        ],
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Divider
+                      Divider(color: Colors.grey[200], thickness: 1),
+                      
+                      const SizedBox(height: 16),
+                      
+                      // Description section
+                      const Text(
+                        'Description',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Comprehensive ${note.subject} notes covering all key topics. Created by ${note.seller}. Total ${note.pages} pages of high-quality content perfect for exam preparation.',
+                        style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.grey[600],
+                          height: 1.5,
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Details section
+                      const Text(
+                        'Details',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      
+                      _buildDetailRow('Subject', note.subject),
+                      _buildDetailRow('Pages', '${note.pages} pages'),
+                      _buildDetailRow('Seller', note.seller),
+                      _buildDetailRow('Format', 'PDF Document'),
+                      
+                      const SizedBox(height: 24),
+                      
+                      // Preview section
+                      Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[50],
+                          borderRadius: BorderRadius.circular(16),
+                          border: Border.all(color: Colors.grey[200]!),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              'Preview',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w700,
+                                fontSize: 16,
+                              ),
+                            ),
+                            const SizedBox(height: 12),
+                            Container(
+                              height: 140,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey[200]!),
+                              ),
+                              child: Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.description_outlined,
+                                      size: 48,
+                                      color: Colors.grey[400],
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      'Preview first few pages',
+                                      style: TextStyle(
+                                        color: Colors.grey[600],
+                                        fontSize: 13,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      
+                      const SizedBox(height: 100), 
+                    ],
+                  ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pushNamed(
-              AppRoutes.checkout,
-              arguments: note, 
+          
+          // Bottom action bar
+          Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withValues(alpha: 0.05),
+                  blurRadius: 10,
+                  offset: const Offset(0, -5),
+                ),
+              ],
             ),
-            child: const Text('Buy Now'),
+            child: SafeArea(
+              child: Row(
+                children: [
+                  // Add to Cart button
+                  Container(
+                    width: 56,
+                    height: 56,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: AppColors.primary, width: 2),
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    child: IconButton(
+                      onPressed: () => _addToCart(context),
+                      icon: const Icon(
+                        Icons.shopping_cart_outlined,
+                        color: AppColors.primary,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  
+                  // Buy Now button
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pushNamed(
+                        AppRoutes.checkout,
+                        arguments: note,
+                      ),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: const Text(
+                        'Buy Now',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w700,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
           ),
-          const SizedBox(height: 8),
-          OutlinedButton(
-            onPressed: () => _addToCart(context), 
-            child: const Text('Add to Cart'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildStatusBadge({
+    required IconData icon,
+    required String label,
+    required Color iconColor,
+  }) {
+    return Row(
+      children: [
+        Icon(icon, size: 18, color: iconColor),
+        const SizedBox(width: 6),
+        Text(
+          label,
+          style: TextStyle(
+            fontSize: 13,
+            fontWeight: FontWeight.w500,
+            color: Colors.grey[700],
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDetailRow(String label, String value) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 14,
+              color: Colors.grey[600],
+            ),
+          ),
+          Text(
+            value,
+            style: const TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w600,
+              color: Colors.black,
+            ),
           ),
         ],
       ),

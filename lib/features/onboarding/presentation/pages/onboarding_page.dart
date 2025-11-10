@@ -37,12 +37,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
         curve: Curves.easeInOut,
       );
     } else {
-      Navigator.of(context).pushReplacementNamed(AppRoutes.landing);
+      Navigator.of(context).pushReplacementNamed(AppRoutes.authentication);
     }
   }
 
   void _skip() {
-    Navigator.of(context).pushReplacementNamed(AppRoutes.landing);
+    Navigator.of(context).pushReplacementNamed(AppRoutes.authentication);
   }
 
   @override

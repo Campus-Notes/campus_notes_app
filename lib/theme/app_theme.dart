@@ -7,6 +7,13 @@ class AppColors {
   static const Color primaryDark = Color(0xFF4F46E5);
   static const Color primaryLight = Color(0xFF818CF8);
   
+  static const Color darkBackground = Color(0xFF1C1C1E);
+  static const Color darkSurface = Color(0xFF2C2C2E);
+  static const Color darkText = Colors.white;
+  static const Color darkSecondaryText = Color(0xFF8E8E93);
+  static const Color greenButton = Color(0xFF34C759);
+  static const Color blueLink = Color(0xFF007AFF);
+  
   static const Color backgroundLight = Color(0xFFFAFAFA);
   static const Color backgroundDark = Color(0xFF121212);
   

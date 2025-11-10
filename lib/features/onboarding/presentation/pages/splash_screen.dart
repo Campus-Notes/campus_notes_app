@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../../../../routes/route_names.dart';
+import '../../../authentication/presentation/controller/auth_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -16,8 +18,19 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   _navigateToNextScreen() async {
-    await Future.delayed(const Duration(seconds: 3), () {});  
-    if (mounted) {
+    // Wait for splash animation
+    await Future.delayed(const Duration(seconds: 3));
+    
+    if (!mounted) return;
+    
+    // Check authentication state
+    final authController = Provider.of<AuthController>(context, listen: false);
+    
+    if (authController.isLoggedIn) {
+      // User is logged in, go to home (main shell)
+      Navigator.of(context).pushReplacementNamed(AppRoutes.shell);
+    } else {
+      // User not logged in, show onboarding
       Navigator.of(context).pushReplacementNamed(AppRoutes.onboarding);
     }
   }
