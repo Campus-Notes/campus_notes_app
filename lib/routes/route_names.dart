@@ -3,7 +3,7 @@ abstract class AppRoutes {
   static const onboarding  = '/onboarding';
   static const shell       = '/';
   static const landing     = '/landing';
-  static const login       = '/login';
+  static const authentication       = '/authentication';
   static const register    = '/register';
   static const home        = '/home';
   static const search      = '/search';
@@ -22,4 +22,6 @@ abstract class AppRoutes {
   static const helpSupport = '/help-support';
   static const privacyPolicy = '/privacy-policy';
   static const settings    = '/settings'; 
+  static const userProfile = '/user_profile';
+  static const changePassword = '/change_password';
 }

@@ -11,8 +11,7 @@ import 'firebase_options.dart';
 // Features
 import 'features/notes/presentation/pages/note_detail_page.dart';
 import 'features/payment/presentation/pages/checkout_page.dart';
-import 'features/authentication/presentation/pages/login_page.dart';
-import 'features/authentication/presentation/pages/register_page.dart';
+import 'features/authentication/presentation/pages/auth_screen.dart';
 import 'features/onboarding/presentation/pages/landingpage.dart';
 import 'features/onboarding/presentation/pages/splash_screen.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
@@ -53,7 +52,6 @@ class CampusNotesApp extends StatelessWidget {
           darkTheme: AppTheme.darkTheme(),
           themeMode: themeService.themeMode,
 
-          // ALWAYS START AT SPLASH
           initialRoute: AppRoutes.splash,
 
           routes: {
@@ -61,8 +59,7 @@ class CampusNotesApp extends StatelessWidget {
             AppRoutes.splash: (_) => const SplashScreen(),
             AppRoutes.onboarding: (_) => const OnboardingPage(),
             AppRoutes.landing: (_) => const LandingScreen(),
-            AppRoutes.login: (_) => const LoginScreen(),
-            AppRoutes.register: (_) => const RegisterScreen(),
+            AppRoutes.authentication: (_) => const AuthenticationScreen(),
           },
 
           onGenerateRoute: (settings) {

@@ -1,70 +1,153 @@
 import 'package:flutter/material.dart';
 import '../../../../data/dummy_data.dart';
-import '../../../../theme/app_theme.dart';
 import '../../../notes/presentation/widgets/note_card.dart';
-import '../../../notes/presentation/pages/purchases_page.dart';
 import '../../../info/presentation/pages/reminders_page.dart';
+import '../widgets/location_header.dart';
+import '../widgets/mode_selector.dart';
+import '../widgets/category_selector.dart';
+import '../widgets/featured_note_card.dart';
+import '../widgets/popular_note_card.dart';
+import '../widgets/section_header.dart';
+import '../widgets/sell_mode_content.dart';
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
   static const String route = '/home';
   const HomePage({super.key});
 
   @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  String selectedUniversity = 'Amrita University';
+  bool isBuyMode = true; 
+  int selectedCategoryIndex = 0;
+
+  final List<String> universities = [
+    'Amrita University',
+    'Stanford University',
+    'MIT Campus',
+    'Harvard University',
+    'Oxford University',
+  ];
+
+  final List<Map<String, dynamic>> categories = [
+    {'icon': Icons.computer, 'label': 'Computer Science'},
+    {'icon': Icons.calculate, 'label': 'Mathematics'},
+    {'icon': Icons.science, 'label': 'Physics'},
+    {'icon': Icons.biotech, 'label': 'Biology'},
+    {'icon': Icons.account_balance, 'label': 'Economics'},
+  ];
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.arrow_back),
-        ),
-        title: const Text('CampusNotes+'),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const PurchasesPage()),
-            ),
-            icon: const Icon(Icons.shopping_cart_outlined),
-            tooltip: 'Purchases',
-          ),
-          IconButton(
-            onPressed: () => Navigator.of(context).push(
-              MaterialPageRoute(builder: (_) => const RemindersPage()),
-            ),
-            icon: const Icon(Icons.notifications_outlined),
-          ),
-        ],
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(12),
-              color: AppColors.primary.withValues(alpha: 0.08),
-            ),
-            child: const Text(
-              'Trending this week',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 16,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: SafeArea(
+        child: Column(
+          children: [
+            // Header section
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                children: [
+                  LocationHeader(
+                    selectedUniversity: selectedUniversity,
+                    universities: universities,
+                    onUniversityChanged: (String? newValue) {
+                      if (newValue != null) {
+                        setState(() {
+                          selectedUniversity = newValue;
+                        });
+                      }
+                    },
+                    onSearchTap: () {
+                    },
+                    onNotificationTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const RemindersPage()),
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ModeSelector(
+                    isBuyMode: isBuyMode,
+                    onModeChanged: (bool buyMode) {
+                      setState(() {
+                        isBuyMode = buyMode;
+                      });
+                    },
+                  ),
+                ],
               ),
             ),
-          ),
-          const SizedBox(height: 12),
-          for (final n in dummyNotes) NoteCard(item: n),
-          const SizedBox(height: 12),
-          const Text(
-            'Recently added',
-            style: TextStyle(
-              fontWeight: FontWeight.w700,
-              fontSize: 16,
+            
+            if (isBuyMode)
+              CategorySelector(
+                selectedIndex: selectedCategoryIndex,
+                categories: categories,
+                onCategoryChanged: (int index) {
+                  setState(() {
+                    selectedCategoryIndex = index;
+                  });
+                },
+              ),
+            
+            // Main content
+            Expanded(
+              child: AnimatedSwitcher(
+                duration: const Duration(milliseconds: 300),
+                child: isBuyMode 
+                  ? _buildBuyModeContent() 
+                  : _buildSellModeContent(),
+              ),
             ),
-          ),
-          const SizedBox(height: 12),
-          for (final n in dummyNotes.reversed) NoteCard(item: n),
-        ],
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildBuyModeContent() {
+    return ListView(
+      key: const ValueKey('buy_mode'),
+      padding: const EdgeInsets.all(16),
+      children: [
+        const FeaturedNoteCard(),
+        const SizedBox(height: 24),
+        
+        SectionHeader(
+          title: 'Popular Notes',
+          actionText: 'See All',
+          onActionTap: () {
+          },
+        ),
+        const SizedBox(height: 12),
+        
+        for (final note in dummyNotes.take(3))
+          PopularNoteCard(note: note),
+        
+        const SizedBox(height: 20),
+        
+        SectionHeader(
+          title: 'Recently Added',
+          actionText: 'View More',
+          onActionTap: () {
+            // TODO: Navigate to recent notes page
+          },
+        ),
+        const SizedBox(height: 12),
+        
+        // Recently added notes
+        for (final note in dummyNotes.reversed.take(3))
+          NoteCard(item: note),
+      ],
+    );
+  }
+
+  Widget _buildSellModeContent() {
+    return const SingleChildScrollView(
+      key: ValueKey('sell_mode'),
+      padding: EdgeInsets.all(16),
+      child: SellModeContent(),
     );
   }
 }
