@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "884943010585",
+    "project_id": "campusnotes-e1806",
+    "storage_bucket": "campusnotes-e1806.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:884943010585:android:f1555ca8d32021fb726388",
+        "android_client_info": {
+          "package_name": "com.example.campus_notes_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCigRpN9ZSxm6DcMBMXZgMNhHvEGCKOr8k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
