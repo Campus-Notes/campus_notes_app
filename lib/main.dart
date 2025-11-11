@@ -19,7 +19,6 @@ import 'features/authentication/presentation/controller/auth_controller.dart';
 
 // chat features
 import 'features/chat/presentation/controller/chat_controller.dart';
-import 'features/chat/presentation/pages/chat_list_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

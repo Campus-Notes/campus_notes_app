@@ -80,33 +80,16 @@ class ChatController extends ChangeNotifier {
   final userId = currentUserId;
 
   // 🔹 Log your current user ID (check if it matches Firestore participant ID)
-  print('[ChatController] currentUserId = $userId');
 
   if (userId == null) {
-    print('[ChatController] currentUserId is NULL – user not authenticated');
     return const Stream.empty();
   }
 
-  print('[ChatController] Setting up listener for chats where participants contain "$userId"');
 
   final query = _firestore
       .collection('chats')
       .where('participants', arrayContains: userId)
       .orderBy('lastMessageTime', descending: true);
-
-  // 🔹 Add a listener just for logging Firestore updates
-  query.snapshots().listen((snapshot) {
-    print('[ChatController] Found ${snapshot.docs.length} chats for user $userId');
-    for (var doc in snapshot.docs) {
-      final data = doc.data() as Map<String, dynamic>;
-      print('  → Chat ID: ${doc.id}');
-      print('    participants: ${data['participants']}');
-      print('    lastMessage: ${data['lastMessage']}');
-      print('    lastMessageTime: ${data['lastMessageTime']}');
-    }
-  }, onError: (e) {
-    print('[ChatController] Error in Firestore stream: $e');
-  });
 
   // 🔹 Return the stream to the UI
   return query.snapshots();
