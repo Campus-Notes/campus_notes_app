@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../data/dummy_data.dart';
-import '../../../notes/presentation/widgets/note_card.dart';
 import '../../../info/presentation/pages/reminders_page.dart';
 import '../../../chat/presentation/pages/chat_list_page.dart'; // ✅ Added import
 import '../widgets/location_header.dart';
@@ -158,7 +157,7 @@ class _HomePageState extends State<HomePage> {
         const SizedBox(height: 12),
 
         for (final note in dummyNotes.reversed.take(3))
-          NoteCard(item: note),
+          PopularNoteCard(note: note),
       ],
     );
   }
