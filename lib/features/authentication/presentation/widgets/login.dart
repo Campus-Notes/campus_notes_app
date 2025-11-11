@@ -16,7 +16,6 @@ class _LoginWidgetState extends State<LoginWidget> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _obscurePassword = true;
-  bool _rememberMe = false;
 
   @override
   void dispose() {
@@ -124,20 +123,6 @@ class _LoginWidgetState extends State<LoginWidget> {
               
               Row(
                 children: [
-                  Checkbox(
-                    value: _rememberMe,
-                    onChanged: (value) => setState(() => _rememberMe = value ?? false),
-                    checkColor: Theme.of(context).colorScheme.onPrimary,
-                    activeColor: AppColors.greenButton,
-                    side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
-                  ),
-                  Text(
-                    'Remember me',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface,
-                      fontSize: 14,
-                    ),
-                  ),
                   const Spacer(),
                   TextButton(
                     onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
