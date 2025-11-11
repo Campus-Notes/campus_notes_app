@@ -176,7 +176,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       child: IconButton(
                         icon: const Icon(Icons.camera_alt, color: Colors.white, size: 22),
                         onPressed: () {
-                          // TODO: Implement image picker
                         },
                       ),
                     ),

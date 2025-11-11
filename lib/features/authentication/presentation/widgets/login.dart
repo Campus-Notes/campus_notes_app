@@ -1,8 +1,9 @@
-import 'package:campus_notes_app/features/authentication/presentation/controller/auth_controller.dart';
+import 'package:campus_notes_app/features/authentication/presentation/screens/forgot_password_feature.dart';
 import 'package:campus_notes_app/features/authentication/presentation/widgets/phone_otp.dart';
 import 'package:campus_notes_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import '../controller/auth_controller.dart';
 
 class LoginWidget extends StatefulWidget {
   const LoginWidget({super.key});
@@ -38,7 +39,7 @@ class _LoginWidgetState extends State<LoginWidget> {
           key: _formKey,
           child: Column(
             children: [
-              // Email field
+              // Email
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
@@ -49,32 +50,22 @@ class _LoginWidgetState extends State<LoginWidget> {
                   keyboardType: TextInputType.emailAddress,
                   style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                   decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.email_outlined,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      size: 20,
-                    ),
+                    prefixIcon: Icon(Icons.email_outlined,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), size: 20),
                     hintText: 'Email Address',
                     hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      fontSize: 16,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide.none,
-                    ),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 16),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
                     filled: true,
                     fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   ),
                   validator: (v) => v?.trim().isEmpty == true ? 'Enter email' : null,
                 ),
               ),
               const SizedBox(height: 16),
-              
+
+              // Password
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
@@ -85,61 +76,46 @@ class _LoginWidgetState extends State<LoginWidget> {
                   obscureText: _obscurePassword,
                   style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
                   decoration: InputDecoration(
-                    prefixIcon: Icon(
-                      Icons.lock_outline,
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      size: 20,
-                    ),
+                    prefixIcon: Icon(Icons.lock_outline,
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), size: 20),
                     hintText: 'Password',
                     hintStyle: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                      fontSize: 16,
-                    ),
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 16),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword 
-                          ? Icons.visibility_outlined 
-                          : Icons.visibility_off_outlined,
+                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                         color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                         size: 20,
                       ),
                       onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
                     ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(15),
-                      borderSide: BorderSide.none,
-                    ),
+                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
                     filled: true,
                     fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
+                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                   ),
                   validator: (v) => (v?.isEmpty == true || v!.length < 6) ? 'Min 6 chars' : null,
                 ),
               ),
               const SizedBox(height: 16),
-              
+
+              // Forgot Password → navigates
               Row(
                 children: [
                   const Spacer(),
                   TextButton(
-                    onPressed: () => ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Forgot password?'))
-                    ),
-                    child: const Text(
-                      'Forgot Password?',
-                      style: TextStyle(
-                        color: AppColors.blueLink,
-                        fontSize: 14,
-                      ),
-                    ),
+                    onPressed: () {
+                      Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                      );
+                    },
+                    child: const Text('Forgot Password?', style: TextStyle(color: AppColors.blueLink, fontSize: 14)),
                   ),
                 ],
               ),
               const SizedBox(height: 30),
-              
+
+              // Login button
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -147,41 +123,25 @@ class _LoginWidgetState extends State<LoginWidget> {
                   onPressed: auth.isLoading ? null : _signIn,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.greenButton,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                     elevation: 0,
                   ),
                   child: auth.isLoading
-                      ? SizedBox(
+                      ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            strokeWidth: 2,
-                          ),
+                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
                         )
-                      : Text(
-                          'Login',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onPrimary,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
+                      : const Text('Login',
+                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
                 ),
               ),
               const SizedBox(height: 30),
-              
-              Text(
-                'Or login with',
-                style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                  fontSize: 14,
-                ),
-              ),
+
+              // Or login with
+              Text('Or login with',
+                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 14)),
               const SizedBox(height: 20),
-              
               Row(
                 children: [
                   Expanded(
@@ -192,24 +152,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: TextButton.icon(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Google login not implemented yet'))
-                          );
-                        },
-                        icon: Icon(
-                          Icons.g_mobiledata,
-                          color: Theme.of(context).colorScheme.onSurface,
-                          size: 20,
-                        ),
-                        label: Text(
-                          'Google',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        onPressed: () => ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(content: Text('Google login not implemented yet'))),
+                        icon: const Icon(Icons.g_mobiledata, size: 20),
+                        label: const Text('Google', style: TextStyle(fontSize: 14)),
                       ),
                     ),
                   ),
@@ -222,22 +168,9 @@ class _LoginWidgetState extends State<LoginWidget> {
                         borderRadius: BorderRadius.circular(15),
                       ),
                       child: TextButton.icon(
-                        onPressed: () {
-                          _showPhoneOTPDialog(context);
-                        },
-                        icon: Icon(
-                          Icons.phone_outlined,
-                          color: Theme.of(context).colorScheme.onSurface,
-                          size: 20,
-                        ),
-                        label: Text(
-                          'Phone',
-                          style: TextStyle(
-                            color: Theme.of(context).colorScheme.onSurface,
-                            fontSize: 14,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
+                        onPressed: () => _showPhoneOTPDialog(context),
+                        icon: const Icon(Icons.phone_outlined, size: 20),
+                        label: const Text('Phone', style: TextStyle(fontSize: 14)),
                       ),
                     ),
                   ),
@@ -251,9 +184,6 @@ class _LoginWidgetState extends State<LoginWidget> {
   }
 
   void _showPhoneOTPDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (context) => const PhoneOTPDialog(),
-    );
+    showDialog(context: context, builder: (_) => const PhoneOTPDialog());
   }
 }

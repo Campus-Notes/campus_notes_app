@@ -151,7 +151,6 @@ class _HomePageState extends State<HomePage> {
           title: 'Recently Added',
           actionText: 'View More',
           onActionTap: () {
-            // TODO: Navigate to recent notes page
           },
         ),
         const SizedBox(height: 12),

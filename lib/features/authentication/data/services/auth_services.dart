@@ -1,14 +1,30 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'database_services.dart';
 import '../models/user_model.dart';
+import 'database_services.dart';
 
+/// Unified authentication service that works with Firebase Auth + Firestore
 class AuthService {
+  // -----------------------------------------------------------------
+  //  Dependencies
+  // -----------------------------------------------------------------
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseService _dbService = DatabaseService();
 
+  /// Optional HTTP base URL – only needed if you ever add a custom backend
+  final String baseUrl;
+
+  AuthService({this.baseUrl = ''});
+
+  // -----------------------------------------------------------------
+  //  Auth state
+  // -----------------------------------------------------------------
   User? get currentUser => _auth.currentUser;
+
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
+  // -----------------------------------------------------------------
+  //  Register
+  // -----------------------------------------------------------------
   Future<String?> register({
     required String firstName,
     required String lastName,
@@ -18,7 +34,7 @@ class AuthService {
     required String password,
   }) async {
     try {
-      UserCredential result = await _auth.createUserWithEmailAndPassword(
+      final result = await _auth.createUserWithEmailAndPassword(
         email: email.trim(),
         password: password,
       );
@@ -29,9 +45,9 @@ class AuthService {
       final newUser = UserModel(
         uid: user.uid,
         firstName: firstName.trim(),
-        lastName: lastName.trim().isEmpty ? '' : lastName.trim(),
+        lastName: lastName.trim(),
         email: email.trim(),
-        mobile: mobile.trim().isEmpty ? '' : mobile.trim(), 
+        mobile: mobile.trim(),
         university: university.trim(),
         walletBalance: 0.0,
         points: 0,
@@ -46,24 +62,18 @@ class AuthService {
         return 'Failed to save profile';
       }
 
-      await user.updateDisplayName('${firstName.trim()} ${lastName.trim()}');
+      await user.updateDisplayName('$firstName $lastName');
       return null;
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'weak-password':
-          return 'Password too weak';
-        case 'email-already-in-use':
-          return 'Email already registered';
-        case 'invalid-email':
-          return 'Invalid email';
-        default:
-          return e.message ?? 'Registration failed';
-      }
+      return _mapFirebaseError(e);
     } catch (e) {
       return 'Unexpected error';
     }
   }
 
+  // -----------------------------------------------------------------
+  //  Login
+  // -----------------------------------------------------------------
   Future<String?> login({
     required String email,
     required String password,
@@ -75,23 +85,20 @@ class AuthService {
       );
       return null;
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'user-not-found':
-          return 'No account found';
-        case 'wrong-password':
-          return 'Incorrect password';
-        case 'invalid-email':
-          return 'Invalid email';
-        default:
-          return e.message ?? 'Login failed';
-      }
+      return _mapFirebaseError(e);
     }
   }
 
+  // -----------------------------------------------------------------
+  //  Logout
+  // -----------------------------------------------------------------
   Future<void> logout() async {
     await _auth.signOut();
   }
 
+  // -----------------------------------------------------------------
+  //  Change Password (requires re-authentication)
+  // -----------------------------------------------------------------
   Future<String?> changePassword({
     required String oldPassword,
     required String newPassword,
@@ -100,29 +107,24 @@ class AuthService {
       final user = _auth.currentUser;
       if (user == null) return 'User not logged in';
 
-      // Re-authenticate user with old password
       final credential = EmailAuthProvider.credential(
         email: user.email!,
         password: oldPassword,
       );
-      
+
       await user.reauthenticateWithCredential(credential);
       await user.updatePassword(newPassword);
       return null;
     } on FirebaseAuthException catch (e) {
-      switch (e.code) {
-        case 'wrong-password':
-          return 'Current password is incorrect';
-        case 'weak-password':
-          return 'New password is too weak';
-        default:
-          return e.message ?? 'Failed to change password';
-      }
+      return _mapFirebaseError(e);
     } catch (e) {
       return 'Unexpected error';
     }
   }
 
+  // -----------------------------------------------------------------
+  //  Update Profile
+  // -----------------------------------------------------------------
   Future<String?> updateProfile({
     required String firstName,
     required String lastName,
@@ -133,7 +135,7 @@ class AuthService {
       final user = _auth.currentUser;
       if (user == null) return 'User not logged in';
 
-      final updatedUser = await _dbService.updateUserProfile(
+      final updated = await _dbService.updateUserProfile(
         uid: user.uid,
         firstName: firstName,
         lastName: lastName,
@@ -141,9 +143,8 @@ class AuthService {
         university: university,
       );
 
-      if (!updatedUser) return 'Failed to update profile';
+      if (!updated) return 'Failed to update profile';
 
-      // Update display name in Firebase Auth
       await user.updateDisplayName('$firstName $lastName');
       return null;
     } catch (e) {
@@ -151,17 +152,22 @@ class AuthService {
     }
   }
 
+  // -----------------------------------------------------------------
+  //  Get Current User Data (from Firestore)
+  // -----------------------------------------------------------------
   Future<UserModel?> getCurrentUserData() async {
     try {
       final user = _auth.currentUser;
       if (user == null) return null;
-      
       return await _dbService.getUserData(user.uid);
     } catch (e) {
       return null;
     }
   }
 
+  // -----------------------------------------------------------------
+  //  Update Bank Details
+  // -----------------------------------------------------------------
   Future<String?> updateBankDetails({
     String? upiId,
     String? bankAccountNumber,
@@ -182,6 +188,28 @@ class AuthService {
       return null;
     } catch (e) {
       return 'Failed to update bank details';
+    }
+  }
+
+  // -----------------------------------------------------------------
+  //  Private: Map Firebase errors to user-friendly messages
+  // -----------------------------------------------------------------
+  String _mapFirebaseError(FirebaseAuthException e) {
+    switch (e.code) {
+      case 'weak-password':
+        return 'Password too weak';
+      case 'email-already-in-use':
+        return 'Email already registered';
+      case 'invalid-email':
+        return 'Invalid email';
+      case 'user-not-found':
+        return 'No account found';
+      case 'wrong-password':
+        return 'Incorrect password';
+      case 'requires-recent-login':
+        return 'Please log in again to change password';
+      default:
+        return e.message ?? 'Authentication failed';
     }
   }
 }
