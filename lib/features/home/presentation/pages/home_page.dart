@@ -138,7 +138,7 @@ class _HomePageState extends State<HomePage> {
         
         // Recently added notes
         for (final note in dummyNotes.reversed.take(3))
-          NoteCard(item: note),
+          PopularNoteCard(note: note),
       ],
     );
   }

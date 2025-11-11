@@ -1,7 +1,6 @@
 import 'package:campus_notes_app/common_widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../../theme/app_theme.dart';
 import '../../../../routes/route_names.dart';
 import '../widgets/quick_access_card.dart';
 import '../widgets/menu_card.dart';
@@ -93,8 +92,8 @@ class _ProfilePageState extends State<ProfilePage> {
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
                     colors: [
-                      AppColors.primary,
-                      AppColors.primary.withValues(alpha: 0.8),
+                      Theme.of(context).colorScheme.primary,
+                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
                     ],
                   ),
                   borderRadius: const BorderRadius.only(
@@ -112,15 +111,15 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: Colors.white.withValues(alpha: 0.2),
+                            color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.2),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white.withValues(alpha: 0.3), width: 2),
+                            border: Border.all(color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.3), width: 2),
                           ),
                           child: Center(
                             child: Text(
                               initials,
-                              style: const TextStyle(
-                                color: Colors.white,
+                              style: TextStyle(
+                                color: Theme.of(context).colorScheme.onPrimary,
                                 fontSize: 24,
                                 fontWeight: FontWeight.bold,
                               ),
@@ -136,9 +135,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             Text(
                               displayName,
                               style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: Colors.white,
-                                fontSize: 20,
-                              ),
+                                  color: Theme.of(context).colorScheme.onPrimary,
+                                  fontSize: 20,
+                                ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -146,8 +145,8 @@ class _ProfilePageState extends State<ProfilePage> {
                             Text(
                               displayEmail,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                color: Colors.white70,
-                              ),
+                                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.85),
+                                ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -156,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               Text(
                                 _currentUser!.university,
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Colors.white60,
+                                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.75),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
