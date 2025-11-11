@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/app_theme.dart';
 import 'sell_note.dart';
 import 'donations_page.dart';
 import '../widgets/sold_note_card.dart';
@@ -45,19 +44,36 @@ class MySoldNotesPage extends StatelessWidget {
     double totalEarnings = soldNotes.fold(0.0, (sum, note) => sum + note['totalEarned']);
     
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
-        title: const Text('My Sold Notes'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
+        title: Text(
+          'My Sold Notes',
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onSurface,
+            fontWeight: FontWeight.bold,
+            fontSize: 20,
+          ),
+        ),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        foregroundColor: Theme.of(context).colorScheme.onSurface,
         elevation: 0,
         actions: [
           TextButton.icon(
             onPressed: () => Navigator.of(context).push(
               MaterialPageRoute(builder: (_) => const DonationsPage()),
             ),
-            icon: const Icon(Icons.volunteer_activism_outlined, size: 20),
-            label: const Text('Donate', style: TextStyle(fontSize: 14)),
+            icon: Icon(
+              Icons.volunteer_activism_outlined,
+              size: 20,
+              color: Theme.of(context).colorScheme.primary,
+            ),
+            label: Text(
+              'Donate',
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.primary,
+              ),
+            ),
           ),
           const SizedBox(width: 8),
         ],
@@ -70,7 +86,10 @@ class MySoldNotesPage extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
+                colors: [
+                  Theme.of(context).colorScheme.onSurface,
+                  Theme.of(context).colorScheme.primary.withValues(alpha:0.8)
+                ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
@@ -107,7 +126,7 @@ class MySoldNotesPage extends StatelessWidget {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: Colors.white.withValues(alpha:0.2),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: const Icon(
@@ -126,23 +145,24 @@ class MySoldNotesPage extends StatelessWidget {
                       MaterialPageRoute(builder: (_) => const UploadPage()),
                     ),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: AppColors.primary,
+                      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                      foregroundColor: Theme.of(context).colorScheme.primary,
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.add, size: 20),
-                        SizedBox(width: 8),
+                        Icon(Icons.add, size: 20, color: Theme.of(context).colorScheme.primary),
+                        const SizedBox(width: 8),
                         Text(
                           'Sell New Note',
                           style: TextStyle(
                             fontWeight: FontWeight.w600,
                             fontSize: 16,
+                            color: Theme.of(context).colorScheme.primary,
                           ),
                         ),
                       ],
@@ -155,30 +175,30 @@ class MySoldNotesPage extends StatelessWidget {
 
           Expanded(
             child: soldNotes.isEmpty
-                ? const Center(
+                ? Center(
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(
                           Icons.note_add_outlined,
                           size: 64,
-                          color: Colors.grey,
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.5),
                         ),
-                        SizedBox(height: 16),
+                        const SizedBox(height: 16),
                         Text(
                           'No notes sold yet',
                           style: TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
-                            color: Colors.grey,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                           ),
                         ),
-                        SizedBox(height: 8),
+                        const SizedBox(height: 8),
                         Text(
                           'Start by selling your first note!',
                           style: TextStyle(
                             fontSize: 14,
-                            color: Colors.grey,
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.5),
                           ),
                         ),
                       ],
@@ -189,14 +209,14 @@ class MySoldNotesPage extends StatelessWidget {
                     itemCount: soldNotes.length + 1,
                     itemBuilder: (context, index) {
                       if (index == 0) {
-                        return const Padding(
-                          padding: EdgeInsets.only(bottom: 16),
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
                           child: Text(
                             'My Sold Notes',
                             style: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
-                              color: Colors.black87,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         );
