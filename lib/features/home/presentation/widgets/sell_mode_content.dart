@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/app_theme.dart';
+// import '../../../../theme/app_theme.dart';
 import '../../../notes/presentation/pages/sell_note.dart';
 import '../../../notes/presentation/widgets/sold_note_card.dart';
 
@@ -52,7 +52,10 @@ class SellModeContent extends StatelessWidget {
           padding: const EdgeInsets.all(20),
           decoration: BoxDecoration(
             gradient: LinearGradient(
-              colors: [AppColors.primary, AppColors.primary.withValues(alpha: 0.8)],
+              colors: [
+                Theme.of(context).colorScheme.primary,
+                Theme.of(context).colorScheme.primary.withValues(alpha: 0.8)
+              ],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
@@ -108,23 +111,24 @@ class SellModeContent extends StatelessWidget {
                     MaterialPageRoute(builder: (_) => const UploadPage()),
                   ),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.white,
-                    foregroundColor: AppColors.primary,
+                    backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+                    foregroundColor: Theme.of(context).colorScheme.primary,
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: const Row(
+                  child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.add, size: 20),
-                      SizedBox(width: 8),
+                      Icon(Icons.add, size: 20, color: Theme.of(context).colorScheme.primary),
+                      const SizedBox(width: 8),
                       Text(
                         'Sell New Note',
                         style: TextStyle(
                           fontWeight: FontWeight.w600,
                           fontSize: 16,
+                          color: Theme.of(context).colorScheme.primary,
                         ),
                       ),
                     ],
@@ -135,12 +139,12 @@ class SellModeContent extends StatelessWidget {
           ),
         ),
 
-        const Text(
+        Text(
           'My Sold Notes',
           style: TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
-            color: Colors.black87,
+            color: Theme.of(context).colorScheme.onSurface,
           ),
         ),
         const SizedBox(height: 16),
@@ -150,28 +154,28 @@ class SellModeContent extends StatelessWidget {
           Center(
             child: Container(
               padding: const EdgeInsets.all(32),
-              child: const Column(
+              child: Column(
                 children: [
                   Icon(
                     Icons.note_add_outlined,
                     size: 64,
-                    color: Colors.grey,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     'No notes sold yet',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: Colors.grey,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Start by selling your first note!',
                     style: TextStyle(
                       fontSize: 14,
-                      color: Colors.grey,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
