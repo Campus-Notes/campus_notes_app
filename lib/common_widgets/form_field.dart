@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/app_theme.dart';
 
 class Formfield extends StatefulWidget {
   final TextEditingController controller;
@@ -71,6 +70,9 @@ class _FormfieldState extends State<Formfield>
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
+        final colorScheme = Theme.of(context).colorScheme;
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+
         return Container(
           margin: const EdgeInsets.only(bottom: 20),
           child: Column(
@@ -81,7 +83,7 @@ class _FormfieldState extends State<Formfield>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: _isFocused ? AppColors.primary : Colors.grey[700],
+                  color: _isFocused ? colorScheme.primary : colorScheme.onSurface.withValues(alpha:0.8),
                 ),
               ),
               const SizedBox(height: 8),
@@ -90,9 +92,9 @@ class _FormfieldState extends State<Formfield>
                   borderRadius: BorderRadius.circular(16),
                   boxShadow: [
                     BoxShadow(
-                      color: _isFocused 
-                        ? AppColors.primary.withValues(alpha: 0.15)
-                        : Colors.grey.withValues(alpha: 0.1),
+                      color: _isFocused
+                          ? colorScheme.primary.withValues(alpha: 0.15)
+                          : (isDark ? Colors.black.withValues(alpha: 0.25) : Colors.grey.withValues(alpha:0.08)),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -111,31 +113,31 @@ class _FormfieldState extends State<Formfield>
                   decoration: InputDecoration(
                     hintText: widget.hint,
                     hintStyle: TextStyle(
-                      color: Colors.grey[400],
+                      color: colorScheme.onSurface.withValues(alpha:0.5),
                       fontSize: 16,
                     ),
                     prefixIcon: Container(
                       margin: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: _isFocused 
-                          ? AppColors.primary.withValues(alpha: 0.1)
-                          : Colors.grey[100],
+                        color: _isFocused
+                            ? colorScheme.primary.withValues(alpha:0.08)
+                            : (isDark ? Colors.white10 : Colors.grey[100]),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                         widget.icon,
-                        color: _isFocused ? AppColors.primary : Colors.grey[600],
+                        color: _isFocused ? colorScheme.primary : colorScheme.onSurface.withValues(alpha:0.6),
                         size: 20,
                       ),
                     ),
                     prefixText: widget.prefix,
-                    prefixStyle: const TextStyle(
+                    prefixStyle: TextStyle(
                       fontSize: 16,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.primary,
+                      color: colorScheme.primary,
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Theme.of(context).cardColor,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide.none,
@@ -143,14 +145,14 @@ class _FormfieldState extends State<Formfield>
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
                       borderSide: BorderSide(
-                        color: Colors.grey[200]!,
+                        color: isDark ? const Color(0xFF2C2C2E) : Colors.grey[200]!,
                         width: 1,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(16),
-                      borderSide: const BorderSide(
-                        color: AppColors.primary,
+                      borderSide: BorderSide(
+                        color: colorScheme.primary,
                         width: 2,
                       ),
                     ),
