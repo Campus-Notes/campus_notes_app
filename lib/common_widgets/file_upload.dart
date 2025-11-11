@@ -69,7 +69,7 @@ class _FileUploadState extends State<FileUpload>
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          'Upload Document',
+          'Upload PDF',
           style: TextStyle(
             fontSize: 16,
             fontWeight: FontWeight.w600,
@@ -201,7 +201,7 @@ class _FileUploadState extends State<FileUpload>
                             ),
                           ] else ...[
                             Text(
-                              'Drop your file here or click to browse',
+                              'Drop your PDF file here or click to browse',
                               style: TextStyle(
                                 fontSize: 16,
                                 fontWeight: FontWeight.w600,
@@ -212,7 +212,7 @@ class _FileUploadState extends State<FileUpload>
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              'Support PDF, DOCX, PPT files up to 10MB',
+                              'Only PDF files supported, up to 10MB',
                               style: TextStyle(
                                 fontSize: 14,
                                 color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.6),

@@ -16,6 +16,7 @@ import 'features/onboarding/presentation/pages/landingpage.dart';
 import 'features/onboarding/presentation/pages/splash_screen.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
 import 'features/authentication/presentation/controller/auth_controller.dart';
+import 'features/notes/presentation/controller/notes_controller.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,6 +32,7 @@ Future<void> main() async {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()),
+        ChangeNotifierProvider(create: (_) => NotesController()),
         ChangeNotifierProvider.value(value: themeService),
       ],
       child: const CampusNotesApp(),
