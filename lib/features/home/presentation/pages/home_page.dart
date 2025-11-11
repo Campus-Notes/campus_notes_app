@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import '../../../../data/dummy_data.dart';
-import '../../../notes/presentation/widgets/note_card.dart';
 import '../../../info/presentation/pages/reminders_page.dart';
 import '../widgets/location_header.dart';
 import '../widgets/mode_selector.dart';

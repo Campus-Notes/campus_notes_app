@@ -115,10 +115,10 @@ class _FileUploadState extends State<FileUpload>
                         boxShadow: [
                           BoxShadow(
                             color: hasFile
-                                ? Colors.green.withOpacity(0.1)
+                                ? Colors.green.withValues(alpha:0.1)
                                 : _isHovered
-                                    ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
-                                    : Theme.of(context).colorScheme.shadow.withOpacity(0.05),
+                                    ? Theme.of(context).colorScheme.primary.withValues(alpha:0.1)
+                                    : Theme.of(context).colorScheme.shadow.withValues(alpha:0.5),
                             blurRadius: 15,
                             offset: const Offset(0, 5),
                           ),
@@ -135,7 +135,7 @@ class _FileUploadState extends State<FileUpload>
                                       ? Colors.green[900]
                                       : Colors.green[100])
                                   : _isHovered
-                                      ? Theme.of(context).colorScheme.primary.withOpacity(0.1)
+                                      ? Theme.of(context).colorScheme.primary.withValues(alpha:0.1)
                                       : Theme.of(context).cardColor,
                               shape: BoxShape.circle,
                             ),
@@ -150,7 +150,7 @@ class _FileUploadState extends State<FileUpload>
                                       : Colors.green[600])
                                   : _isHovered
                                       ? Theme.of(context).colorScheme.primary
-                                      : Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                      : Theme.of(context).colorScheme.onSurface.withValues(alpha:0.6),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -207,7 +207,7 @@ class _FileUploadState extends State<FileUpload>
                                 fontWeight: FontWeight.w600,
                 color: _isHovered
                   ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onSurface.withOpacity(0.8),
+                  : Theme.of(context).colorScheme.onSurface.withValues(alpha:0.8),
                               ),
                             ),
                             const SizedBox(height: 8),
@@ -215,7 +215,7 @@ class _FileUploadState extends State<FileUpload>
                               'Support PDF, DOCX, PPT files up to 10MB',
                               style: TextStyle(
                                 fontSize: 14,
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.6),
+                                color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.6),
                               ),
                             ),
                           ],
@@ -231,7 +231,7 @@ class _FileUploadState extends State<FileUpload>
                               boxShadow: [
                                 if (_isHovered || hasFile)
                                   BoxShadow(
-                                    color: Theme.of(context).colorScheme.primary.withOpacity(0.2),
+                                    color: Theme.of(context).colorScheme.primary.withValues(alpha:0.2),
                                     blurRadius: 8,
                                     offset: const Offset(0, 2),
                                   ),

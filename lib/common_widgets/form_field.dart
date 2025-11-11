@@ -83,7 +83,7 @@ class _FormfieldState extends State<Formfield>
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.w600,
-                  color: _isFocused ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.8),
+                  color: _isFocused ? colorScheme.primary : colorScheme.onSurface.withValues(alpha:0.8),
                 ),
               ),
               const SizedBox(height: 8),
@@ -93,8 +93,8 @@ class _FormfieldState extends State<Formfield>
                   boxShadow: [
                     BoxShadow(
                       color: _isFocused
-                          ? colorScheme.primary.withOpacity(0.15)
-                          : (isDark ? Colors.black.withOpacity(0.25) : Colors.grey.withOpacity(0.08)),
+                          ? colorScheme.primary.withValues(alpha: 0.15)
+                          : (isDark ? Colors.black.withValues(alpha: 0.25) : Colors.grey.withValues(alpha:0.08)),
                       blurRadius: 12,
                       offset: const Offset(0, 4),
                     ),
@@ -113,20 +113,20 @@ class _FormfieldState extends State<Formfield>
                   decoration: InputDecoration(
                     hintText: widget.hint,
                     hintStyle: TextStyle(
-                      color: colorScheme.onSurface.withOpacity(0.5),
+                      color: colorScheme.onSurface.withValues(alpha:0.5),
                       fontSize: 16,
                     ),
                     prefixIcon: Container(
                       margin: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
                         color: _isFocused
-                            ? colorScheme.primary.withOpacity(0.08)
+                            ? colorScheme.primary.withValues(alpha:0.08)
                             : (isDark ? Colors.white10 : Colors.grey[100]),
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Icon(
                         widget.icon,
-                        color: _isFocused ? colorScheme.primary : colorScheme.onSurface.withOpacity(0.6),
+                        color: _isFocused ? colorScheme.primary : colorScheme.onSurface.withValues(alpha:0.6),
                         size: 20,
                       ),
                     ),

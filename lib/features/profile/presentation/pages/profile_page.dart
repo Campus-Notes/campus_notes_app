@@ -93,7 +93,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     end: Alignment.bottomRight,
                     colors: [
                       Theme.of(context).colorScheme.primary,
-                      Theme.of(context).colorScheme.primary.withOpacity(0.8),
+                      Theme.of(context).colorScheme.primary.withValues(alpha: 0.8),
                     ],
                   ),
                   borderRadius: const BorderRadius.only(
@@ -111,9 +111,9 @@ class _ProfilePageState extends State<ProfilePage> {
                           width: 60,
                           height: 60,
                           decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.2),
+                            color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.2),
                             shape: BoxShape.circle,
-                            border: Border.all(color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.3), width: 2),
+                            border: Border.all(color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.3), width: 2),
                           ),
                           child: Center(
                             child: Text(
@@ -145,7 +145,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             Text(
                               displayEmail,
                               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.85),
+                                  color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.75),
                                 ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -155,7 +155,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               Text(
                                 _currentUser!.university,
                                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(0.75),
+                                  color: Theme.of(context).colorScheme.onPrimary.withValues(alpha: 0.75),
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
