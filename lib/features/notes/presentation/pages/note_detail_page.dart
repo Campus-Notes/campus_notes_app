@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/app_theme.dart';
 import '../../../../data/dummy_data.dart';
 import '../../../../routes/route_names.dart';
 
@@ -16,22 +15,22 @@ class NoteDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
         ),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.favorite_border, color: Colors.black),
+            icon: Icon(Icons.favorite_border, color: Theme.of(context).colorScheme.onSurface),
           ),
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.share, color: Colors.black),
+            icon: Icon(Icons.share, color: Theme.of(context).colorScheme.onSurface),
           ),
         ],
       ),
@@ -63,7 +62,7 @@ class NoteDetailPage extends StatelessWidget {
                           end: Alignment.bottomCenter,
                           colors: [
                             Colors.transparent,
-                            Colors.black.withValues(alpha: 0.3),
+                            Theme.of(context).colorScheme.onSurface.withValues(alpha:0.3),
                           ],
                         ),
                       ),
@@ -82,9 +81,10 @@ class NoteDetailPage extends StatelessWidget {
                       // Title
                       Text(
                         note.title,
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 22,
                           fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       
@@ -96,19 +96,19 @@ class NoteDetailPage extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
-                              color: Colors.amber[50],
+                              color: Theme.of(context).colorScheme.secondary.withValues(alpha:0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Row(
                               children: [
-                                Icon(Icons.star, size: 16, color: Colors.amber[700]),
+                                Icon(Icons.star, size: 16, color: Theme.of(context).colorScheme.secondary),
                                 const SizedBox(width: 4),
                                 Text(
                                   note.rating.toStringAsFixed(1),
                                   style: TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w700,
-                                    color: Colors.amber[900],
+                                    color: Theme.of(context).colorScheme.secondary,
                                   ),
                                 ),
                               ],
@@ -118,7 +118,7 @@ class NoteDetailPage extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
                             decoration: BoxDecoration(
-                              color: Colors.green[50],
+                              color: Theme.of(context).colorScheme.primary.withValues(alpha:0.1),
                               borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
@@ -126,7 +126,7 @@ class NoteDetailPage extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: Colors.green[700],
+                                color: Theme.of(context).colorScheme.primary,
                               ),
                             ),
                           ),
@@ -138,10 +138,10 @@ class NoteDetailPage extends StatelessWidget {
                       // Price
                       Text(
                         '₹${note.price.toStringAsFixed(2)}',
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w800,
-                          color: Colors.black,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                       ),
                       
@@ -153,13 +153,13 @@ class NoteDetailPage extends StatelessWidget {
                           _buildStatusBadge(
                             icon: Icons.check_circle,
                             label: 'Delivered',
-                            iconColor: Colors.green,
+                            iconColor: Theme.of(context).colorScheme.primary,
                           ),
                           const SizedBox(width: 16),
                           _buildStatusBadge(
                             icon: Icons.access_time,
                             label: 'Time ${note.pages} min',
-                            iconColor: Colors.orange,
+                            iconColor: Theme.of(context).colorScheme.secondary,
                           ),
                         ],
                       ),
@@ -167,7 +167,7 @@ class NoteDetailPage extends StatelessWidget {
                       const SizedBox(height: 24),
                       
                       // Divider
-                      Divider(color: Colors.grey[200], thickness: 1),
+                      Divider(color: Theme.of(context).dividerColor, thickness: 1),
                       
                       const SizedBox(height: 16),
                       
@@ -184,7 +184,7 @@ class NoteDetailPage extends StatelessWidget {
                         'Comprehensive ${note.subject} notes covering all key topics. Created by ${note.seller}. Total ${note.pages} pages of high-quality content perfect for exam preparation.',
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                           height: 1.5,
                         ),
                       ),
@@ -212,27 +212,28 @@ class NoteDetailPage extends StatelessWidget {
                       Container(
                         padding: const EdgeInsets.all(16),
                         decoration: BoxDecoration(
-                          color: Colors.grey[50],
+                          color: Theme.of(context).colorScheme.surface,
                           borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey[200]!),
+                          border: Border.all(color: Theme.of(context).dividerColor),
                         ),
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
+                            Text(
                               'Preview',
                               style: TextStyle(
                                 fontWeight: FontWeight.w700,
                                 fontSize: 16,
+                                color: Theme.of(context).colorScheme.onSurface,
                               ),
                             ),
                             const SizedBox(height: 12),
                             Container(
                               height: 140,
                               decoration: BoxDecoration(
-                                color: Colors.white,
+                                color: Theme.of(context).scaffoldBackgroundColor,
                                 borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey[200]!),
+                                border: Border.all(color: Theme.of(context).dividerColor),
                               ),
                               child: Center(
                                 child: Column(
@@ -241,13 +242,13 @@ class NoteDetailPage extends StatelessWidget {
                                     Icon(
                                       Icons.description_outlined,
                                       size: 48,
-                                      color: Colors.grey[400],
+                                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.4),
                                     ),
                                     const SizedBox(height: 8),
                                     Text(
                                       'Preview first few pages',
                                       style: TextStyle(
-                                        color: Colors.grey[600],
+                                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                                         fontSize: 13,
                                       ),
                                     ),
@@ -271,10 +272,10 @@ class NoteDetailPage extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.surface,
               boxShadow: [
                 BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.05),
                   blurRadius: 10,
                   offset: const Offset(0, -5),
                 ),
@@ -288,19 +289,18 @@ class NoteDetailPage extends StatelessWidget {
                     width: 56,
                     height: 56,
                     decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.primary, width: 2),
+                      border: Border.all(color: Theme.of(context).colorScheme.primary, width: 2),
                       borderRadius: BorderRadius.circular(16),
                     ),
                     child: IconButton(
                       onPressed: () => _addToCart(context),
-                      icon: const Icon(
+                      icon: Icon(
                         Icons.shopping_cart_outlined,
-                        color: AppColors.primary,
+                        color: Theme.of(context).colorScheme.primary,
                       ),
                     ),
                   ),
                   const SizedBox(width: 12),
-                  
                   // Buy Now button
                   Expanded(
                     child: ElevatedButton(
@@ -309,19 +309,20 @@ class NoteDetailPage extends StatelessWidget {
                         arguments: note,
                       ),
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
+                        backgroundColor: Theme.of(context).colorScheme.primary,
+                        foregroundColor: Theme.of(context).colorScheme.onPrimary,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(16),
                         ),
                         elevation: 0,
                       ),
-                      child: const Text(
+                      child: Text(
                         'Buy Now',
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w700,
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
                     ),
@@ -340,44 +341,48 @@ class NoteDetailPage extends StatelessWidget {
     required String label,
     required Color iconColor,
   }) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: iconColor),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[700],
+    return Builder(
+      builder: (context) => Row(
+        children: [
+          Icon(icon, size: 18, color: iconColor),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w500,
+              color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
   Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
+    return Builder(
+      builder: (context) => Padding(
+        padding: const EdgeInsets.only(bottom: 12),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 14,
+                color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
+              ),
             ),
-          ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: Theme.of(context).colorScheme.onSurface,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
