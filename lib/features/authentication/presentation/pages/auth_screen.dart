@@ -67,21 +67,8 @@ Widget build(BuildContext context) {
             child: SingleChildScrollView(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // Back button
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: Icon(
-                        Icons.arrow_back,
-                        color: Theme.of(context).colorScheme.onSurface,
-                        size: 24,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  
+                children: [  
+                const SizedBox(height: 40),
                   Text(
                     'Go ahead and set up\nyour account',
                     style: TextStyle(

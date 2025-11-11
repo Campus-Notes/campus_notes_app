@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import '../../../../routes/route_names.dart';
+import '../../../../theme/app_theme.dart';
 
 class OnboardingPage extends StatefulWidget {
   const OnboardingPage({super.key});
@@ -54,20 +56,40 @@ class _OnboardingPageState extends State<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
           children: [
             Align(
-              alignment: Alignment.topRight,
-              child: TextButton(
-                onPressed: _skip,
-                child: const Text(
-                  'Skip',
-                  style: TextStyle(color: Colors.grey, fontSize: 16),
-                ),
-              ),
-            ),
+  alignment: Alignment.topRight,
+  child: Padding(
+    padding: const EdgeInsets.only(top: 25, right: 12),
+    child: InkWell(
+      borderRadius: BorderRadius.circular(20),
+      onTap: _skip,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Theme.of(context).brightness == Brightness.dark
+              ? Colors.white.withValues(alpha: 0.1)
+              : Colors.black.withValues(alpha: 0.05),
+        ),
+        child: Text(
+          "Skip",
+          style: GoogleFonts.nunito(
+            fontSize: 14,
+            fontWeight: FontWeight.w600,
+            color: Theme.of(context).brightness == Brightness.dark
+                ? Colors.white.withValues(alpha: 0.8)
+                : Colors.black.withValues(alpha: 0.7),
+          ),
+        ),
+      ),
+    ),
+  ),
+),
+
 
             Expanded(
               child: PageView.builder(
@@ -92,10 +114,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
                         Text(
                           page['title']!,
-                          style: const TextStyle(
+                          style: GoogleFonts.poppins(
                             fontSize: 28,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.textPrimaryDark
+                                : AppColors.textPrimaryLight,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -103,10 +127,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
 
                         Text(
                           page['description']!,
-                          style: const TextStyle(
+                          style: GoogleFonts.nunito(
                             fontSize: 16,
-                            color: Colors.grey,
+                            fontWeight: FontWeight.normal,
                             height: 1.5,
+                            color: Theme.of(context).brightness == Brightness.dark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondaryLight,
                           ),
                           textAlign: TextAlign.center,
                         ),
@@ -127,7 +154,13 @@ class _OnboardingPageState extends State<OnboardingPage> {
                   height: 8,
                   width: _currentPage == index ? 24 : 8,
                   decoration: BoxDecoration(
-                    color: _currentPage == index ? Colors.blue : Colors.grey[300],
+                    color: _currentPage == index 
+                        ? (Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.primaryLight
+                            : AppColors.primary)
+                        : (Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.mutedDark
+                            : AppColors.muted),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -143,7 +176,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                     child: ElevatedButton(
                       onPressed: _nextPage,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
+                        backgroundColor: Theme.of(context).brightness == Brightness.dark
+                            ? AppColors.primaryLight
+                            : AppColors.primary,
+                        foregroundColor: Theme.of(context).brightness == Brightness.dark
+                            ? Colors.black
+                            : Colors.white,
                         padding: const EdgeInsets.symmetric(vertical: 16),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(12),
@@ -152,10 +190,12 @@ class _OnboardingPageState extends State<OnboardingPage> {
                       ),
                       child: Text(
                         _currentPage == _pages.length - 1 ? 'Get Started' : 'Next',
-                        style: const TextStyle(
-                          color: Colors.white,
+                        style: GoogleFonts.poppins(
                           fontSize: 16,
-                          fontWeight: FontWeight.w600,
+                          fontWeight: FontWeight.bold,
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? Colors.black
+                              : Colors.white,
                         ),
                       ),
                     ),
