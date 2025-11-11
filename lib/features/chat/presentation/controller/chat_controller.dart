@@ -1,80 +1,316 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import '../../../../data/dummy_data.dart';
 
+/// Controller for managing chat functionality
+/// Handles all chat operations like sending messages, fetching chats, etc.
+/// 
+/// Usage: Wrap your app with ChangeNotifierProvider<ChatController>()
+/// Access with: context.read<ChatController>() or context.watch<ChatController>()
 class ChatController extends ChangeNotifier {
-  List<Map<String, dynamic>> _threads = [];
-  List<Message> _messages = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  
   bool _isLoading = false;
   String? _error;
-  String? _currentThreadId;
   
-  List<Map<String, dynamic>> get threads => _threads;
-  List<Message> get messages => _messages;
   bool get isLoading => _isLoading;
   String? get error => _error;
-  String? get currentThreadId => _currentThreadId;
   
-  ChatController() {
-    _loadThreads();
-  }
+  /// Get current user ID from Firebase Auth
+  String? get currentUserId => _auth.currentUser?.uid;
   
-  void _loadThreads() {
-    _threads = List.from(dummyThreads);
-    notifyListeners();
-  }
+  /// Get current user email
+  String? get currentUserEmail => _auth.currentUser?.email;
   
-  void openThread(String threadId, String peerName) {
-    _currentThreadId = threadId;
-    _loadMessages(threadId);
-  }
-  
-  void _loadMessages(String threadId) {
-    _isLoading = true;
-    notifyListeners();
+  /// Send a message to a specific chat thread
+  /// 
+  /// Parameters:
+  /// - chatId: The ID of the chat thread
+  /// - message: The text message to send
+  /// - receiverId: The ID of the user receiving the message
+  Future<void> sendMessage({
+    required String chatId,
+    required String message,
+    String? receiverId,
+  }) async {
+    if (message.trim().isEmpty) return;
     
-    // Simulate loading messages
-    Future.delayed(const Duration(milliseconds: 500), () {
-      _messages = List.from(dummyMessages);
-      _isLoading = false;
-      notifyListeners();
-    });
-  }
-  
-  void sendMessage(String text) {
-    if (text.trim().isEmpty) return;
-    
-    final newMessage = Message(
-      id: 'm${DateTime.now().millisecondsSinceEpoch}',
-      sender: 'me',
-      text: text.trim(),
-      time: DateTime.now(),
-    );
-    
-    _messages.add(newMessage);
-    notifyListeners();
-    
-    // Simulate receiving a response
-    Future.delayed(const Duration(seconds: 2), () {
-      final responses = [
-        'That sounds great!',
-        'I agree with you.',
-        'Thanks for sharing!',
-        'Interesting point.',
-        'Let me think about it.',
-      ];
+    try {
+      _setLoading(true);
+      _error = null;
       
-      final response = Message(
-        id: 'm${DateTime.now().millisecondsSinceEpoch}',
-        sender: 'Other User',
-        text: responses[DateTime.now().millisecond % responses.length],
-        time: DateTime.now(),
-      );
+      final user = _auth.currentUser;
+      if (user == null) throw Exception('User not authenticated');
       
-      _messages.add(response);
-      notifyListeners();
-    });
+      // Create message document in the messages subcollection
+      await _firestore
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .add({
+        'senderId': user.uid,
+        'senderEmail': user.email,
+        'receiverId': receiverId,
+        'message': message.trim(),
+        'timestamp': FieldValue.serverTimestamp(),
+        'isRead': false,
+      });
+      
+      // Update chat metadata (last message, timestamp)
+      // This helps in showing chat previews in the chat list
+      await _firestore.collection('chats').doc(chatId).set({
+        'participants': [user.uid, receiverId],
+        'lastMessage': message.trim(),
+        'lastMessageTime': FieldValue.serverTimestamp(),
+        'lastMessageSenderId': user.uid,
+      }, SetOptions(merge: true));
+      
+    } catch (e) {
+      _error = e.toString();
+      debugPrint('Error sending message: $e');
+    } finally {
+      _setLoading(false);
+    }
   }
   
+  /// Get all chat threads for current user
+  /// Returns a stream that updates in real-time
+  Stream<QuerySnapshot> getUserChats() {
+  final userId = currentUserId;
+
+  // 🔹 Log your current user ID (check if it matches Firestore participant ID)
+  print('[ChatController] currentUserId = $userId');
+
+  if (userId == null) {
+    print('[ChatController] currentUserId is NULL – user not authenticated');
+    return const Stream.empty();
+  }
+
+  print('[ChatController] Setting up listener for chats where participants contain "$userId"');
+
+  final query = _firestore
+      .collection('chats')
+      .where('participants', arrayContains: userId)
+      .orderBy('lastMessageTime', descending: true);
+
+  // 🔹 Add a listener just for logging Firestore updates
+  query.snapshots().listen((snapshot) {
+    print('[ChatController] Found ${snapshot.docs.length} chats for user $userId');
+    for (var doc in snapshot.docs) {
+      final data = doc.data() as Map<String, dynamic>;
+      print('  → Chat ID: ${doc.id}');
+      print('    participants: ${data['participants']}');
+      print('    lastMessage: ${data['lastMessage']}');
+      print('    lastMessageTime: ${data['lastMessageTime']}');
+    }
+  }, onError: (e) {
+    print('[ChatController] Error in Firestore stream: $e');
+  });
+
+  // 🔹 Return the stream to the UI
+  return query.snapshots();
+}
+
+  
+  /// Get messages for a specific chat thread
+  /// Returns a stream that updates in real-time
+  /// Messages are ordered newest first (for reverse ListView)
+  Stream<QuerySnapshot> getChatMessages(String chatId) {
+    return _firestore
+        .collection('chats')
+        .doc(chatId)
+        .collection('messages')
+        .orderBy('timestamp', descending: true)
+        .snapshots();
+  }
+  
+  /// Create or get existing chat between two users
+  /// 
+  /// Returns the chat ID if successful, null otherwise
+  /// If chat already exists between users, returns existing chat ID
+  Future<String?> createOrGetChat(String otherUserId) async {
+    try {
+      _setLoading(true);
+      _error = null;
+      
+      final userId = currentUserId;
+      if (userId == null) throw Exception('User not authenticated');
+      
+      // Create a consistent chat ID based on user IDs
+      // This ensures same chat is used regardless of who initiates
+      final chatId = _generateChatId(userId, otherUserId);
+      
+      // Check if chat exists
+      final chatDoc = await _firestore.collection('chats').doc(chatId).get();
+      
+      if (!chatDoc.exists) {
+        // Create new chat document
+        await _firestore.collection('chats').doc(chatId).set({
+          'participants': [userId, otherUserId],
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastMessageTime': FieldValue.serverTimestamp(),
+        });
+      }
+      
+      return chatId;
+    } catch (e) {
+      _error = e.toString();
+      debugPrint('Error creating/getting chat: $e');
+      return null;
+    } finally {
+      _setLoading(false);
+    }
+  }
+  
+  /// Mark messages as read in a chat
+  /// Call this when user opens a chat thread
+  Future<void> markMessagesAsRead(String chatId) async {
+    try {
+      final userId = currentUserId;
+      if (userId == null) return;
+      
+      // Get all unread messages where current user is the receiver
+      final messages = await _firestore
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .where('receiverId', isEqualTo: userId)
+          .where('isRead', isEqualTo: false)
+          .get();
+      
+      // Update all unread messages in a batch
+      final batch = _firestore.batch();
+      for (var doc in messages.docs) {
+        batch.update(doc.reference, {'isRead': true});
+      }
+      await batch.commit();
+    } catch (e) {
+      debugPrint('Error marking messages as read: $e');
+    }
+  }
+  
+  /// Delete a chat thread and all its messages
+  /// 
+  /// Warning: This permanently deletes all messages in the chat
+  Future<void> deleteChat(String chatId) async {
+    try {
+      _setLoading(true);
+      _error = null;
+      
+      // Get all messages in the chat
+      final messages = await _firestore
+          .collection('chats')
+          .doc(chatId)
+          .collection('messages')
+          .get();
+      
+      // Delete all messages in a batch operation
+      final batch = _firestore.batch();
+      for (var doc in messages.docs) {
+        batch.delete(doc.reference);
+      }
+      
+      // Delete the chat document itself
+      batch.delete(_firestore.collection('chats').doc(chatId));
+      
+      await batch.commit();
+    } catch (e) {
+      _error = e.toString();
+      debugPrint('Error deleting chat: $e');
+    } finally {
+      _setLoading(false);
+    }
+  }
+  
+  /// Generate consistent chat ID from two user IDs
+  /// Always returns same ID regardless of order
+  /// Example: user1_user2 (sorted alphabetically)
+  String _generateChatId(String userId1, String userId2) {
+    // Sort IDs to ensure consistency regardless of who initiates
+    final ids = [userId1, userId2]..sort();
+    return '${ids[0]}_${ids[1]}';
+  }
+  
+  /// Get user data from Firestore users collection
+  /// 
+  /// Returns user data map or null if not found
+  /// Useful for displaying user names, profile pictures, etc.
+  Future<Map<String, dynamic>?> getUserData(String userId) async {
+    try {
+      final doc = await _firestore.collection('users').doc(userId).get();
+      return doc.data();
+    } catch (e) {
+      debugPrint('Error getting user data: $e');
+      return null;
+    }
+  }
+  
+  /// Search users by name or email
+  /// 
+  /// Note: For better performance, consider using Algolia or similar
+  /// This is a simple implementation for small user bases
+  Future<List<Map<String, dynamic>>> searchUsers(String query) async {
+    try {
+      if (query.trim().isEmpty) return [];
+      
+      final queryLower = query.toLowerCase();
+      
+      // Search by email (simple startsWith query)
+      final snapshot = await _firestore
+          .collection('users')
+          .where('email', isGreaterThanOrEqualTo: queryLower)
+          .where('email', isLessThanOrEqualTo: '$queryLower\uf8ff')
+          .limit(20)
+          .get();
+      
+      return snapshot.docs
+          .map((doc) => {'id': doc.id, ...doc.data()})
+          .where((user) => user['id'] != currentUserId) // Exclude current user
+          .toList();
+    } catch (e) {
+      debugPrint('Error searching users: $e');
+      return [];
+    }
+  }
+  
+  /// Get unread message count for current user
+  Future<int> getUnreadMessageCount() async {
+    try {
+      final userId = currentUserId;
+      if (userId == null) return 0;
+      
+      final chats = await _firestore
+          .collection('chats')
+          .where('participants', arrayContains: userId)
+          .get();
+      
+      int unreadCount = 0;
+      
+      for (var chat in chats.docs) {
+        final messages = await chat.reference
+            .collection('messages')
+            .where('receiverId', isEqualTo: userId)
+            .where('isRead', isEqualTo: false)
+            .get();
+        
+        unreadCount += messages.docs.length;
+      }
+      
+      return unreadCount;
+    } catch (e) {
+      debugPrint('Error getting unread count: $e');
+      return 0;
+    }
+  }
+  
+  /// Helper method to set loading state and notify listeners
+  void _setLoading(bool value) {
+    _isLoading = value;
+    notifyListeners();
+  }
+  
+  /// Clear any error messages
   void clearError() {
     _error = null;
     notifyListeners();
