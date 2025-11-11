@@ -17,6 +17,9 @@ import 'features/onboarding/presentation/pages/splash_screen.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
 import 'features/authentication/presentation/controller/auth_controller.dart';
 
+// chat features
+import 'features/chat/presentation/controller/chat_controller.dart';
+
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -32,6 +35,7 @@ Future<void> main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => AuthController()),
         ChangeNotifierProvider.value(value: themeService),
+        ChangeNotifierProvider(create: (_) => ChatController()),
       ],
       child: const CampusNotesApp(),
     ),
