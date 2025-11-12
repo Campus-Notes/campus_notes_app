@@ -1,12 +1,18 @@
 import 'package:flutter/material.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../../data/dummy_data.dart';
-import '../../../notes/presentation/pages/note_detail_page.dart';
 
 class PopularNoteCard extends StatelessWidget {
   final NoteItem note;
+  final VoidCallback? onTap;
+  final VoidCallback? onAddToCart;
 
-  const PopularNoteCard({super.key, required this.note});
+  const PopularNoteCard({
+    super.key,
+    required this.note,
+    this.onTap,
+    this.onAddToCart,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,11 +26,7 @@ class PopularNoteCard extends StatelessWidget {
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
-          onTap: () => Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => NoteDetailPage(note: note),
-            ),
-          ),
+          onTap: onTap,
           child: Padding(
             padding: const EdgeInsets.all(16),
             child: Row(
@@ -120,17 +122,21 @@ class PopularNoteCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 8),
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: AppColors.primary,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(
-                        Icons.add,
-                        color: Theme.of(context).colorScheme.onPrimary,
-                        size: 18,
+                    InkWell(
+                      onTap: onAddToCart,
+                      borderRadius: BorderRadius.circular(8),
+                      child: Container(
+                        width: 32,
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: AppColors.primary,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.add,
+                          color: Theme.of(context).colorScheme.onPrimary,
+                          size: 18,
+                        ),
                       ),
                     ),
                   ],

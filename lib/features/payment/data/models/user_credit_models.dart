@@ -70,7 +70,7 @@ class PointsCreditModel {
   final String userId;
   final String noteId;
   final String transactionId; // Reference to the main transaction
-  final int points;
+  final double points;
   final String type; // 'selling_bonus', 'buying_bonus', 'referral', etc.
   final DateTime creditedAt;
   final String? description;
@@ -108,7 +108,7 @@ class PointsCreditModel {
       userId: map['userId'] ?? '',
       noteId: map['noteId'] ?? '',
       transactionId: map['transactionId'] ?? '',
-      points: map['points'] ?? 0,
+      points: (map['points'] as num?)?.toDouble() ?? 0.0,
       type: map['type'] ?? 'selling_bonus',
       creditedAt: (map['creditedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
       description: map['description'],

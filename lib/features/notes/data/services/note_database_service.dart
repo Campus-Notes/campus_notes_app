@@ -17,6 +17,7 @@ class NoteDatabaseService {
     double? price,
     required String fileName,
     required String fileEncodedData,
+    int pageCount = 0,
   }) async {
     try {
       const uuid = Uuid();
@@ -38,6 +39,8 @@ class NoteDatabaseService {
         updatedAt: now,
         viewCount: 0,
         purchaseCount: 0,
+        isVerified: false, 
+        pageCount: pageCount,
       );
 
       // Store in Firestore
@@ -303,7 +306,6 @@ class NoteDatabaseService {
     }
   }
 
-  /// Get donation notes excluding the current user's own notes
   Future<List<NoteModel>> getDonationNotesExcludingOwn({
     required String currentUserUid,
     int limit = 20,

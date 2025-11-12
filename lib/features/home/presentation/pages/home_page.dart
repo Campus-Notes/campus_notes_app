@@ -135,7 +135,7 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _buildSellModeContent() {
-    return const SingleChildScrollView(
+    return const Padding(
       key: ValueKey('sell_mode'),
       padding: EdgeInsets.all(16),
       child: SellModeContent(),

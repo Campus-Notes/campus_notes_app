@@ -80,4 +80,35 @@ class PdfService {
            bytes[2] == 0x44 && 
            bytes[3] == 0x46;
   }
+
+  /// Count the number of pages in a PDF by counting page objects
+  /// This is a simple heuristic that counts "/Page" occurrences
+  static int countPdfPages(List<int> pdfBytes) {
+    try {
+      // Convert bytes to string to search for page markers
+      final pdfString = String.fromCharCodes(pdfBytes);
+      
+      // Count occurrences of "/Type /Page" (not /Pages which is the parent)
+      // This regex looks for "/Type" followed by whitespace and "/Page" but not "/Pages"
+      final pagePattern = RegExp(r'/Type\s*/Page(?![s/])');
+      final matches = pagePattern.allMatches(pdfString);
+      
+      int pageCount = matches.length;
+      
+      // If no pages found using strict pattern, try counting /Page with word boundary
+      if (pageCount == 0) {
+        final simplePagePattern = RegExp(r'/Page\b');
+        pageCount = simplePagePattern.allMatches(pdfString).length;
+        // Subtract 1 if we found /Pages (parent object)
+        if (pdfString.contains('/Pages')) {
+          pageCount = pageCount > 0 ? pageCount - 1 : 0;
+        }
+      }
+      
+      return pageCount > 0 ? pageCount : 1; // Return at least 1 page
+    } catch (e) {
+      // If counting fails, return 1 as default
+      return 1;
+    }
+  }
 }

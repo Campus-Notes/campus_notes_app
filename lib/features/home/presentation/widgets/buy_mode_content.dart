@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../notes/presentation/controller/notes_controller.dart';
+import '../../../notes/presentation/controller/cart_controller.dart';
 import '../../../notes/presentation/pages/note_detail_page.dart';
+import '../../../notes/presentation/pages/all_notes_page.dart';
 import '../../../../data/dummy_data.dart';
 import 'featured_note_card.dart';
 import 'popular_note_card.dart';
@@ -54,13 +56,52 @@ class BuyModeContent extends StatelessWidget {
           key: const ValueKey('buy_mode'),
           padding: const EdgeInsets.all(16),
           children: [
-            const FeaturedNoteCard(),
+            // Featured/Trending Note Card
+            if (notes.isNotEmpty)
+              FeaturedNoteCard(
+                featuredNote: _getTrendingNotes(notes).isNotEmpty 
+                    ? NoteItem(
+                        id: _getTrendingNotes(notes).first.noteId,
+                        title: _getTrendingNotes(notes).first.title,
+                        subject: _getTrendingNotes(notes).first.subject,
+                        seller: 'Top Seller',
+                        price: _getTrendingNotes(notes).first.price ?? 0.0,
+                        rating: _getTrendingNotes(notes).first.rating,
+                        pages: 0,
+                        tags: [_getTrendingNotes(notes).first.subject],
+                      )
+                    : null,
+                onTap: () {
+                  if (_getTrendingNotes(notes).isNotEmpty) {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NoteDetailPage(
+                          note: _getTrendingNotes(notes).first,
+                        ),
+                      ),
+                    );
+                  }
+                },
+              )
+            else
+              const FeaturedNoteCard(),
             const SizedBox(height: 24),
 
             SectionHeader(
-              title: 'Popular Notes',
+              title: 'Trending',
               actionText: 'See All',
-              onActionTap: () {},
+              onActionTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AllNotesPage(
+                      title: 'Trending Notes',
+                      sortBy: 'trending',
+                    ),
+                  ),
+                );
+              },
             ),
             const SizedBox(height: 12),
 
@@ -84,54 +125,9 @@ class BuyModeContent extends StatelessWidget {
                 ),
               )
             else
-              for (final note in notes.take(3))
+              for (final note in _getTrendingNotes(notes).take(3))
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: GestureDetector(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => NoteDetailPage(note: note),
-                        ),
-                      );
-                    },
-                    child: PopularNoteCard(
-                      note: NoteItem(
-                        id: note.noteId,
-                        title: note.title,
-                        subject: note.subject,
-                        seller: 'Anonymous',
-                        price: note.price ?? 0.0,
-                        rating: note.rating,
-                        pages: 0,
-                        tags: [note.subject],
-                      ),
-                    ),
-                  ),
-                ),
-
-            const SizedBox(height: 20),
-
-            SectionHeader(
-              title: 'Recently Added',
-              actionText: 'View More',
-              onActionTap: () {},
-            ),
-            const SizedBox(height: 12),
-
-            for (final note in notes.reversed.take(3))
-              Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NoteDetailPage(note: note),
-                      ),
-                    );
-                  },
                   child: PopularNoteCard(
                     note: NoteItem(
                       id: note.noteId,
@@ -143,12 +139,129 @@ class BuyModeContent extends StatelessWidget {
                       pages: 0,
                       tags: [note.subject],
                     ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NoteDetailPage(note: note),
+                        ),
+                      );
+                    },
+                    onAddToCart: () {
+                      final cart = context.read<CartController>();
+                      if (cart.isInCart(note.noteId)) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: const Text('Already in cart'),
+                            action: SnackBarAction(
+                              label: 'VIEW CART',
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/cart');
+                              },
+                            ),
+                          ),
+                        );
+                      } else {
+                        cart.addToCart(note);
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${note.title} added to cart'),
+                            action: SnackBarAction(
+                              label: 'VIEW CART',
+                              onPressed: () {
+                                Navigator.pushNamed(context, '/cart');
+                              },
+                            ),
+                            duration: const Duration(seconds: 2),
+                          ),
+                        );
+                      }
+                    },
                   ),
+                ),
+
+            const SizedBox(height: 20),
+
+            SectionHeader(
+              title: 'Recently Added',
+              actionText: 'View More',
+              onActionTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const AllNotesPage(
+                      title: 'Recently Added',
+                      sortBy: 'recent',
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(height: 12),
+
+            for (final note in notes.reversed.take(3))
+              Padding(
+                padding: const EdgeInsets.only(bottom: 12),
+                child: PopularNoteCard(
+                  note: NoteItem(
+                    id: note.noteId,
+                    title: note.title,
+                    subject: note.subject,
+                    seller: 'Anonymous',
+                    price: note.price ?? 0.0,
+                    rating: note.rating,
+                    pages: 0,
+                    tags: [note.subject],
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => NoteDetailPage(note: note),
+                      ),
+                    );
+                  },
+                  onAddToCart: () {
+                    final cart = context.read<CartController>();
+                    if (cart.isInCart(note.noteId)) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: const Text('Already in cart'),
+                          action: SnackBarAction(
+                            label: 'VIEW CART',
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/cart');
+                            },
+                          ),
+                        ),
+                      );
+                    } else {
+                      cart.addToCart(note);
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('${note.title} added to cart'),
+                          action: SnackBarAction(
+                            label: 'VIEW CART',
+                            onPressed: () {
+                              Navigator.pushNamed(context, '/cart');
+                            },
+                          ),
+                          duration: const Duration(seconds: 2),
+                        ),
+                      );
+                    }
+                  },
                 ),
               ),
           ],
         );
       },
     );
+  }
+
+  List<dynamic> _getTrendingNotes(List<dynamic> notes) {
+    final sortedNotes = List.from(notes);
+    sortedNotes.sort((a, b) => b.purchaseCount.compareTo(a.purchaseCount));
+    return sortedNotes;
   }
 }

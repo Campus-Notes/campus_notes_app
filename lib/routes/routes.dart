@@ -5,10 +5,12 @@ import '../features/onboarding/presentation/pages/splash_screen.dart';
 import '../features/onboarding/presentation/pages/onboarding_page.dart';
 import '../features/onboarding/presentation/pages/landingpage.dart';
 import '../features/authentication/presentation/pages/auth_screen.dart';
+import '../features/notes/presentation/pages/cart_page.dart';
 import '../features/notes/presentation/pages/shopping_cart.dart';
 import '../features/info/presentation/pages/reminders_page.dart';
 import '../features/notes/presentation/pages/notes_management_page.dart';
 import '../features/profile/presentation/pages/wallet_page.dart';
+import '../features/profile/presentation/pages/points_page.dart';
 import '../features/notes/presentation/pages/donations_page.dart';
 import '../features/profile/presentation/pages/report_issue_page.dart';
 import '../features/info/presentation/pages/about_page.dart';
@@ -26,10 +28,12 @@ class AppRouter {
         AppRoutes.shell: (_) => const MainShell(),
         AppRoutes.landing: (_) => const LandingScreen(), 
         AppRoutes.authentication: (_) => const AuthenticationScreen(),
+        AppRoutes.cart: (_) => const CartPage(),
         AppRoutes.purchases: (_) => const PurchasesPage(),
         AppRoutes.reminders: (_) => const RemindersPage(),
         AppRoutes.manageNotes: (_) => const NotesManagementPage(),
         AppRoutes.wallet: (_) => const WalletPage(),
+        AppRoutes.points: (_) => const PointsPage(),
         AppRoutes.donations: (_) => const DonationsPage(),
         AppRoutes.reportIssue: (_) => const ReportIssuePage(),
         AppRoutes.about: (_) => const AboutPage(),

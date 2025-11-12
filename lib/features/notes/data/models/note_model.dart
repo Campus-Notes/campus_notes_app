@@ -15,7 +15,9 @@ class NoteModel {
   final DateTime? updatedAt;
   final int viewCount;
   final int purchaseCount;
-  final double earnings; // Total earnings from this note (80% of sales)
+  final double earnings; 
+  final bool isVerified; 
+  final int pageCount; 
 
   NoteModel({
     required this.noteId,
@@ -33,6 +35,8 @@ class NoteModel {
     this.viewCount = 0,
     this.purchaseCount = 0,
     this.earnings = 0.0,
+    this.isVerified = false,
+    this.pageCount = 0,
   });
 
   Map<String, dynamic> toMap() {
@@ -52,16 +56,23 @@ class NoteModel {
       'viewCount': viewCount,
       'purchaseCount': purchaseCount,
       'earnings': earnings,
+      'isVerified': isVerified,
+      'pageCount': pageCount,
     };
   }
 
   factory NoteModel.fromMap(Map<String, dynamic> map, String docId) {
+    
+    final descriptionValue = map['description'] as String?;
+    
+    final ownerUidValue = map['ownerUid'] ?? '';
+    
     return NoteModel(
       noteId: map['noteId'] ?? docId,
       title: map['title'] ?? '',
       subject: map['subject'] ?? '',
-      description: map['description'],
-      ownerUid: map['ownerUid'] ?? '',
+      description: descriptionValue,
+      ownerUid: ownerUidValue,
       isDonation: map['isDonation'] ?? false,
       price: map['isDonation'] == true ? null : (map['price'] as num?)?.toDouble(),
       rating: (map['rating'] as num?)?.toDouble() ?? 0.0,
@@ -72,6 +83,8 @@ class NoteModel {
       viewCount: map['viewCount'] ?? 0,
       purchaseCount: map['purchaseCount'] ?? 0,
       earnings: (map['earnings'] as num?)?.toDouble() ?? 0.0,
+      isVerified: map['isVerified'] ?? false,
+      pageCount: map['pageCount'] ?? 0,
     );
   }
 
@@ -94,6 +107,8 @@ class NoteModel {
     int? viewCount,
     int? purchaseCount,
     double? earnings,
+    bool? isVerified,
+    int? pageCount,
   }) {
     return NoteModel(
       noteId: noteId,
@@ -111,12 +126,16 @@ class NoteModel {
       viewCount: viewCount ?? this.viewCount,
       purchaseCount: purchaseCount ?? this.purchaseCount,
       earnings: earnings ?? this.earnings,
+      isVerified: isVerified ?? this.isVerified,
+      pageCount: pageCount ?? this.pageCount,
     );
   }
 
   @override
   String toString() {
     return 'NoteModel(noteId: $noteId, title: $title, subject: $subject, '
-        'ownerUid: $ownerUid, isDonation: $isDonation, price: $price, rating: $rating, earnings: $earnings)';
+        'description: "$description" (length: ${description?.length}, isEmpty: ${description?.isEmpty}, isNull: ${description == null}), '
+        'ownerUid: $ownerUid, isDonation: $isDonation, price: $price, rating: $rating, '
+        'pageCount: $pageCount, earnings: $earnings)';
   }
 }
