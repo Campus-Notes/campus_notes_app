@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../theme/app_theme.dart';
 import '../../data/services/library_service.dart';
+import '../widgets/add_review_dialog.dart';
 import 'pdf_viewer_page.dart';
 
 class LibraryPage extends StatefulWidget {
@@ -245,36 +246,19 @@ class _LibraryPageState extends State<LibraryPage> {
     }
   }
 
-  void _showRatingDialog(PurchasedNoteData noteData) {
-    // TODO: Implement rating functionality in Firebase
-    showDialog(
+  void _showRatingDialog(PurchasedNoteData noteData) async {
+    final result = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Rate This Note'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Text('Rating feature coming soon!'),
-            const SizedBox(height: 16),
-            Text(
-              'Current Rating: ${noteData.note.rating.toStringAsFixed(1)} ⭐',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              'You will be able to rate notes and help other students find quality content.',
-              style: TextStyle(fontSize: 12, color: AppColors.muted),
-            ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
-        ],
+      builder: (context) => AddReviewDialog(
+        noteId: noteData.note.noteId,
+        noteTitle: noteData.note.title,
       ),
     );
+
+    // If review was submitted successfully, reload the list
+    if (result == true && mounted) {
+      _loadPurchasedNotes();
+    }
   }
 
   String _formatDate(DateTime date) {

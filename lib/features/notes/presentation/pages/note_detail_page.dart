@@ -1,6 +1,7 @@
 import 'package:campus_notes_app/features/notes/data/models/note_model.dart';
 import 'package:campus_notes_app/features/notes/data/services/note_database_service.dart';
 import 'package:campus_notes_app/features/payment/data/services/transaction_service.dart';
+import 'package:campus_notes_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -11,6 +12,7 @@ import '../widgets/status_indicators.dart';
 import '../widgets/note_details.dart';
 import '../widgets/purchase_status.dart';
 import '../widgets/bottom_action_bar.dart';
+import '../widgets/reviews_section.dart';
 import '../controller/cart_controller.dart';
 
 class NoteDetailPage extends StatefulWidget {
@@ -155,7 +157,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Purchase failed: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
             duration: const Duration(seconds: 5),
           ),
         );
@@ -189,7 +191,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Failed to access note: ${e.toString()}'),
-            backgroundColor: Colors.red,
+            backgroundColor: AppColors.error,
           ),
         );
       }
@@ -275,7 +277,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                 Navigator.pushNamed(context, '/cart');
               },
             ),
-            backgroundColor: Colors.green,
+            backgroundColor: AppColors.success,
             duration: const Duration(seconds: 3),
           ),
         );
@@ -451,6 +453,14 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                   description: _getNoteDescription(),
                   pageCount: _getPageCount(),
                 ),
+                
+                const SizedBox(height: 20),
+                
+                // Reviews Section - only show for NoteModel (not dummy data)
+                if (widget.note is NoteModel)
+                  ReviewsSectionWidget(
+                    noteId: _getNoteId(),
+                  ),
                 
                 PurchaseStatusWidget(
                   isOwnNote: _isOwnNote,
