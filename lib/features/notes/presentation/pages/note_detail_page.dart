@@ -1,6 +1,9 @@
 import 'package:campus_notes_app/features/notes/data/models/note_model.dart';
 import 'package:campus_notes_app/features/notes/data/services/note_database_service.dart';
 import 'package:campus_notes_app/features/payment/data/services/transaction_service.dart';
+import 'package:campus_notes_app/features/chat/presentation/pages/chat_thread_page.dart';
+import 'package:campus_notes_app/features/chat/presentation/controller/chat_controller.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campus_notes_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -47,6 +50,20 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     
     _checkNoteOwnershipAndPurchase();
   }
+
+  Future<String> _getSellerName(String sellerId) async {
+    try {
+      final doc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(sellerId)
+          .get();
+
+      return doc.data()?['name'] ?? doc.data()?['email'] ?? 'User';
+    } catch (_) {
+      return 'User';
+    }
+  }
+
 
   Future<void> _checkNoteOwnershipAndPurchase() async {
     setState(() => _isLoading = true);
@@ -168,6 +185,35 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       }
     }
   }
+
+  Future<void> _openChat() async {
+    final sellerId = _getSellerId();
+    final currentUser = _auth.currentUser;
+
+    if (sellerId.isEmpty || currentUser == null) return;
+
+    final chatController = context.read<ChatController>();
+
+    final chatId = await chatController.createOrGetChat(sellerId);
+
+    if (!mounted) return;  // ✅ FIX HERE
+
+    final sellerName = await _getSellerName(sellerId);
+
+    if (!mounted) return;  // optional second check
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => ChatThreadPage(
+          chatId: chatId!,
+          peerId: sellerId,
+          peerName: sellerName,
+        ),
+      ),
+    );
+  }
+
 
   Future<void> _handleFreePurchase(String noteId, String userId) async {
     try {
@@ -383,6 +429,9 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final sellerId = _getSellerId();
+    final showChatButton = !_isOwnNote && sellerId.isNotEmpty && _auth.currentUser != null;
+
     
     if (_isLoading) {
       return Scaffold(
@@ -466,6 +515,20 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                   isOwnNote: _isOwnNote,
                   hasAlreadyPurchased: _hasAlreadyPurchased,
                 ),
+
+                if (showChatButton)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    child: ElevatedButton.icon(
+                      onPressed: _openChat,
+                      icon: const Icon(Icons.chat),
+                      label: const Text("Chat with Owner"),
+                      style: ElevatedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                      ),
+                    ),
+                  ),
+
                 
                 const SizedBox(height: 100), 
               ],

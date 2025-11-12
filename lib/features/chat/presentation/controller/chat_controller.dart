@@ -77,24 +77,19 @@ class ChatController extends ChangeNotifier {
   /// Get all chat threads for current user
   /// Returns a stream that updates in real-time
   Stream<QuerySnapshot> getUserChats() {
-  final userId = currentUserId;
+    final userId = currentUserId;
 
-  // 🔹 Log your current user ID (check if it matches Firestore participant ID)
+    if (userId == null) {
+      return const Stream.empty();
+    }
 
-  if (userId == null) {
-    return const Stream.empty();
+    final query = _firestore
+        .collection('chats')
+        .where('participants', arrayContains: userId)
+        .orderBy('lastMessageTime', descending: true);
+
+    return query.snapshots();
   }
-
-
-  final query = _firestore
-      .collection('chats')
-      .where('participants', arrayContains: userId)
-      .orderBy('lastMessageTime', descending: true);
-
-  // 🔹 Return the stream to the UI
-  return query.snapshots();
-}
-
   
   /// Get messages for a specific chat thread
   /// Returns a stream that updates in real-time
@@ -173,6 +168,76 @@ class ChatController extends ChangeNotifier {
     }
   }
   
+  /// Toggle pin status for a chat
+  /// Pinned chats appear at the top of the chat list
+  Future<void> togglePinChat(String chatId) async {
+    try {
+      final chatDoc = await _firestore.collection('chats').doc(chatId).get();
+      final currentPinStatus = chatDoc.data()?['isPinned'] ?? false;
+      
+      await _firestore.collection('chats').doc(chatId).update({
+        'isPinned': !currentPinStatus,
+      });
+    } catch (e) {
+      debugPrint('Error toggling pin status: $e');
+      rethrow;
+    }
+  }
+  
+  /// Mute notifications for a chat
+  /// User will no longer receive notifications for this chat
+  Future<void> muteChat(String chatId) async {
+    try {
+      await _firestore.collection('chats').doc(chatId).update({
+        'isMuted': true,
+        'mutedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('Error muting chat: $e');
+      rethrow;
+    }
+  }
+  
+  /// Unmute notifications for a chat
+  Future<void> unmuteChat(String chatId) async {
+    try {
+      await _firestore.collection('chats').doc(chatId).update({
+        'isMuted': false,
+        'mutedAt': null,
+      });
+    } catch (e) {
+      debugPrint('Error unmuting chat: $e');
+      rethrow;
+    }
+  }
+  
+  /// Archive a chat
+  /// Archived chats are hidden from main chat list
+  Future<void> archiveChat(String chatId) async {
+    try {
+      await _firestore.collection('chats').doc(chatId).update({
+        'isArchived': true,
+        'archivedAt': FieldValue.serverTimestamp(),
+      });
+    } catch (e) {
+      debugPrint('Error archiving chat: $e');
+      rethrow;
+    }
+  }
+  
+  /// Unarchive a chat
+  Future<void> unarchiveChat(String chatId) async {
+    try {
+      await _firestore.collection('chats').doc(chatId).update({
+        'isArchived': false,
+        'archivedAt': null,
+      });
+    } catch (e) {
+      debugPrint('Error unarchiving chat: $e');
+      rethrow;
+    }
+  }
+  
   /// Delete a chat thread and all its messages
   /// 
   /// Warning: This permanently deletes all messages in the chat
@@ -201,6 +266,7 @@ class ChatController extends ChangeNotifier {
     } catch (e) {
       _error = e.toString();
       debugPrint('Error deleting chat: $e');
+      rethrow;
     } finally {
       _setLoading(false);
     }
