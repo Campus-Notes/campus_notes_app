@@ -35,7 +35,7 @@ class CartCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(12),
                   color: AppColors.primary.withOpacity(0.1),
                 ),
-                child: Icon(
+                child: const Icon(
                   Icons.description_outlined,
                   color: AppColors.primary,
                   size: 28,
