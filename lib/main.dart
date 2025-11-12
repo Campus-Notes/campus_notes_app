@@ -21,6 +21,9 @@ import 'features/onboarding/presentation/pages/landingpage.dart';
 import 'features/onboarding/presentation/pages/splash_screen.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
 import 'features/authentication/presentation/controller/auth_controller.dart';
+import 'features/notes/presentation/controller/notes_controller.dart';
+import 'features/home/presentation/controller/sell_mode_controller.dart';
+import 'features/notes/data/services/note_database_service.dart';
 
 // chat features
 import 'features/chat/presentation/controller/chat_controller.dart';
@@ -62,8 +65,18 @@ Future<void> main() async {
         ChangeNotifierProvider(
           create: (_) => AuthController(baseUrl: apiBaseUrl),
         ),
+        ChangeNotifierProvider(create: (_) => NotesController()),
         ChangeNotifierProvider.value(value: themeService),
         ChangeNotifierProvider(create: (_) => ChatController()),
+        ChangeNotifierProvider(
+          create: (context) {
+            final authController = context.read<AuthController>();
+            return SellModeController(
+              noteDatabaseService: NoteDatabaseService(),
+              authController: authController,
+            );
+          },
+        ),
       ],
       child: const CampusNotesApp(),
     ),

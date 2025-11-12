@@ -1,13 +1,12 @@
+import 'package:campus_notes_app/features/home/presentation/widgets/buy_mode_content.dart';
 import 'package:flutter/material.dart';
-import '../../../../data/dummy_data.dart';
+import 'package:provider/provider.dart';
 import '../../../info/presentation/pages/reminders_page.dart';
-import '../../../chat/presentation/pages/chat_list_page.dart'; // ✅ Added import
+import '../../../chat/presentation/pages/chat_list_page.dart'; 
+import '../../../notes/presentation/controller/notes_controller.dart';
 import '../widgets/location_header.dart';
 import '../widgets/mode_selector.dart';
 import '../widgets/category_selector.dart';
-import '../widgets/featured_note_card.dart';
-import '../widgets/popular_note_card.dart';
-import '../widgets/section_header.dart';
 import '../widgets/sell_mode_content.dart';
 
 class HomePage extends StatefulWidget {
@@ -38,6 +37,16 @@ class _HomePageState extends State<HomePage> {
     {'icon': Icons.biotech, 'label': 'Biology'},
     {'icon': Icons.account_balance, 'label': 'Economics'},
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    // Load notes when the home page is initialized
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final notesController = Provider.of<NotesController>(context, listen: false);
+      notesController.loadTrendingNotes(); // Load trending notes excluding own notes
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -99,7 +108,6 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
 
-            // Category section (only in Buy mode)
             if (isBuyMode)
               CategorySelector(
                 selectedIndex: selectedCategoryIndex,
@@ -116,7 +124,7 @@ class _HomePageState extends State<HomePage> {
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),
                 child: isBuyMode
-                    ? _buildBuyModeContent()
+                    ? const BuyModeContent()
                     : _buildSellModeContent(),
               ),
             ),
@@ -126,42 +134,6 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // 🛍️ Buy Mode Content
-  Widget _buildBuyModeContent() {
-    return ListView(
-      key: const ValueKey('buy_mode'),
-      padding: const EdgeInsets.all(16),
-      children: [
-        const FeaturedNoteCard(),
-        const SizedBox(height: 24),
-
-        SectionHeader(
-          title: 'Popular Notes',
-          actionText: 'See All',
-          onActionTap: () {},
-        ),
-        const SizedBox(height: 12),
-
-        for (final note in dummyNotes.take(3))
-          PopularNoteCard(note: note),
-
-        const SizedBox(height: 20),
-
-        SectionHeader(
-          title: 'Recently Added',
-          actionText: 'View More',
-          onActionTap: () {
-          },
-        ),
-        const SizedBox(height: 12),
-
-        for (final note in dummyNotes.reversed.take(3))
-          PopularNoteCard(note: note),
-      ],
-    );
-  }
-
-  // 💼 Sell Mode Content
   Widget _buildSellModeContent() {
     return const SingleChildScrollView(
       key: ValueKey('sell_mode'),

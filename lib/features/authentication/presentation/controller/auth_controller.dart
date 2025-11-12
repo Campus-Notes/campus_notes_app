@@ -28,6 +28,7 @@ class AuthController extends ChangeNotifier {
   bool get justLoggedIn => _justLoggedIn;
   bool get justRegistered => _justRegistered;
   bool get justLoggedOut => _justLoggedOut;
+  String? get currentUserUid => _authService.currentUser?.uid;
 
   // --------------------------------------------------------------
   // Constructor – inject services

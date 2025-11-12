@@ -158,8 +158,13 @@ class AuthService {
   Future<UserModel?> getCurrentUserData() async {
     try {
       final user = _auth.currentUser;
-      if (user == null) return null;
-      return await _dbService.getUserData(user.uid);
+      if (user == null) {
+        return null;
+      }
+      
+      final userData = await _dbService.getUserData(user.uid);
+      
+      return userData;
     } catch (e) {
       return null;
     }

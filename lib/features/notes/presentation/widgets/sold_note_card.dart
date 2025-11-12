@@ -135,7 +135,6 @@ class SoldNoteCard extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 12),
-            // Bottom row with price and date
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [

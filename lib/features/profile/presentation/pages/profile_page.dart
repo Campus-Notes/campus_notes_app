@@ -17,6 +17,7 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   UserModel? _currentUser;
   bool _isLoading = true;
+  String? _errorMessage;
 
   @override
   void initState() {
@@ -25,19 +26,52 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _loadUserData() async {
-    final auth = Provider.of<AuthController>(context, listen: false);
-    final user = await auth.getCurrentUser();
-    
-    if (user != null && mounted) {
-      setState(() {
-        _currentUser = user;
-        _isLoading = false;
-      });
-    } else {
-      setState(() {
-        _isLoading = false;
-      });
+    try {
+      final auth = Provider.of<AuthController>(context, listen: false);
+      
+      // Check if user is logged in first
+      if (!auth.isLoggedIn) {
+        if (mounted) {
+          setState(() {
+            _errorMessage = 'User not logged in';
+            _isLoading = false;
+          });
+        }
+        return;
+      }
+      
+      final user = await auth.getCurrentUser();
+      
+      if (user != null && mounted) {
+        setState(() {
+          _currentUser = user;
+          _isLoading = false;
+          _errorMessage = null;
+        });
+      } else {
+        if (mounted) {
+          setState(() {
+            _errorMessage = 'Failed to load user data. Please try logging in again.';
+            _isLoading = false;
+          });
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _errorMessage = 'An error occurred while loading user data: ${e.toString()}';
+          _isLoading = false;
+        });
+      }
     }
+  }
+
+  Future<void> _retryLoadUserData() async {
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+    await _loadUserData();
   }
 
   @override
@@ -57,6 +91,77 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         body: const Center(
           child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    // Show error state if there's an error message
+    if (_errorMessage != null) {
+      return Scaffold(
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        appBar: CustomAppBar(
+          text: 'Profile',
+          usePremiumBackIcon: true,
+          sideIcon: Icons.help_center_rounded,
+          onSideIconTap: () => Navigator.pushNamedAndRemoveUntil(
+            context,
+            AppRoutes.helpSupport,
+            (route) => false,
+          ),
+        ),
+        body: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(24.0),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.error_outline,
+                  size: 64,
+                  color: Theme.of(context).colorScheme.error,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Error Loading Profile',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                    color: Theme.of(context).colorScheme.error,
+                  ),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  _errorMessage!,
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                    color: Theme.of(context).colorScheme.onSurfaceVariant,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _retryLoadUserData,
+                      child: const Text('Retry'),
+                    ),
+                    const SizedBox(width: 16),
+                    TextButton(
+                      onPressed: () async {
+                        final auth = Provider.of<AuthController>(context, listen: false);
+                        await auth.logout();
+                        if (context.mounted) {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            AppRoutes.authentication,
+                            (route) => false,
+                          );
+                        }
+                      },
+                      child: const Text('Log Out'),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
         ),
       );
     }
