@@ -127,87 +127,96 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-  Future<void> _handleCheckout(
-      BuildContext context, CartController cart, double finalAmount) async {
-    final user = _auth.currentUser;
-    if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please log in to complete purchase')),
-      );
-      return;
-    }
-
-    setState(() => _isProcessing = true);
-    try {
-      for (final note in cart.cartNotes) {
-        final txn = await _transactionService.createTransaction(
-          buyerId: user.uid,
-          sellerId: note.ownerUid,
-          noteId: note.noteId,
-          salePrice: note.price ?? 0.0,
-          paymentMethod: _pointsToRedeem > 0 ? 'points+payment' : 'payment',
-        );
-        await _transactionService.completeTransaction(
-          transactionId: txn.transactionId,
-          paymentId: 'payment_${DateTime.now().millisecondsSinceEpoch}',
-        );
-      }
-
-      cart.clearCart();
-      await _loadUserPoints();
-      
-      if (!mounted) return;
-      
-      setState(() {
-        _isProcessing = false;
-        _pointsToRedeem = 0.0;
-      });
-
-      _showSuccessDialog();
-    } catch (e) {
-      if (!mounted) return;
-      
-      setState(() => _isProcessing = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Checkout failed: $e'),
-          backgroundColor: AppColors.error,
-        ),
-      );
-    }
+Future<void> _handleCheckout(
+    BuildContext context, CartController cart, double finalAmount) async {
+  final user = _auth.currentUser;
+  if (user == null) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please log in to complete purchase')),
+    );
+    return;
   }
 
-  void _showSuccessDialog() {
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Row(
-          children: [
-            Icon(Icons.check_circle, color: AppColors.success),
-            SizedBox(width: 8),
-            Text('Purchase Successful!'),
-          ],
-        ),
-        content: const Text('Your notes have been added to your library.'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pop(context);
-            },
-            child: const Text('Continue Shopping'),
-          ),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.pop(context);
-              Navigator.pushReplacementNamed(context, '/library');
-            },
-            child: const Text('View Library'),
-          ),
-        ],
+  setState(() => _isProcessing = true);
+  
+  try {
+    for (final note in cart.cartNotes) {
+      final txn = await _transactionService.createTransaction(
+        buyerId: user.uid,
+        sellerId: note.ownerUid,
+        noteId: note.noteId,
+        salePrice: note.price ?? 0.0,
+        paymentMethod: _pointsToRedeem > 0 ? 'points+payment' : 'payment',
+      );
+      await _transactionService.completeTransaction(
+        transactionId: txn.transactionId,
+        paymentId: 'payment_${DateTime.now().millisecondsSinceEpoch}',
+      );
+    }
+    
+    cart.clearCart();
+    await _loadUserPoints();
+    
+    if (!mounted) return;
+    
+    setState(() {
+      _isProcessing = false;
+      _pointsToRedeem = 0.0;
+    });
+    
+    // Store context validity before showing dialog
+    _showSuccessDialog();
+    
+  }   catch (e) {
+    if (!mounted) return;
+    
+    setState(() => _isProcessing = false);
+    
+    // ignore: use_build_context_synchronously
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Checkout failed: $e'),
+        backgroundColor: AppColors.error,
       ),
     );
   }
+}
+
+// Also update _showSuccessDialog to check mounted
+void _showSuccessDialog() {
+  if (!mounted) return;
+  
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Row(
+        children: [
+          Icon(Icons.check_circle, color: AppColors.success),
+          SizedBox(width: 8),
+          Text('Purchase Successful!'),
+        ],
+      ),
+      content: const Text('Your notes have been added to your library.'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+          child: const Text('Continue Shopping'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushReplacementNamed(context, '/library');
+          },
+          child: const Text('View Library'),
+        ),
+      ],
+    ),
+  );
+}
 
   void _showClearCartDialog(BuildContext context, CartController cart) {
     showDialog(
