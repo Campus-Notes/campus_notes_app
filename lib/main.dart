@@ -1,7 +1,6 @@
-// main.dart
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_app_check/firebase_app_check.dart'; 
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 
 import 'package:campus_notes_app/data/dummy_data.dart';
@@ -31,39 +30,27 @@ import 'features/chat/presentation/controller/chat_controller.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // -------------------------------------------------
-  // 1. Load .env (only once)
-  // -------------------------------------------------
-  await dotenv.load(fileName: ".env");
-
-  // -------------------------------------------------
-  // 2. Firebase
-  // -------------------------------------------------
+ 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
-
+  await FirebaseAppCheck.instance.activate(
+    androidProvider: AndroidProvider.playIntegrity, 
+    appleProvider: AppleProvider.deviceCheck,      
+  );
 
   // -------------------------------------------------
-  // 4. Theme
+  // 4. Theme setup
   // -------------------------------------------------
   final themeService = ThemeService();
   await themeService.init();
 
-  // -------------------------------------------------
-  // 5. API base URL from .env
-  // -------------------------------------------------
-  final String apiBaseUrl = dotenv.env['API_BASE_URL'] ?? 'https://your-api.com';
-
-  // -------------------------------------------------
-  // 6. Run the app
-  // -------------------------------------------------
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => AuthController(baseUrl: apiBaseUrl),
+          create: (_) => AuthController(),
         ),
         ChangeNotifierProvider(create: (_) => NotesController()),
         ChangeNotifierProvider.value(value: themeService),
@@ -106,7 +93,6 @@ class CampusNotesApp extends StatelessWidget {
             AppRoutes.forgotPassword: (_) => const ForgotPasswordScreen(),
           },
           onGenerateRoute: (settings) {
-            // ── Note detail ──
             if (settings.name == AppRoutes.noteDetail) {
               final note = settings.arguments as NoteItem;
               return MaterialPageRoute(
@@ -114,7 +100,6 @@ class CampusNotesApp extends StatelessWidget {
               );
             }
 
-            // ── Checkout ──
             if (settings.name == AppRoutes.checkout) {
               final note = settings.arguments as NoteItem;
               return MaterialPageRoute(
@@ -122,7 +107,6 @@ class CampusNotesApp extends StatelessWidget {
               );
             }
 
-            // ── Reset password (with token) ──
             if (settings.name == AppRoutes.resetPassword) {
               final token = settings.arguments as String;
               return MaterialPageRoute(
