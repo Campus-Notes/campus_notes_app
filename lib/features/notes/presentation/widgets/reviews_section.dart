@@ -127,7 +127,7 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
           // Section Header
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.rate_review_outlined,
                 color: AppColors.primary,
                 size: 24,
@@ -174,7 +174,7 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   children: [
-                    Icon(
+                    const Icon(
                       Icons.error_outline,
                       color: AppColors.error,
                       size: 48,

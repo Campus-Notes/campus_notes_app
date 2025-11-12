@@ -107,7 +107,6 @@ class ReviewService {
     }
   }
 
-  /// Get a specific review by a user for a note
   Future<ReviewModel?> getUserReview(String noteId, String userUid) async {
     try {
       final querySnapshot = await _firestore
@@ -127,7 +126,6 @@ class ReviewService {
     }
   }
 
-  /// Update an existing review
   Future<void> updateReview({
     required String reviewId,
     required String noteId,
@@ -135,7 +133,6 @@ class ReviewService {
     required double rating,
   }) async {
     try {
-      // Validate rating
       if (rating < 1.0 || rating > 5.0) {
         throw Exception('Rating must be between 1 and 5');
       }
@@ -145,45 +142,42 @@ class ReviewService {
         'rating': rating,
       });
 
-      // Update the note's average rating
       await _updateNoteAverageRating(noteId);
     } catch (e) {
       rethrow;
     }
   }
 
-  /// Delete a review
+  /// Delete review
   Future<void> deleteReview(String reviewId, String noteId) async {
     try {
       await _firestore.collection(_reviewsCollection).doc(reviewId).delete();
 
-      // Update the note's average rating
       await _updateNoteAverageRating(noteId);
     } catch (e) {
       rethrow;
     }
   }
 
-  /// Calculate and update the average rating for a note
   Future<void> _updateNoteAverageRating(String noteId) async {
-    try {
-      final reviews = await getNoteReviews(noteId);
+  try {
+    final reviews = await getNoteReviews(noteId);
 
-      double averageRating = 0.0;
-      if (reviews.isNotEmpty) {
-        final totalRating = reviews.fold<double>(
-          0.0,
-          (sum, review) => sum + review.rating,
-        );
-        averageRating = totalRating / reviews.length;
-      }
-
-      // Update the note's rating
-      await _noteDatabaseService.updateRating(noteId, averageRating);
-    } catch (e) {
-      rethrow;
+    double averageRating = 0.0;
+    if (reviews.isNotEmpty) {
+      final totalRating = reviews.fold<double>(
+        0.0,
+        (acc, review) => acc + review.rating,
+      );
+      averageRating = totalRating / reviews.length;
     }
+
+    await _noteDatabaseService.updateRating(noteId, averageRating);
+  } catch (e) {
+    rethrow;
   }
+}
+
 
   Future<int> getReviewCount(String noteId) async {
     try {

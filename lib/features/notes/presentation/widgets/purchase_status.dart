@@ -34,10 +34,10 @@ class PurchaseStatusWidget extends StatelessWidget {
                   color: AppColors.warning.withValues(alpha: 0.3),
                 ),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(Icons.info_outline, color: AppColors.warning),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'This is your own note. You cannot purchase it.',
@@ -63,10 +63,10 @@ class PurchaseStatusWidget extends StatelessWidget {
                   color: AppColors.success.withValues(alpha: 0.3),
                 ),
               ),
-              child: Row(
+              child: const Row(
                 children: [
                   Icon(Icons.check_circle, color: AppColors.success),
-                  const SizedBox(width: 12),
+                  SizedBox(width: 12),
                   Expanded(
                     child: Text(
                       'You have already purchased this note.',

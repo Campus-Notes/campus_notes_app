@@ -111,7 +111,7 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 Icons.rate_review,
                 color: AppColors.primary,
                 size: 24,
