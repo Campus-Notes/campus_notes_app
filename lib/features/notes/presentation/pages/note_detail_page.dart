@@ -13,7 +13,7 @@ import '../widgets/bottom_action_bar.dart';
 
 class NoteDetailPage extends StatefulWidget {
   const NoteDetailPage({super.key, required this.note});
-  final dynamic note; // Can be NoteItem or NoteModel
+  final dynamic note; 
 
   @override
   State<NoteDetailPage> createState() => _NoteDetailPageState();
@@ -88,7 +88,6 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       final noteId = _getNoteId();
       final sellerId = _getSellerId();
 
-      // Validate note data
       if (noteId.isEmpty) {
         throw Exception('Invalid note ID');
       }
@@ -98,21 +97,18 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       }
 
       if (notePrice <= 0) {
-        // Free note (donation)
         _handleFreePurchase();
         return;
       }
 
-      // Create transaction
       final transaction = await _transactionService.createTransaction(
         buyerId: currentUser.uid,
         sellerId: sellerId,
         noteId: noteId,
         salePrice: notePrice,
-        paymentMethod: 'dummy', // Will integrate Razorpay later
+        paymentMethod: 'dummy',
       );
 
-      // For now, simulate successful payment
       final success = await _transactionService.completeTransaction(
         transactionId: transaction.transactionId,
         paymentId: 'dummy_payment_${DateTime.now().millisecondsSinceEpoch}',
@@ -235,7 +231,6 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
 
   String _getSellerId() {
     if (widget.note is NoteItem) {
-      // For dummy data, use a different seller ID so users can test purchasing
       return 'dummy_seller_123';
     } else if (widget.note is NoteModel) {
       return (widget.note as NoteModel).ownerUid;
