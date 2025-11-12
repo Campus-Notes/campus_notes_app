@@ -21,6 +21,7 @@ import 'features/onboarding/presentation/pages/splash_screen.dart';
 import 'features/onboarding/presentation/pages/onboarding_page.dart';
 import 'features/authentication/presentation/controller/auth_controller.dart';
 import 'features/notes/presentation/controller/notes_controller.dart';
+import 'features/notes/presentation/controller/cart_controller.dart';
 import 'features/home/presentation/controller/sell_mode_controller.dart';
 import 'features/notes/data/services/note_database_service.dart';
 
@@ -53,6 +54,7 @@ Future<void> main() async {
           create: (_) => AuthController(),
         ),
         ChangeNotifierProvider(create: (_) => NotesController()),
+        ChangeNotifierProvider(create: (_) => CartController()),
         ChangeNotifierProvider.value(value: themeService),
         ChangeNotifierProvider(create: (_) => ChatController()),
         ChangeNotifierProvider(

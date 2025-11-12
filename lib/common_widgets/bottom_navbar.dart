@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../features/home/presentation/pages/home_page.dart';
 import '../features/notes/presentation/pages/sell_note.dart';
-import '../features/notes/presentation/pages/cart_page.dart';
+import '../features/notes/presentation/pages/library_page.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -18,7 +18,7 @@ class _MainShellState extends State<MainShell> {
   final List<Widget> _pages = [
     const HomePage(),
     const UploadPage(),
-    const CartPage(),
+    const LibraryPage(),
     const ProfilePage(),
   ];
 
@@ -66,7 +66,7 @@ class _MainShellState extends State<MainShell> {
                 final icons = [
                   Icons.home_outlined,
                   Icons.upload_outlined,
-                  Icons.shopping_cart_outlined,
+                  Icons.library_books_outlined,
                   Icons.person_outline,
                 ];
 

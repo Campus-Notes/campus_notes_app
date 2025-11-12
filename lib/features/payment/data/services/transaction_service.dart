@@ -86,22 +86,13 @@ class TransactionService {
         },
       );
 
+      // Update seller's wallet balance, total earnings, and points
       final sellerDoc = _firestore.collection('users').doc(transaction.sellerId);
-      final sellerData = await sellerDoc.get();
-      
-      if (sellerData.exists) {
-        batch.update(sellerDoc, {
-          'walletBalance': FieldValue.increment(transaction.sellerAmount),
-          'totalEarnings': FieldValue.increment(transaction.sellerAmount), 
-          'points': FieldValue.increment(transaction.sellerPoints.round()),
-        });
-      } else {
-        batch.set(sellerDoc, {
-          'walletBalance': transaction.sellerAmount,
-          'totalEarnings': transaction.sellerAmount,
-          'points': transaction.sellerPoints.round(),
-        }, SetOptions(merge: true));
-      }
+      batch.update(sellerDoc, {
+        'walletBalance': FieldValue.increment(transaction.sellerAmount),
+        'totalEarnings': FieldValue.increment(transaction.sellerAmount),
+        'points': FieldValue.increment(transaction.sellerPoints),
+      });
 
       final sellerWalletCredit = WalletCreditModel(
         creditId: '${transaction.transactionId}_seller_wallet',
@@ -128,7 +119,7 @@ class TransactionService {
         userId: transaction.sellerId,
         noteId: transaction.noteId,
         transactionId: transaction.transactionId,
-        points: transaction.sellerPoints.round(),
+        points: transaction.sellerPoints,
         type: 'selling_bonus',
         creditedAt: DateTime.now(),
         description: 'Selling bonus points',
@@ -143,47 +134,18 @@ class TransactionService {
         sellerPointsCredit.toMap(),
       );
 
+      // Update buyer points only (Razorpay handles payment, not wallet)
       final buyerDoc = _firestore.collection('users').doc(transaction.buyerId);
-      final buyerData = await buyerDoc.get();
-      
-      if (buyerData.exists) {
-        batch.update(buyerDoc, {
-          'walletBalance': FieldValue.increment(-transaction.salePrice),
-          'points': FieldValue.increment(transaction.buyerPoints.round()),
-        });
-      } else {
-        batch.set(buyerDoc, {
-          'walletBalance': -transaction.salePrice,
-          'points': transaction.buyerPoints.round(),
-        }, SetOptions(merge: true));
-      }
-
-      final buyerWalletCredit = WalletCreditModel(
-        creditId: '${transaction.transactionId}_buyer_wallet',
-        userId: transaction.buyerId,
-        noteId: transaction.noteId,
-        transactionId: transaction.transactionId,
-        amount: -transaction.salePrice,
-        type: 'purchase',
-        creditedAt: DateTime.now(),
-        description: 'Note purchase payment',
-      );
-
-      batch.set(
-        _firestore
-            .collection('users')
-            .doc(transaction.buyerId)
-            .collection(_walletCreditsSubcollection)
-            .doc(buyerWalletCredit.creditId),
-        buyerWalletCredit.toMap(),
-      );
+      batch.update(buyerDoc, {
+        'points': FieldValue.increment(transaction.buyerPoints),
+      });
 
       final buyerPointsCredit = PointsCreditModel(
         creditId: '${transaction.transactionId}_buyer_points',
         userId: transaction.buyerId,
         noteId: transaction.noteId,
         transactionId: transaction.transactionId,
-        points: transaction.buyerPoints.round(),
+        points: transaction.buyerPoints,
         type: 'purchase_bonus',
         creditedAt: DateTime.now(),
         description: 'Purchase bonus points',
@@ -235,7 +197,6 @@ class TransactionService {
             .doc(transaction.buyerId),
         {
           'uid': transaction.buyerId,
-          'name': 'User', 
           'purchasedAt': Timestamp.now(),
           'transactionId': transactionId,
         },

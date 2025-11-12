@@ -34,6 +34,12 @@ dependencies:
   crypto: ^3.0.7
   flutter_dotenv: ^6.0.0
   http: ^1.1.0
+  intl: ^0.19.0
+  
+  # PDF viewer - secure in-app viewing
+  syncfusion_flutter_pdfviewer: ^27.2.5
+  path_provider: ^2.1.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

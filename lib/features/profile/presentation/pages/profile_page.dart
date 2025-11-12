@@ -187,9 +187,11 @@ class _ProfilePageState extends State<ProfilePage> {
           (route) => false,
         ),
       ),
-      body: SafeArea(
-        child: CustomScrollView(
-          slivers: [
+      body: RefreshIndicator(
+        onRefresh: _loadUserData,
+        child: SafeArea(
+          child: CustomScrollView(
+            slivers: [
             SliverToBoxAdapter(
               child: Container(
                 decoration: BoxDecoration(
@@ -289,7 +291,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             icon: Icons.emoji_events_outlined,
                             label: 'Rewards',
                             value: '$points pts',
-                            onTap: () {},
+                            onTap: () => Navigator.of(context).pushNamed(AppRoutes.points),
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -396,6 +398,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           ],
         ),
+      ),
       ),
     );
   }

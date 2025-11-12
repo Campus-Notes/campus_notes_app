@@ -1,15 +1,17 @@
+import 'package:campus_notes_app/features/notes/data/models/note_model.dart';
 import 'package:campus_notes_app/features/notes/data/services/note_database_service.dart';
+import 'package:campus_notes_app/features/payment/data/services/transaction_service.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 import '../../../../data/dummy_data.dart';
-import '../../../payment/data/services/transaction_service.dart';
-import '../../data/models/note_model.dart';
 import '../widgets/pdf_preview.dart';
 import '../widgets/note_header.dart';
 import '../widgets/status_indicators.dart';
 import '../widgets/note_details.dart';
 import '../widgets/purchase_status.dart';
 import '../widgets/bottom_action_bar.dart';
+import '../controller/cart_controller.dart';
 
 class NoteDetailPage extends StatefulWidget {
   const NoteDetailPage({super.key, required this.note});
@@ -24,13 +26,23 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   final NoteDatabaseService _noteDatabaseService = NoteDatabaseService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   
-  bool _isLoading = false;
+  bool _isLoading = true; 
   bool _isOwnNote = false;
   bool _hasAlreadyPurchased = false;
+  bool _isPurchasing = false; 
 
   @override
   void initState() {
     super.initState();
+    
+    if (widget.note is NoteModel) {
+      final noteModel = widget.note as NoteModel;
+      debugPrint('🔍 NoteDetailPage initState - Full NoteModel: $noteModel');
+      debugPrint('🔍 NoteDetailPage initState - Description field: "${noteModel.description}"');
+      debugPrint('🔍 NoteDetailPage initState - Description is null: ${noteModel.description == null}');
+      debugPrint('🔍 NoteDetailPage initState - Description isEmpty: ${noteModel.description?.isEmpty}');
+    }
+    
     _checkNoteOwnershipAndPurchase();
   }
 
@@ -39,7 +51,10 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
 
     try {
       final currentUser = _auth.currentUser;
-      if (currentUser == null) return;
+      if (currentUser == null) {
+        setState(() => _isLoading = false);
+        return;
+      }
 
       // Get full note data if we only have NoteItem
       if (widget.note is NoteItem) {
@@ -53,7 +68,12 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         _isOwnNote = noteModel.ownerUid == currentUser.uid;
         
         // Check if user has already purchased this note
-        if (!_isOwnNote) {
+        if (!_isOwnNote && !noteModel.isDonation) {
+          _hasAlreadyPurchased = await _noteDatabaseService.hasUserPurchased(
+            noteModel.noteId,
+            currentUser.uid, 
+          );
+        } else if (noteModel.isDonation) {
           _hasAlreadyPurchased = await _noteDatabaseService.hasUserPurchased(
             noteModel.noteId,
             currentUser.uid, 
@@ -61,7 +81,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         }
       }
     } catch (e) {
-      // Handle error silently for now
+      debugPrint('Error checking note ownership: $e');
     } finally {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -81,12 +101,18 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       return;
     }
 
-    setState(() => _isLoading = true);
+    setState(() => _isPurchasing = true);
 
     try {
       final notePrice = _getNotePrice();
       final noteId = _getNoteId();
       final sellerId = _getSellerId();
+
+      debugPrint('💳 Purchase attempt:');
+      debugPrint('   - Note ID: "$noteId" (isEmpty: ${noteId.isEmpty})');
+      debugPrint('   - Seller ID: "$sellerId" (isEmpty: ${sellerId.isEmpty})');
+      debugPrint('   - Note Price: $notePrice');
+      debugPrint('   - Note Type: ${widget.note.runtimeType}');
 
       if (noteId.isEmpty) {
         throw Exception('Invalid note ID');
@@ -97,7 +123,8 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       }
 
       if (notePrice <= 0) {
-        _handleFreePurchase();
+        // Handle free note (donation)
+        await _handleFreePurchase(noteId, currentUser.uid);
         return;
       }
 
@@ -135,18 +162,42 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       }
     } finally {
       if (mounted) {
-        setState(() => _isLoading = false);
+        setState(() => _isPurchasing = false);
       }
     }
   }
 
-  void _handleFreePurchase() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Free note added to your collection!')),
-    );
-    setState(() {
-      _hasAlreadyPurchased = true;
-    });
+  Future<void> _handleFreePurchase(String noteId, String userId) async {
+    try {
+      // For free notes, just record the "purchase" (access)
+      await _noteDatabaseService.addPurchase(
+        noteId: noteId,
+        uid: userId,
+        name: _auth.currentUser?.displayName ?? 'Unknown',
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Free note added to your collection!')),
+        );
+        setState(() {
+          _hasAlreadyPurchased = true;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to access note: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isPurchasing = false);
+      }
+    }
   }
 
   void _showSuccessDialog() {
@@ -161,7 +212,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
             Text('You have successfully purchased "${_getNoteTitle()}"'),
             const SizedBox(height: 12),
             const Text('Rewards earned:', style: TextStyle(fontWeight: FontWeight.bold)),
-            Text('• Points: +${(_getNotePrice() * 0.02).round()}'),
+            Text('• Points: +${(_getNotePrice() * 0.02).toStringAsFixed(2)}'),
             const SizedBox(height: 8),
             const Text('The note has been added to your collection.'),
           ],
@@ -177,12 +228,66 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   }
 
   void _addToCart() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${_getNoteTitle()} added to cart!')),
-    );
+    // Only allow adding NoteModel to cart (not dummy NoteItem)
+    if (widget.note is NoteModel) {
+      final cartController = context.read<CartController>();
+      final noteModel = widget.note as NoteModel;
+      
+      if (cartController.isInCart(noteModel.noteId)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.info_outline, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text('${noteModel.title} is already in your cart'),
+                ),
+              ],
+            ),
+            action: SnackBarAction(
+              label: 'VIEW CART',
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.pushNamed(context, '/cart');
+              },
+            ),
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      } else {
+        cartController.addToCart(noteModel);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text('${noteModel.title} added to cart!'),
+                ),
+              ],
+            ),
+            action: SnackBarAction(
+              label: 'VIEW CART',
+              textColor: Colors.white,
+              onPressed: () {
+                Navigator.pushNamed(context, '/cart');
+              },
+            ),
+            backgroundColor: Colors.green,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } else {
+      // For dummy data
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('${_getNoteTitle()} added to cart!')),
+      );
+    }
   }
 
-  // Helper methods to get note data regardless of type
   String _getNoteTitle() {
     if (widget.note is NoteItem) {
       return (widget.note as NoteItem).title;
@@ -231,11 +336,39 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
 
   String _getSellerId() {
     if (widget.note is NoteItem) {
-      return 'dummy_seller_123';
+      debugPrint('💰 _getSellerId - Note is NoteItem, returning empty string');
+      return ''; 
     } else if (widget.note is NoteModel) {
-      return (widget.note as NoteModel).ownerUid;
+      final noteModel = widget.note as NoteModel;
+      final sellerId = noteModel.ownerUid;
+      debugPrint('💰 _getSellerId - Note is NoteModel');
+      debugPrint('💰 _getSellerId - ownerUid: "$sellerId"');
+      debugPrint('💰 _getSellerId - ownerUid isEmpty: ${sellerId.isEmpty}');
+      debugPrint('💰 _getSellerId - Full NoteModel: $noteModel');
+      return sellerId;
     }
-    return 'dummy_seller_123';
+    debugPrint('💰 _getSellerId - Note is neither type, returning empty string');
+    return '';
+  }
+
+  String? _getNoteDescription() {
+    if (widget.note is NoteItem) {
+      return null; // Dummy data doesn't have description
+    } else if (widget.note is NoteModel) {
+      final noteModel = widget.note as NoteModel;
+      final description = noteModel.description;
+      return description;
+    }
+    return null;
+  }
+
+  int _getPageCount() {
+    if (widget.note is NoteItem) {
+      return 0; // Dummy data doesn't have page count
+    } else if (widget.note is NoteModel) {
+      return (widget.note as NoteModel).pageCount;
+    }
+    return 0;
   }
 
   bool _isDonation() {
@@ -261,7 +394,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       );
     }
 
-    return Scaffold(
+    return Scaffold(  
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -291,6 +424,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                 PdfPreviewWidget(
                   hasAlreadyPurchased: _hasAlreadyPurchased,
                   isOwnNote: _isOwnNote,
+                  note: widget.note,
                   onTap: () {
                   },
                 ),
@@ -314,6 +448,8 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                   subject: _getNoteSubject(),
                   isDonation: _isDonation(),
                   price: _getNotePrice(),
+                  description: _getNoteDescription(),
+                  pageCount: _getPageCount(),
                 ),
                 
                 PurchaseStatusWidget(
@@ -331,7 +467,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
             hasAlreadyPurchased: _hasAlreadyPurchased,
             isDonation: _isDonation(),
             price: _getNotePrice(),
-            isLoading: _isLoading,
+            isLoading: _isPurchasing, 
             onAddToCart: _addToCart,
             onPurchase: _handlePurchase,
           ),

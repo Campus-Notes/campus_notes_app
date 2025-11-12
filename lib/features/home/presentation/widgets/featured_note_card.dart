@@ -4,15 +4,18 @@ import '../../../../data/dummy_data.dart';
 
 class FeaturedNoteCard extends StatelessWidget {
   final NoteItem? featuredNote;
+  final VoidCallback? onTap;
 
-  const FeaturedNoteCard({super.key, this.featuredNote});
+  const FeaturedNoteCard({super.key, this.featuredNote, this.onTap});
 
   @override
   Widget build(BuildContext context) {
     final note = featuredNote ?? _getDefaultFeaturedNote();
     
-    return Container(
-      height: 180,
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+      height: 200,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16),
         gradient: LinearGradient(
@@ -56,7 +59,7 @@ class FeaturedNoteCard extends StatelessWidget {
             padding: const EdgeInsets.all(20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
               children: [
                 Row(
                   children: [
@@ -100,7 +103,7 @@ class FeaturedNoteCard extends StatelessWidget {
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Text(
                   note.title,
                   style: const TextStyle(
@@ -112,7 +115,7 @@ class FeaturedNoteCard extends StatelessWidget {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Text(
                   note.subject,
                   style: TextStyle(
@@ -120,8 +123,10 @@ class FeaturedNoteCard extends StatelessWidget {
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
                   ),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 8),
                 Row(
                   children: [
                     Text(
@@ -132,25 +137,9 @@ class FeaturedNoteCard extends StatelessWidget {
                         fontWeight: FontWeight.w800,
                       ),
                     ),
-                    const SizedBox(width: 16),
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: Colors.green[600],
-                        borderRadius: BorderRadius.circular(6),
-                      ),
-                      child: const Text(
-                        '20% OFF',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
                   ],
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 6),
                 Row(
                   children: [
                     Icon(Icons.description, color: Colors.white.withValues(alpha: 0.8), size: 14),
@@ -181,6 +170,7 @@ class FeaturedNoteCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
       ),
     );
   }

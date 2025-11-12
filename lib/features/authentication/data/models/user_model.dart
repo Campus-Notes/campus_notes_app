@@ -7,7 +7,7 @@ class UserModel {
   final String university;
   final double walletBalance; 
   final double totalEarnings; 
-  final int points;
+  final double points;
   final bool isUPIProvided;
   final bool isBankDetailsProvided;
   final String? upiId;
@@ -24,7 +24,7 @@ class UserModel {
     required this.university,
     this.walletBalance = 0.0,
     this.totalEarnings = 0.0,
-    this.points = 0,
+    this.points = 0.0,
     this.isUPIProvided = false,
     this.isBankDetailsProvided = false,
     this.upiId,
@@ -67,7 +67,7 @@ class UserModel {
       university: map['university'] ?? '',
       walletBalance: (map['walletBalance'] ?? 0.0).toDouble(),
       totalEarnings: (map['totalEarnings'] ?? 0.0).toDouble(),
-      points: _convertToInt(map['points']), 
+      points: (map['points'] ?? 0.0).toDouble(),
       isUPIProvided: map['isUPIProvided'] ?? false,
       isBankDetailsProvided: map['isBankDetailsProvided'] ?? false,
       upiId: map['upiId'],
@@ -77,14 +77,6 @@ class UserModel {
     );
   }
 
-  static int _convertToInt(dynamic value) {
-    if (value == null) return 0;
-    if (value is int) return value;
-    if (value is double) return value.round();
-    if (value is String) return int.tryParse(value) ?? 0;
-    return 0;
-  }
-
   UserModel copyWith({
     String? firstName,
     String? lastName,
@@ -92,7 +84,7 @@ class UserModel {
     String? university,
     double? walletBalance,
     double? totalEarnings,
-    int? points,
+    double? points,
     bool? isUPIProvided,
     bool? isBankDetailsProvided,
     String? upiId,

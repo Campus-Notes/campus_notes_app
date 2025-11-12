@@ -4,17 +4,25 @@ class NoteDetailsWidget extends StatelessWidget {
   final String subject;
   final bool isDonation;
   final double price;
+  final String? description;
+  final int pageCount;
 
   const NoteDetailsWidget({
     super.key,
     required this.subject,
     required this.isDonation,
     required this.price,
+    this.description,
+    this.pageCount = 0,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    
+    // Debug print to check description value
+    debugPrint('🔍 NoteDetailsWidget - Description: $description');
+    debugPrint('🔍 NoteDetailsWidget - PageCount: $pageCount');
     
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -33,7 +41,9 @@ class NoteDetailsWidget extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            'Comprehensive $subject notes covering all key topics. High-quality content perfect for exam preparation and academic reference.',
+            (description != null && description!.isNotEmpty) 
+              ? description! 
+              : 'Comprehensive $subject notes covering all key topics. High-quality content perfect for exam preparation and academic reference.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
               height: 1.5,
@@ -53,9 +63,11 @@ class NoteDetailsWidget extends StatelessWidget {
           
           _buildDetailRow('Subject', subject, theme),
           _buildDetailRow('Format', 'PDF Document', theme),
+          if (pageCount > 0)
+            _buildDetailRow('Pages', '$pageCount ${pageCount == 1 ? 'page' : 'pages'}', theme),
           _buildDetailRow('Type', isDonation ? 'Donation' : 'Premium', theme),
           if (!isDonation)
-            _buildDetailRow('Revenue Split', '80% to seller, 5% points to seller, 2% points to buyer', theme),
+            _buildDetailRow('Revenue Split', '70% to seller, 5% points to seller, 2% points to buyer', theme),
         ],
       ),
     );

@@ -147,6 +147,11 @@ class NotesController extends ChangeNotifier {
       notifyListeners();
       final fileEncodedData = PdfService.encodeBytesToBase64(fileBytes);
 
+      // Count PDF pages
+      _uploadMessage = 'Analyzing PDF...';
+      notifyListeners();
+      final pageCount = PdfService.countPdfPages(fileBytes);
+
       // Upload to Firestore
       _uploadMessage = 'Uploading to cloud...';
       notifyListeners();
@@ -159,6 +164,7 @@ class NotesController extends ChangeNotifier {
         price: isDonation ? null : price,
         fileName: fileName,
         fileEncodedData: fileEncodedData,
+        pageCount: pageCount,
       );
 
       // Add to local list
@@ -235,6 +241,12 @@ class NotesController extends ChangeNotifier {
       notifyListeners();
       final fileEncodedData = await PdfService.encodeFileToBase64(filePath);
 
+      // Read file bytes to count pages
+      _uploadMessage = 'Analyzing PDF...';
+      notifyListeners();
+      final fileBytes = await File(filePath).readAsBytes();
+      final pageCount = PdfService.countPdfPages(fileBytes);
+
       // Upload to Firestore
       _uploadMessage = 'Uploading to cloud...';
       notifyListeners();
@@ -247,6 +259,7 @@ class NotesController extends ChangeNotifier {
         price: isDonation ? null : price,
         fileName: fileName,
         fileEncodedData: fileEncodedData,
+        pageCount: pageCount,
       );
 
       // Add to local list

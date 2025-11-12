@@ -16,6 +16,7 @@ abstract class AppRoutes {
 
   // Notes & Payments
   static const noteDetail = '/note-detail';
+  static const cart = '/cart';
   static const checkout = '/checkout';
   static const purchases = '/purchases';
   static const reminders = '/reminders';
@@ -23,6 +24,7 @@ abstract class AppRoutes {
 
   // Wallet & Support
   static const wallet = '/wallet';
+  static const points = '/points';
   static const donations = '/donations';
   static const reportIssue = '/report-issue';
   static const about = '/about';

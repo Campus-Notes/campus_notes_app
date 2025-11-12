@@ -1,6 +1,15 @@
+import 'package:campus_notes_app/features/notes/presentation/pages/cart_checkout_section.dart';
 import 'package:flutter/material.dart';
-import '../../../../data/dummy_data.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import '../../../../common_widgets/app_bar.dart';
+import '../../../../theme/app_theme.dart';
+import '../../../payment/data/services/wallet_service.dart';
+import '../../../payment/data/services/transaction_service.dart';
+import '../controller/cart_controller.dart';
 import '../widgets/cart_card.dart';
+import '../widgets/cart_empty_view.dart';
+import 'note_detail_page.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -10,195 +19,255 @@ class CartPage extends StatefulWidget {
 }
 
 class _CartPageState extends State<CartPage> {
-  List<NoteItem> cartItems = [
-    // Add some dummy cart items for demonstration
-    const NoteItem(
-      id: 'cart1',
-      title: 'Data Structures: Exam Cheatsheet',
-      subject: 'CS - Data Structures',
-      seller: 'Ananya Sharma',
-      price: 59.0,
-      rating: 4.7,
-      pages: 18,
-      tags: ['cs', 'dsa', 'semester-4'],
-    ),
-    const NoteItem(
-      id: 'cart2',
-      title: 'Microeconomics Quick Revision',
-      subject: 'Economics',
-      seller: 'Rohit Verma',
-      price: 39.0,
-      rating: 4.4,
-      pages: 12,
-      tags: ['eco', 'first-year'],
-    ),
-  ];
+  final WalletService _walletService = WalletService();
+  final TransactionService _transactionService = TransactionService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  Map<String, int> quantities = {
-    'cart1': 1,
-    'cart2': 1,
-  };
+  double _userPoints = 0.0;
+  double _pointsToRedeem = 0.0;
+  bool _isLoadingPoints = true;
+  bool _isProcessing = false;
 
-  void _updateQuantity(String itemId, int change) {
-    setState(() {
-      quantities[itemId] = (quantities[itemId] ?? 1) + change;
-      if (quantities[itemId]! <= 0) {
-        quantities.remove(itemId);
-        cartItems.removeWhere((item) => item.id == itemId);
+  @override
+  void initState() {
+    super.initState();
+    _loadUserPoints();
+  }
+
+  Future<void> _loadUserPoints() async {
+    setState(() => _isLoadingPoints = true);
+    try {
+      final user = _auth.currentUser;
+      if (user != null) {
+        final points = await _walletService.getPointsBalance(user.uid);
+        setState(() {
+          _userPoints = points;
+          _isLoadingPoints = false;
+        });
+      } else {
+        setState(() => _isLoadingPoints = false);
       }
-    });
+    } catch (_) {
+      setState(() => _isLoadingPoints = false);
+    }
   }
-
-  double get subtotal {
-    return cartItems.fold(0, (sum, item) {
-      return sum + (item.price * (quantities[item.id] ?? 1));
-    });
-  }
-
-  double get deliveryFee => 2.0;
-  double get discount => subtotal * 0.05; // 5% discount
-  double get total => subtotal + deliveryFee - discount;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          'Cart',
-          style: TextStyle(
-            fontWeight: FontWeight.w800,
+      appBar: CustomAppBar(
+        text: 'Shopping Cart',
+        showBackButton: true,
+        centerTitle: true,
+        trailing: Consumer<CartController>(
+          builder: (context, cart, child) => cart.itemCount == 0
+              ? const SizedBox()
+              : IconButton(
+                  icon: const Icon(Icons.delete_sweep, color: AppColors.error),
+                  tooltip: 'Clear cart',
+                  onPressed: () => _showClearCartDialog(context, cart),
+                ),
+        ),
+      ),
+      body: Consumer<CartController>(
+        builder: (context, cart, _) {
+          if (cart.itemCount == 0) return const CartEmptyView();
+          return _buildCartContent(context, cart);
+        },
+      ),
+    );
+  }
+
+  Widget _buildCartContent(BuildContext context, CartController cart) {
+    return Column(
+      children: [
+        _CartHeader(itemCount: cart.itemCount),
+        Expanded(
+          child: ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: cart.cartNotes.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 16),
+            itemBuilder: (context, index) {
+              final note = cart.cartNotes[index];
+              return CartCard(
+                note: note,
+                onDelete: () {
+                  cart.removeFromCart(note.noteId);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text('${note.title} removed from cart'),
+                      action: SnackBarAction(
+                        label: 'UNDO',
+                        onPressed: () => cart.addToCart(note),
+                      ),
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                },
+                onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => NoteDetailPage(note: note),
+                  ),
+                ),
+              );
+            },
           ),
         ),
-        centerTitle: true,
+        CartCheckoutSection(
+          userPoints: _userPoints,
+          pointsToRedeem: _pointsToRedeem,
+          isLoadingPoints: _isLoadingPoints,
+          isProcessing: _isProcessing,
+          onPointsChanged: (value) => setState(() => _pointsToRedeem = value),
+          onCheckout: (finalAmount) =>
+              _handleCheckout(context, cart, finalAmount),
+        ),
+      ],
+    );
+  }
+
+Future<void> _handleCheckout(
+    BuildContext context, CartController cart, double finalAmount) async {
+  final user = _auth.currentUser;
+  if (user == null) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Please log in to complete purchase')),
+    );
+    return;
+  }
+
+  setState(() => _isProcessing = true);
+  
+  try {
+    for (final note in cart.cartNotes) {
+      final txn = await _transactionService.createTransaction(
+        buyerId: user.uid,
+        sellerId: note.ownerUid,
+        noteId: note.noteId,
+        salePrice: note.price ?? 0.0,
+        paymentMethod: _pointsToRedeem > 0 ? 'points+payment' : 'payment',
+      );
+      await _transactionService.completeTransaction(
+        transactionId: txn.transactionId,
+        paymentId: 'payment_${DateTime.now().millisecondsSinceEpoch}',
+      );
+    }
+    
+    cart.clearCart();
+    await _loadUserPoints();
+    
+    if (!mounted) return;
+    
+    setState(() {
+      _isProcessing = false;
+      _pointsToRedeem = 0.0;
+    });
+    
+    // Store context validity before showing dialog
+    _showSuccessDialog();
+    
+  }   catch (e) {
+    if (!mounted) return;
+    
+    setState(() => _isProcessing = false);
+    
+    // ignore: use_build_context_synchronously
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('Checkout failed: $e'),
+        backgroundColor: AppColors.error,
+      ),
+    );
+  }
+}
+
+// Also update _showSuccessDialog to check mounted
+void _showSuccessDialog() {
+  if (!mounted) return;
+  
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: const Row(
+        children: [
+          Icon(Icons.check_circle, color: AppColors.success),
+          SizedBox(width: 8),
+          Text('Purchase Successful!'),
+        ],
+      ),
+      content: const Text('Your notes have been added to your library.'),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pop(context);
+          },
+          child: const Text('Continue Shopping'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pop(context);
+            Navigator.pushReplacementNamed(context, '/library');
+          },
+          child: const Text('View Library'),
+        ),
+      ],
+    ),
+  );
+}
+
+  void _showClearCartDialog(BuildContext context, CartController cart) {
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text('Clear Cart'),
+        content:
+            const Text('Are you sure you want to remove all items from your cart?'),
         actions: [
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.share),
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () {
+              cart.clearCart();
+              Navigator.pop(context);
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Cart cleared')),
+              );
+            },
+            child: const Text('Clear', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),
-      body: cartItems.isEmpty
-          ? Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.shopping_cart_outlined,
-                    size: 64,
-                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.5),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    'Your cart is empty',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.w600,
-                      color: Theme.of(context).colorScheme.onSurface,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Add some notes to get started',
-                    style: TextStyle(
-                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
-                    ),
-                  ),
-                ],
-              ),
-            )
-          : Column(
-              children: [
-                Expanded(
-                  child: ListView.separated(
-                    padding: const EdgeInsets.all(16),
-                    itemCount: cartItems.length,
-                    separatorBuilder: (context, index) => const SizedBox(height: 12),
-                    itemBuilder: (context, index) {
-                      final item = cartItems[index];
-                      
-                      return CartCard(
-                        item: item,
-                        onDelete: () => _updateQuantity(item.id, -1),
-                      );
-                    },
-                  ),
-                ),
-                
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).scaffoldBackgroundColor,
-                    border: Border(
-                      top: BorderSide(
-                        color: Theme.of(context).dividerColor,
-                      ),
-                    ),
-                  ),
-                  child: Column(
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Subtotal', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                          Text('₹${subtotal.toStringAsFixed(0)}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Delivery', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                          Text('₹${deliveryFee.toStringAsFixed(0)}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                        ],
-                      ),
-                      const SizedBox(height: 8),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text('Discount', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
-                          Text('-₹${discount.toStringAsFixed(0)}', 
-                               style: TextStyle(color: Theme.of(context).colorScheme.primary)),
-                        ],
-                      ),
-                      const Divider(),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Total',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w700,
-                              fontSize: 16,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                          Text(
-                            '₹${total.toStringAsFixed(0)}',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w800,
-                              fontSize: 16,
-                              color: Theme.of(context).colorScheme.onSurface,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      SizedBox(
-                        width: double.infinity,
-                        child: ElevatedButton(
-                          onPressed: () {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(content: Text('Proceeding to checkout...')),
-                            );
-                          },
-                          child: const Text('Buy Now'),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
+    );
+  }
+}
+
+class _CartHeader extends StatelessWidget {
+  final int itemCount;
+  const _CartHeader({required this.itemCount});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      color: theme.colorScheme.primaryContainer.withOpacity(0.3),
+      child: Row(
+        children: [
+          const Icon(Icons.shopping_bag_outlined, size: 20),
+          const SizedBox(width: 8),
+          Text(
+            '$itemCount ${itemCount == 1 ? 'item' : 'items'} in cart',
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w600,
             ),
+          ),
+        ],
+      ),
     );
   }
 }

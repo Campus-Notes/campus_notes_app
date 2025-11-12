@@ -81,7 +81,7 @@ class WalletService {
   }
 
   /// Get user's points balance
-  Future<int> getPointsBalance(String userId) async {
+  Future<double> getPointsBalance(String userId) async {
     try {
       final userDoc = await _firestore
           .collection('users')
@@ -90,11 +90,11 @@ class WalletService {
 
       if (userDoc.exists) {
         final data = userDoc.data() as Map<String, dynamic>;
-        return (data['points'] as num?)?.toInt() ?? 0;
+        return (data['points'] as num?)?.toDouble() ?? 0.0;
       }
-      return 0;
+      return 0.0;
     } catch (e) {
-      return 0;
+      return 0.0;
     }
   }
 
@@ -358,13 +358,13 @@ class WalletService {
 
       double walletBalance = 0.0;
       double totalEarnings = 0.0;
-      int points = 0;
+      double points = 0.0;
 
       if (userDoc.exists) {
         final data = userDoc.data() as Map<String, dynamic>;
         walletBalance = (data['walletBalance'] as num?)?.toDouble() ?? 0.0;
         totalEarnings = (data['totalEarnings'] as num?)?.toDouble() ?? 0.0;
-        points = (data['points'] as num?)?.toInt() ?? 0;
+        points = (data['points'] as num?)?.toDouble() ?? 0.0;
       }
 
       return {
@@ -377,7 +377,7 @@ class WalletService {
       return {
         'walletBalance': 0.0,
         'totalEarnings': 0.0,
-        'points': 0,
+        'points': 0.0,
         'totalWithdrawn': 0.0,
       };
     }
