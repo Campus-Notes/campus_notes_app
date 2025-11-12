@@ -58,9 +58,9 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
           .doc(sellerId)
           .get();
 
-      return doc.data()?['name'] ?? doc.data()?['email'] ?? 'User';
+      return doc.data()?['firstName'] ?? 'Seller';
     } catch (_) {
-      return 'User';
+      return 'Seller';
     }
   }
 

@@ -1,7 +1,6 @@
 import 'package:campus_notes_app/features/home/presentation/widgets/buy_mode_content.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../info/presentation/pages/reminders_page.dart';
 import '../../../chat/presentation/pages/chat_list_page.dart'; 
 import '../../../notes/presentation/controller/notes_controller.dart';
 import '../widgets/location_header.dart';
@@ -71,8 +70,8 @@ class _HomePageState extends State<HomePage> {
                       }
                     },
                     onSearchTap: () {},
-                    onNotificationTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const RemindersPage()),
+                    onChatTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ChatListPage()),
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -86,24 +85,6 @@ class _HomePageState extends State<HomePage> {
                     },
                   ),
                   const SizedBox(height: 12),
-
-                  // ✅ Messages Button
-                  ElevatedButton.icon(
-                    icon: const Icon(Icons.chat),
-                    label: const Text('Messages'),
-                    style: ElevatedButton.styleFrom(
-                      minimumSize: const Size(double.infinity, 48),
-                      textStyle: const TextStyle(fontSize: 16),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const ChatListPage(),
-                        ),
-                      );
-                    },
-                  ),
                 ],
               ),
             ),

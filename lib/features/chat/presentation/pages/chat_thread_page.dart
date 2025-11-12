@@ -91,6 +91,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     required String time,
     required bool isLastInGroup,
   }) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -103,7 +105,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         decoration: BoxDecoration(
           color: isMe
               ? AppColors.primary
-              : const Color(0xFFF1F3F5),
+              : isDark 
+                  ? const Color(0xFF2C2C2E)
+                  : const Color(0xFFF1F3F5),
           borderRadius: BorderRadius.only(
             topLeft: const Radius.circular(18),
             topRight: const Radius.circular(18),
@@ -112,7 +116,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
           ),
           boxShadow: [
             BoxShadow(
-              color: Colors.black.withValues(alpha: 0.05),
+              color: Colors.black.withValues(alpha: isDark ? 0.3 : 0.05),
               blurRadius: 5,
               offset: const Offset(0, 2),
             ),
@@ -125,7 +129,11 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               text,
               style: TextStyle(
                 fontSize: 15,
-                color: isMe ? Colors.white : Colors.black87,
+                color: isMe 
+                    ? Colors.white 
+                    : isDark 
+                        ? Colors.white.withValues(alpha: 0.9)
+                        : Colors.black87,
                 height: 1.4,
               ),
             ),
@@ -136,7 +144,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                 fontSize: 11,
                 color: isMe 
                     ? Colors.white.withValues(alpha: 0.7)
-                    : Colors.grey[600],
+                    : isDark
+                        ? Colors.grey[400]
+                        : Colors.grey[600],
               ),
             ),
           ],
@@ -152,12 +162,43 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     return Scaffold(
       appBar: CustomAppBar(
         text: widget.peerName,
-        sideIcon: Icons.videocam_outlined,
         usePremiumBackIcon: true,
       ),
       body: SafeArea(
         child: Column(
           children: [
+            // Disclaimer banner
+            Container(
+              margin: const EdgeInsets.all(12),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: AppColors.info.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(8),
+                border: Border.all(
+                  color: AppColors.info.withValues(alpha: 0.3),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(
+                    Icons.info_outline,
+                    size: 18,
+                    color: AppColors.info,
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      'This chat is for marketplace transactions only',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                        color: AppColors.info,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
             Expanded(
               child: StreamBuilder<QuerySnapshot>(
                 stream: chatController.getChatMessages(widget.chatId),
@@ -173,14 +214,13 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                         children: [
                           Icon(Icons.error_outline, 
                             size: 48, 
-                            color: Colors.grey[400]
+                            color: Theme.of(context).colorScheme.error,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             'Something went wrong',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[600],
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                         ],
@@ -196,22 +236,20 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                           Icon(
                             Icons.chat_bubble_outline,
                             size: 64,
-                            color: Colors.grey[300],
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
                           ),
                           const SizedBox(height: 16),
                           Text(
                             'No messages yet',
-                            style: TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey[600],
+                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Send a message to start the conversation',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.grey[500],
+                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
                             ),
                           ),
                         ],
@@ -254,7 +292,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
             ),
             Container(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
@@ -271,7 +309,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                     Expanded(
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(0xFFF1F3F5),
+                          color: Theme.of(context).brightness == Brightness.dark
+                              ? const Color(0xFF2C2C2E)
+                              : const Color(0xFFF1F3F5),
                           borderRadius: BorderRadius.circular(24),
                         ),
                         child: TextField(
@@ -281,10 +321,15 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                           onSubmitted: (_) => _send(),
                           maxLines: null,
                           textCapitalization: TextCapitalization.sentences,
-                          decoration: const InputDecoration(
+                          style: TextStyle(
+                            color: Theme.of(context).colorScheme.onSurface,
+                          ),
+                          decoration: InputDecoration(
                             hintText: 'Message...',
-                            hintStyle: TextStyle(color: Colors.grey),
-                            contentPadding: EdgeInsets.symmetric(
+                            hintStyle: TextStyle(
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 12,
                             ),

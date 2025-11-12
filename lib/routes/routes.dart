@@ -7,7 +7,6 @@ import '../features/onboarding/presentation/pages/landingpage.dart';
 import '../features/authentication/presentation/pages/auth_screen.dart';
 import '../features/notes/presentation/pages/cart_page.dart';
 import '../features/notes/presentation/pages/shopping_cart.dart';
-import '../features/info/presentation/pages/reminders_page.dart';
 import '../features/notes/presentation/pages/my_sold_notes_page.dart';
 import '../features/profile/presentation/pages/wallet_page.dart';
 import '../features/profile/presentation/pages/points_page.dart';
@@ -30,7 +29,6 @@ class AppRouter {
         AppRoutes.authentication: (_) => const AuthenticationScreen(),
         AppRoutes.cart: (_) => const CartPage(),
         AppRoutes.purchases: (_) => const PurchasesPage(),
-        AppRoutes.reminders: (_) => const RemindersPage(),
         AppRoutes.manageNotes: (_) => const MySoldNotesPage(),
         AppRoutes.wallet: (_) => const WalletPage(),
         AppRoutes.points: (_) => const PointsPage(),

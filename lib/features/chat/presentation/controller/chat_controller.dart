@@ -57,13 +57,16 @@ class ChatController extends ChangeNotifier {
         'isRead': false,
       });
       
-      // Update chat metadata (last message, timestamp)
+      // Update chat metadata (last message, timestamp) and increment unread count
       // This helps in showing chat previews in the chat list
       await _firestore.collection('chats').doc(chatId).set({
         'participants': [user.uid, receiverId],
         'lastMessage': message.trim(),
         'lastMessageTime': FieldValue.serverTimestamp(),
         'lastMessageSenderId': user.uid,
+        'unreadCount': {
+          receiverId!: FieldValue.increment(1),
+        },
       }, SetOptions(merge: true));
       
     } catch (e) {
@@ -74,8 +77,6 @@ class ChatController extends ChangeNotifier {
     }
   }
   
-  /// Get all chat threads for current user
-  /// Returns a stream that updates in real-time
   Stream<QuerySnapshot> getUserChats() {
     final userId = currentUserId;
 
@@ -163,6 +164,11 @@ class ChatController extends ChangeNotifier {
         batch.update(doc.reference, {'isRead': true});
       }
       await batch.commit();
+      
+      // Reset unread count for current user in chat document
+      await _firestore.collection('chats').doc(chatId).update({
+        'unreadCount.$userId': 0,
+      });
     } catch (e) {
       debugPrint('Error marking messages as read: $e');
     }
@@ -295,7 +301,7 @@ class ChatController extends ChangeNotifier {
     }
   }
   
-  /// Search users by name or email
+  /// Search users by name
   /// 
   /// Note: For better performance, consider using Algolia or similar
   /// This is a simple implementation for small user bases
@@ -305,11 +311,11 @@ class ChatController extends ChangeNotifier {
       
       final queryLower = query.toLowerCase();
       
-      // Search by email (simple startsWith query)
+      // Search by firstName (simple startsWith query)
       final snapshot = await _firestore
           .collection('users')
-          .where('email', isGreaterThanOrEqualTo: queryLower)
-          .where('email', isLessThanOrEqualTo: '$queryLower\uf8ff')
+          .where('firstName', isGreaterThanOrEqualTo: queryLower)
+          .where('firstName', isLessThanOrEqualTo: '$queryLower\uf8ff')
           .limit(20)
           .get();
       

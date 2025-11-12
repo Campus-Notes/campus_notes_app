@@ -40,6 +40,9 @@ dependencies:
   syncfusion_flutter_pdfviewer: ^27.2.5
   path_provider: ^2.1.1
   url_launcher: ^6.3.2
+  
+  # Security - Disable screenshots and screen recording
+  screen_protector: ^1.4.2
 
 dev_dependencies:
   flutter_test:

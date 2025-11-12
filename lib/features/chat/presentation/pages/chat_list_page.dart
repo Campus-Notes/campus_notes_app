@@ -37,6 +37,7 @@ class ChatListPage extends StatelessWidget {
   }) {
     showModalBottomSheet(
       context: context,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
@@ -52,7 +53,7 @@ class ChatListPage extends StatelessWidget {
                 width: 40,
                 height: 4,
                 decoration: BoxDecoration(
-                  color: Colors.grey[300],
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(2),
                 ),
               ),
@@ -60,16 +61,13 @@ class ChatListPage extends StatelessWidget {
                 padding: const EdgeInsets.all(16),
                 child: Text(
                   peerName,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w600,
-                  ),
+                  style: Theme.of(context).textTheme.titleLarge,
                 ),
               ),
               ListTile(
                 leading: Icon(
                   isPinned ? Icons.push_pin_outlined : Icons.push_pin,
-                  color: Colors.grey[700],
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                 ),
                 title: Text(isPinned ? 'Unpin Chat' : 'Pin Chat'),
                 onTap: () async {
@@ -99,7 +97,9 @@ class ChatListPage extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.volume_off, color: Colors.grey[700]),
+                leading: Icon(Icons.volume_off, 
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)
+                ),
                 title: const Text('Mute Notifications'),
                 onTap: () async {
                   Navigator.pop(context);
@@ -126,7 +126,9 @@ class ChatListPage extends StatelessWidget {
                 },
               ),
               ListTile(
-                leading: Icon(Icons.archive_outlined, color: Colors.grey[700]),
+                leading: Icon(Icons.archive_outlined, 
+                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7)
+                ),
                 title: const Text('Archive Chat'),
                 onTap: () async {
                   Navigator.pop(context);
@@ -247,14 +249,13 @@ class ChatListPage extends StatelessWidget {
                 children: [
                   Icon(Icons.error_outline, 
                     size: 64, 
-                    color: Colors.grey[400]
+                    color: Theme.of(context).colorScheme.error,
                   ),
                   const SizedBox(height: 16),
                   Text(
                     'Something went wrong',
-                    style: TextStyle(
-                      fontSize: 16,
-                      color: Colors.grey[600],
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                     ),
                   ),
                 ],
@@ -270,23 +271,20 @@ class ChatListPage extends StatelessWidget {
                   Icon(
                     Icons.chat_bubble_outline,
                     size: 80,
-                    color: Colors.grey[300],
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'No chats yet',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600,
-                      color: Colors.grey[700],
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
                   ),
                   const SizedBox(height: 8),
                   Text(
                     'Start a conversation to see your chats here',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[500],
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                     ),
                   ),
                 ],
@@ -343,7 +341,7 @@ class ChatListPage extends StatelessWidget {
                   }
 
                   final peerData = userSnapshot.data ?? {};
-                  final peerName = peerData['name'] ?? peerData['email'] ?? 'Unknown User';
+                  final peerName = peerData['firstName'] ?? 'Unknown User';
                   final photoUrl = peerData['photoUrl'];
                   final timeText = _formatTimestamp(timestamp);
 
@@ -368,7 +366,11 @@ class ChatListPage extends StatelessWidget {
                       );
                     },
                     child: Container(
-                      color: isPinned ? Colors.grey[100] : Colors.transparent,
+                      color: isPinned 
+                          ? (Theme.of(context).brightness == Brightness.dark
+                              ? Colors.grey[800]?.withValues(alpha: 0.3)
+                              : Colors.grey[100])
+                          : Colors.transparent,
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16,
                         vertical: 12,
@@ -419,12 +421,10 @@ class ChatListPage extends StatelessWidget {
                                     Expanded(
                                       child: Text(
                                         peerName,
-                                        style: TextStyle(
-                                          fontSize: 16,
+                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                           fontWeight: unreadCount > 0 
                                               ? FontWeight.w600 
                                               : FontWeight.w500,
-                                          color: Colors.black87,
                                         ),
                                         maxLines: 1,
                                         overflow: TextOverflow.ellipsis,
@@ -433,11 +433,10 @@ class ChatListPage extends StatelessWidget {
                                     if (timeText.isNotEmpty)
                                       Text(
                                         timeText,
-                                        style: TextStyle(
-                                          fontSize: 12,
+                                        style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                           color: unreadCount > 0
                                               ? AppColors.primary
-                                              : Colors.grey[600],
+                                              : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
                                           fontWeight: unreadCount > 0
                                               ? FontWeight.w600
                                               : FontWeight.normal,
@@ -453,11 +452,10 @@ class ChatListPage extends StatelessWidget {
                                         lastMessage.isEmpty 
                                             ? 'No messages yet' 
                                             : lastMessage,
-                                        style: TextStyle(
-                                          fontSize: 14,
+                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                           color: unreadCount > 0
-                                              ? Colors.black87
-                                              : Colors.grey[600],
+                                              ? Theme.of(context).colorScheme.onSurface
+                                              : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                                           fontWeight: unreadCount > 0
                                               ? FontWeight.w500
                                               : FontWeight.normal,
@@ -517,8 +515,8 @@ class ChatListPage extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 28,
-            backgroundColor: Colors.grey[300],
-            child: const Icon(Icons.person, color: Colors.grey),
+            backgroundColor: AppColors.primary.withValues(alpha: 0.2),
+            child: Icon(Icons.person, color: AppColors.primary.withValues(alpha: 0.5)),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -529,7 +527,7 @@ class ChatListPage extends StatelessWidget {
                   width: 120,
                   height: 14,
                   decoration: BoxDecoration(
-                    color: Colors.grey[300],
+                    color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
@@ -538,7 +536,7 @@ class ChatListPage extends StatelessWidget {
                   width: double.infinity,
                   height: 12,
                   decoration: BoxDecoration(
-                    color: Colors.grey[200],
+                    color: AppColors.primary.withValues(alpha: 0.05),
                     borderRadius: BorderRadius.circular(4),
                   ),
                 ),
