@@ -6,6 +6,7 @@ import '../../../../theme/app_theme.dart';
 import '../../../../common_widgets/form_field.dart';
 import '../../../../common_widgets/file_upload.dart';
 import '../../../../common_widgets/button/main_button.dart';
+import '../../../../constants/subject_constants.dart';
 import '../controller/notes_controller.dart';
 
 class UploadPage extends StatefulWidget {
@@ -18,17 +19,16 @@ class UploadPage extends StatefulWidget {
 class _UploadPageState extends State<UploadPage> {
   final _formKey = GlobalKey<FormState>();
   final _titleCtrl = TextEditingController();
-  final _subjectCtrl = TextEditingController();
   final _priceCtrl = TextEditingController(text: '49');
   final _descriptionCtrl = TextEditingController();
   String? _pickedFileName;
   List<int>? _pickedFileBytes;
   bool _isDonationMode = false;
+  String _selectedSubject = subjects[0]; // Default to first subject
 
   @override
   void dispose() {
     _titleCtrl.dispose();
-    _subjectCtrl.dispose();
     _priceCtrl.dispose();
     _descriptionCtrl.dispose();
     super.dispose();
@@ -128,7 +128,7 @@ class _UploadPageState extends State<UploadPage> {
     
     final success = await notesController.uploadNoteWithBytes(
       title: _titleCtrl.text.trim(),
-      subject: _subjectCtrl.text.trim(),
+      subject: _selectedSubject,
       description: _descriptionCtrl.text.trim().isEmpty 
         ? null 
         : _descriptionCtrl.text.trim(),
@@ -353,17 +353,79 @@ class _UploadPageState extends State<UploadPage> {
                             ? 'Please enter a title'
                             : null,
                   ),
-                  Formfield(
-                    controller: _subjectCtrl,
-                    label: 'Subject',
-                    hint: 'e.g., Computer Science',
-                    icon: Icons.subject,
-                    textInputAction: TextInputAction.next,
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty)
-                            ? 'Please enter subject'
-                            : null,
+                  
+                  // Subject Dropdown
+                  const SizedBox(height: 16),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.subject,
+                            color: AppColors.primary,
+                            size: 20,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Subject',
+                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: AppColors.borderLight,
+                            width: 1,
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: DropdownButtonHideUnderline(
+                          child: DropdownButton<String>(
+                            value: _selectedSubject,
+                            isExpanded: true,
+                            icon: Icon(
+                              Icons.arrow_drop_down,
+                              color: AppColors.primary,
+                            ),
+                            style: Theme.of(context).textTheme.bodyLarge,
+                            dropdownColor: Theme.of(context).colorScheme.surface,
+                            items: subjects.map((String subject) {
+                              return DropdownMenuItem<String>(
+                                value: subject,
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      getSubjectIcon(subject),
+                                      size: 20,
+                                      color: AppColors.primary.withValues(alpha: 0.7),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Text(subject),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              if (newValue != null) {
+                                setState(() {
+                                  _selectedSubject = newValue;
+                                });
+                              }
+                            },
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
+                  const SizedBox(height: 16),
+                  
                   if (!_isDonationMode)
                     Formfield(
                       controller: _priceCtrl,

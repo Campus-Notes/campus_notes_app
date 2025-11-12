@@ -18,6 +18,7 @@ import '../features/profile/presentation/pages/privacy_policy_page.dart';
 import '../features/profile/presentation/pages/settings_page.dart';
 import '../features/profile/presentation/pages/user_info_page.dart';
 import '../features/profile/presentation/pages/change_password_page.dart';
+import '../features/home/presentation/pages/new_search_page.dart';
 import '../common_widgets/bottom_navbar.dart';
 
 class AppRouter {
@@ -27,6 +28,7 @@ class AppRouter {
         AppRoutes.shell: (_) => const MainShell(),
         AppRoutes.landing: (_) => const LandingScreen(), 
         AppRoutes.authentication: (_) => const AuthenticationScreen(),
+        AppRoutes.search: (_) => const NewSearchPage(),
         AppRoutes.cart: (_) => const CartPage(),
         AppRoutes.purchases: (_) => const PurchasesPage(),
         AppRoutes.manageNotes: (_) => const MySoldNotesPage(),

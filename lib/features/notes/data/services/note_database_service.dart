@@ -311,18 +311,23 @@ class NoteDatabaseService {
     int limit = 20,
   }) async {
     try {
+      // Use a simple query without orderBy to avoid index requirements
       final querySnapshot = await _firestore
           .collection(_notesCollection)
           .where('isDonation', isEqualTo: true)
-          .orderBy('createdAt', descending: true)
-          .limit(limit * 2) // Get more to account for filtering
           .get();
 
-      return querySnapshot.docs
+      // Filter, sort, and limit in memory
+      final notes = querySnapshot.docs
           .map((doc) => NoteModel.fromSnapshot(doc))
           .where((note) => note.ownerUid != currentUserUid) // Exclude own notes
-          .take(limit) // Take only the requested amount after filtering
           .toList();
+      
+      // Sort by createdAt in descending order
+      notes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      
+      // Return only the requested limit
+      return notes.take(limit).toList();
     } catch (e) {
       rethrow;
     }
@@ -372,18 +377,23 @@ class NoteDatabaseService {
     int limit = 20,
   }) async {
     try {
+      // Use a simple query without orderBy to avoid index requirements
       final querySnapshot = await _firestore
           .collection(_notesCollection)
           .where('subject', isEqualTo: subject)
-          .orderBy('createdAt', descending: true)
-          .limit(limit * 2) // Get more to account for filtering
           .get();
 
-      return querySnapshot.docs
+      // Filter, sort, and limit in memory
+      final notes = querySnapshot.docs
           .map((doc) => NoteModel.fromSnapshot(doc))
           .where((note) => note.ownerUid != currentUserUid) // Exclude own notes
-          .take(limit) // Take only the requested amount after filtering
           .toList();
+      
+      // Sort by createdAt in descending order
+      notes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      
+      // Return only the requested limit
+      return notes.take(limit).toList();
     } catch (e) {
       rethrow;
     }
