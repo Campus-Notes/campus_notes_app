@@ -8,6 +8,7 @@ import '../../../../data/dummy_data.dart';
 import 'featured_note_card.dart';
 import 'popular_note_card.dart';
 import 'section_header.dart';
+import 'notes_shimmer_loading.dart';
 
 class BuyModeContent extends StatelessWidget {
   const BuyModeContent({super.key});
@@ -18,8 +19,9 @@ class BuyModeContent extends StatelessWidget {
       builder: (context, notesController, child) {
         final notes = notesController.allNotes;
 
-        if (notesController.isLoading) {
-          return const Center(child: CircularProgressIndicator());
+        // Show shimmer if loading OR if notes haven't been loaded yet (initial state)
+        if (notesController.isLoading || !notesController.hasLoadedOnce) {
+          return const NotesShimmerLoading();
         }
 
         if (notesController.error != null) {
@@ -52,10 +54,14 @@ class BuyModeContent extends StatelessWidget {
           );
         }
 
-        return ListView(
-          key: const ValueKey('buy_mode'),
-          padding: const EdgeInsets.all(16),
-          children: [
+        return RefreshIndicator(
+          onRefresh: () async {
+            await notesController.loadTrendingNotes();
+          },
+          child: ListView(
+            key: const ValueKey('buy_mode'),
+            padding: const EdgeInsets.all(16),
+            children: [
             // Featured/Trending Note Card
             if (notes.isNotEmpty)
               FeaturedNoteCard(
@@ -253,7 +259,8 @@ class BuyModeContent extends StatelessWidget {
                   },
                 ),
               ),
-          ],
+            ],
+          ),
         );
       },
     );

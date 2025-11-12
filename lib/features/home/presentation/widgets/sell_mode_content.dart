@@ -136,7 +136,7 @@ class _SellModeContentState extends State<SellModeContent> {
                 ),
 
                 Text(
-                  'My Uploaded Notes',  
+                  'My Sold Notes',  
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
