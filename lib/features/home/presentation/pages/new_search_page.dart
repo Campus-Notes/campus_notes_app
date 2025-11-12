@@ -143,7 +143,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                       hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondaryLight,
                       ),
-                      prefixIcon: Icon(
+                      prefixIcon: const Icon(
                         Icons.search,
                         color: AppColors.primary,
                       ),
@@ -269,7 +269,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
         child: DropdownButton<String>(
           value: value,
           isExpanded: true,
-          icon: Icon(
+          icon: const Icon(
             Icons.arrow_drop_down,
             color: AppColors.primary,
             size: 20,
@@ -431,7 +431,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            Icon(
+                            const Icon(
                               Icons.subject,
                               size: 14,
                               color: AppColors.textSecondaryLight,
@@ -479,7 +479,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                       ),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.currency_rupee,
                             size: 16,
                             color: AppColors.primary,
@@ -506,7 +506,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                       ),
                       child: Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.favorite,
                             size: 16,
                             color: Colors.green,
@@ -537,7 +537,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     ),
                     child: Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.star,
                           size: 16,
                           color: Colors.amber,

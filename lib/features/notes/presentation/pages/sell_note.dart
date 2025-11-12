@@ -361,7 +361,7 @@ class _UploadPageState extends State<UploadPage> {
                     children: [
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.subject,
                             color: AppColors.primary,
                             size: 20,
@@ -390,7 +390,7 @@ class _UploadPageState extends State<UploadPage> {
                           child: DropdownButton<String>(
                             value: _selectedSubject,
                             isExpanded: true,
-                            icon: Icon(
+                            icon: const Icon(
                               Icons.arrow_drop_down,
                               color: AppColors.primary,
                             ),
