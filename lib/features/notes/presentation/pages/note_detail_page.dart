@@ -1,37 +1,288 @@
+import 'package:campus_notes_app/features/notes/data/services/note_database_service.dart';
 import 'package:flutter/material.dart';
-import '../../../../theme/app_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../data/dummy_data.dart';
-import '../../../../routes/route_names.dart';
+import '../../../payment/data/services/transaction_service.dart';
+import '../../data/models/note_model.dart';
+import '../widgets/pdf_preview.dart';
+import '../widgets/note_header.dart';
+import '../widgets/status_indicators.dart';
+import '../widgets/note_details.dart';
+import '../widgets/purchase_status.dart';
+import '../widgets/bottom_action_bar.dart';
 
-class NoteDetailPage extends StatelessWidget {
+class NoteDetailPage extends StatefulWidget {
   const NoteDetailPage({super.key, required this.note});
-  final NoteItem note;
+  final dynamic note; // Can be NoteItem or NoteModel
 
-  void _addToCart(BuildContext context) {
+  @override
+  State<NoteDetailPage> createState() => _NoteDetailPageState();
+}
+
+class _NoteDetailPageState extends State<NoteDetailPage> {
+  final TransactionService _transactionService = TransactionService();
+  final NoteDatabaseService _noteDatabaseService = NoteDatabaseService();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  
+  bool _isLoading = false;
+  bool _isOwnNote = false;
+  bool _hasAlreadyPurchased = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkNoteOwnershipAndPurchase();
+  }
+
+  Future<void> _checkNoteOwnershipAndPurchase() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) return;
+
+      // Get full note data if we only have NoteItem
+      if (widget.note is NoteItem) {
+        // For dummy data, we'll simulate
+        _isOwnNote = false;
+        _hasAlreadyPurchased = false;
+      } else if (widget.note is NoteModel) {
+        final noteModel = widget.note as NoteModel;
+        
+        // Check if user owns this note
+        _isOwnNote = noteModel.ownerUid == currentUser.uid;
+        
+        // Check if user has already purchased this note
+        if (!_isOwnNote) {
+          _hasAlreadyPurchased = await _noteDatabaseService.hasUserPurchased(
+            noteModel.noteId,
+            currentUser.uid, 
+          );
+        }
+      }
+    } catch (e) {
+      // Handle error silently for now
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  Future<void> _handlePurchase() async {
+    if (_isOwnNote) return;
+    if (_hasAlreadyPurchased) return;
+
+    final currentUser = _auth.currentUser;
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in to purchase notes')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final notePrice = _getNotePrice();
+      final noteId = _getNoteId();
+      final sellerId = _getSellerId();
+
+      // Validate note data
+      if (noteId.isEmpty) {
+        throw Exception('Invalid note ID');
+      }
+      
+      if (sellerId.isEmpty) {
+        throw Exception('Invalid seller ID');
+      }
+
+      if (notePrice <= 0) {
+        // Free note (donation)
+        _handleFreePurchase();
+        return;
+      }
+
+      // Create transaction
+      final transaction = await _transactionService.createTransaction(
+        buyerId: currentUser.uid,
+        sellerId: sellerId,
+        noteId: noteId,
+        salePrice: notePrice,
+        paymentMethod: 'dummy', // Will integrate Razorpay later
+      );
+
+      // For now, simulate successful payment
+      final success = await _transactionService.completeTransaction(
+        transactionId: transaction.transactionId,
+        paymentId: 'dummy_payment_${DateTime.now().millisecondsSinceEpoch}',
+      );
+
+      if (success) {
+        setState(() {
+          _hasAlreadyPurchased = true;
+        });
+
+        _showSuccessDialog();
+      } else {
+        throw Exception('Payment processing failed');
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Purchase failed: ${e.toString()}'),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 5),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isLoading = false);
+      }
+    }
+  }
+
+  void _handleFreePurchase() {
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('${note.title} added to cart!')),
+      const SnackBar(content: Text('Free note added to your collection!')),
     );
+    setState(() {
+      _hasAlreadyPurchased = true;
+    });
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Purchase Successful!'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text('You have successfully purchased "${_getNoteTitle()}"'),
+            const SizedBox(height: 12),
+            const Text('Rewards earned:', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text('• Points: +${(_getNotePrice() * 0.02).round()}'),
+            const SizedBox(height: 8),
+            const Text('The note has been added to your collection.'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _addToCart() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('${_getNoteTitle()} added to cart!')),
+    );
+  }
+
+  // Helper methods to get note data regardless of type
+  String _getNoteTitle() {
+    if (widget.note is NoteItem) {
+      return (widget.note as NoteItem).title;
+    } else if (widget.note is NoteModel) {
+      return (widget.note as NoteModel).title;
+    }
+    return 'Unknown';
+  }
+
+  String _getNoteSubject() {
+    if (widget.note is NoteItem) {
+      return (widget.note as NoteItem).subject;
+    } else if (widget.note is NoteModel) {
+      return (widget.note as NoteModel).subject;
+    }
+    return 'Unknown';
+  }
+
+  double _getNotePrice() {
+    if (widget.note is NoteItem) {
+      return (widget.note as NoteItem).price;
+    } else if (widget.note is NoteModel) {
+      final noteModel = widget.note as NoteModel;
+      return noteModel.price ?? 0.0;
+    }
+    return 0.0;
+  }
+
+  double _getNoteRating() {
+    if (widget.note is NoteItem) {
+      return (widget.note as NoteItem).rating;
+    } else if (widget.note is NoteModel) {
+      return (widget.note as NoteModel).rating;
+    }
+    return 0.0;
+  }
+
+  String _getNoteId() {
+    if (widget.note is NoteItem) {
+      return (widget.note as NoteItem).id;
+    } else if (widget.note is NoteModel) {
+      return (widget.note as NoteModel).noteId;
+    }
+    return '';
+  }
+
+  String _getSellerId() {
+    if (widget.note is NoteItem) {
+      // For dummy data, use a different seller ID so users can test purchasing
+      return 'dummy_seller_123';
+    } else if (widget.note is NoteModel) {
+      return (widget.note as NoteModel).ownerUid;
+    }
+    return 'dummy_seller_123';
+  }
+
+  bool _isDonation() {
+    if (widget.note is NoteModel) {
+      return (widget.note as NoteModel).isDonation;
+    }
+    return _getNotePrice() == 0.0;
   }
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    
+    if (_isLoading) {
+      return Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+        ),
+        body: const Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: theme.scaffoldBackgroundColor,
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         elevation: 0,
         leading: IconButton(
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
         ),
         actions: [
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.favorite_border, color: Colors.black),
+            icon: Icon(Icons.favorite_border, color: theme.colorScheme.onSurface),
           ),
           IconButton(
             onPressed: () {},
-            icon: const Icon(Icons.share, color: Colors.black),
+            icon: Icon(Icons.share, color: theme.colorScheme.onSurface),
           ),
         ],
       ),
@@ -41,341 +292,53 @@ class NoteDetailPage extends StatelessWidget {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                // Large image card
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Container(
-                    height: 240,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(20),
-                      image: const DecorationImage(
-                        image: NetworkImage(
-                          'https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?w=800',
-                        ),
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: LinearGradient(
-                          begin: Alignment.topCenter,
-                          end: Alignment.bottomCenter,
-                          colors: [
-                            Colors.transparent,
-                            Colors.black.withValues(alpha: 0.3),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
+                // PDF Preview Section
+                PdfPreviewWidget(
+                  hasAlreadyPurchased: _hasAlreadyPurchased,
+                  isOwnNote: _isOwnNote,
+                  onTap: () {
+                  },
                 ),
                 
                 const SizedBox(height: 20),
                 
-                // Note details
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Title
-                      Text(
-                        note.title,
-                        style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 12),
-                      
-                      // Rating and discount badge
-                      Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.amber[50],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(Icons.star, size: 16, color: Colors.amber[700]),
-                                const SizedBox(width: 4),
-                                Text(
-                                  note.rating.toStringAsFixed(1),
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w700,
-                                    color: Colors.amber[900],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(width: 12),
-                          Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-                            decoration: BoxDecoration(
-                              color: Colors.green[50],
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              'Discount 5%',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.green[700],
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      
-                      const SizedBox(height: 16),
-                      
-                      // Price
-                      Text(
-                        '₹${note.price.toStringAsFixed(2)}',
-                        style: const TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w800,
-                          color: Colors.black,
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 16),
-                      
-                      // Status badges
-                      Row(
-                        children: [
-                          _buildStatusBadge(
-                            icon: Icons.check_circle,
-                            label: 'Delivered',
-                            iconColor: Colors.green,
-                          ),
-                          const SizedBox(width: 16),
-                          _buildStatusBadge(
-                            icon: Icons.access_time,
-                            label: 'Time ${note.pages} min',
-                            iconColor: Colors.orange,
-                          ),
-                        ],
-                      ),
-                      
-                      const SizedBox(height: 24),
-                      
-                      // Divider
-                      Divider(color: Colors.grey[200], thickness: 1),
-                      
-                      const SizedBox(height: 16),
-                      
-                      // Description section
-                      const Text(
-                        'Description',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Comprehensive ${note.subject} notes covering all key topics. Created by ${note.seller}. Total ${note.pages} pages of high-quality content perfect for exam preparation.',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[600],
-                          height: 1.5,
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 24),
-                      
-                      // Details section
-                      const Text(
-                        'Details',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      
-                      _buildDetailRow('Subject', note.subject),
-                      _buildDetailRow('Pages', '${note.pages} pages'),
-                      _buildDetailRow('Seller', note.seller),
-                      _buildDetailRow('Format', 'PDF Document'),
-                      
-                      const SizedBox(height: 24),
-                      
-                      // Preview section
-                      Container(
-                        padding: const EdgeInsets.all(16),
-                        decoration: BoxDecoration(
-                          color: Colors.grey[50],
-                          borderRadius: BorderRadius.circular(16),
-                          border: Border.all(color: Colors.grey[200]!),
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'Preview',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w700,
-                                fontSize: 16,
-                              ),
-                            ),
-                            const SizedBox(height: 12),
-                            Container(
-                              height: 140,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(color: Colors.grey[200]!),
-                              ),
-                              child: Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.description_outlined,
-                                      size: 48,
-                                      color: Colors.grey[400],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      'Preview first few pages',
-                                      style: TextStyle(
-                                        color: Colors.grey[600],
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                      
-                      const SizedBox(height: 100), 
-                    ],
-                  ),
+                NoteHeaderWidget(
+                  title: _getNoteTitle(),
+                  rating: _getNoteRating(),
+                  price: _getNotePrice(),
+                  isDonation: _isDonation(),
                 ),
+                
+                const SizedBox(height: 16),
+                
+                StatusIndicatorsWidget(
+                  hasAlreadyPurchased: _hasAlreadyPurchased,
+                ),
+                
+                NoteDetailsWidget(
+                  subject: _getNoteSubject(),
+                  isDonation: _isDonation(),
+                  price: _getNotePrice(),
+                ),
+                
+                PurchaseStatusWidget(
+                  isOwnNote: _isOwnNote,
+                  hasAlreadyPurchased: _hasAlreadyPurchased,
+                ),
+                
+                const SizedBox(height: 100), 
               ],
             ),
           ),
           
-          // Bottom action bar
-          Container(
-            padding: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withValues(alpha: 0.05),
-                  blurRadius: 10,
-                  offset: const Offset(0, -5),
-                ),
-              ],
-            ),
-            child: SafeArea(
-              child: Row(
-                children: [
-                  // Add to Cart button
-                  Container(
-                    width: 56,
-                    height: 56,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: AppColors.primary, width: 2),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: IconButton(
-                      onPressed: () => _addToCart(context),
-                      icon: const Icon(
-                        Icons.shopping_cart_outlined,
-                        color: AppColors.primary,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  
-                  // Buy Now button
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: () => Navigator.of(context).pushNamed(
-                        AppRoutes.checkout,
-                        arguments: note,
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text(
-                        'Buy Now',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildStatusBadge({
-    required IconData icon,
-    required String label,
-    required Color iconColor,
-  }) {
-    return Row(
-      children: [
-        Icon(icon, size: 18, color: iconColor),
-        const SizedBox(width: 6),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w500,
-            color: Colors.grey[700],
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildDetailRow(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 12),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14,
-              color: Colors.grey[600],
-            ),
-          ),
-          Text(
-            value,
-            style: const TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w600,
-              color: Colors.black,
-            ),
+          BottomActionBarWidget(
+            isOwnNote: _isOwnNote,
+            hasAlreadyPurchased: _hasAlreadyPurchased,
+            isDonation: _isDonation(),
+            price: _getNotePrice(),
+            isLoading: _isLoading,
+            onAddToCart: _addToCart,
+            onPurchase: _handlePurchase,
           ),
         ],
       ),

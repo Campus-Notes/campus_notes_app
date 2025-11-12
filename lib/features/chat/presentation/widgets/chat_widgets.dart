@@ -1,19 +1,28 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import '../../../../data/dummy_data.dart';
+import 'package:provider/provider.dart';
 import '../../../../theme/app_theme.dart';
+import '../controller/chat_controller.dart';
 
+/// ===============================
+/// 🔹 CHAT MESSAGE BUBBLE
+/// ===============================
 class ChatBubble extends StatelessWidget {
-  final Message message;
+  final Map<String, dynamic> message;
   final bool isMe;
-  
+
   const ChatBubble({
     super.key,
     required this.message,
     required this.isMe,
   });
-  
+
   @override
   Widget build(BuildContext context) {
+    final text = message['message'] ?? '';
+    final timestamp = message['timestamp'] as Timestamp?;
+    final time = timestamp != null ? _formatTime(timestamp.toDate()) : '';
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -27,11 +36,12 @@ class ChatBubble extends StatelessWidget {
           ),
         ),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment:
+              isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
             Text(
-              message.text,
+              text,
               style: TextStyle(
                 color: isMe ? Colors.white : AppColors.textPrimaryLight,
                 fontSize: 14,
@@ -39,7 +49,7 @@ class ChatBubble extends StatelessWidget {
             ),
             const SizedBox(height: 4),
             Text(
-              _formatTime(message.time),
+              time,
               style: TextStyle(
                 color: isMe ? Colors.white70 : AppColors.muted,
                 fontSize: 10,
@@ -50,48 +60,71 @@ class ChatBubble extends StatelessWidget {
       ),
     );
   }
-  
+
   String _formatTime(DateTime time) {
     return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
   }
 }
 
+/// ===============================
+/// 🔹 CHAT THREAD TILE
+/// ===============================
+/// Used in chat list to show last message and unread count
 class ChatThreadTile extends StatelessWidget {
-  final Map<String, dynamic> thread;
+  final String chatId;
+  final Map<String, dynamic> chatData;
+  final String peerName;
+  final String? peerPhoto;
+  final int unreadCount;
   final VoidCallback? onTap;
-  
+
   const ChatThreadTile({
     super.key,
-    required this.thread,
+    required this.chatId,
+    required this.chatData,
+    required this.peerName,
+    this.peerPhoto,
+    this.unreadCount = 0,
     this.onTap,
   });
-  
+
   @override
   Widget build(BuildContext context) {
-    final unread = thread['unread'] as int? ?? 0;
-    
+    final lastMessage = chatData['lastMessage'] ?? '';
+    final lastMessageTime = chatData['lastMessageTime'] as Timestamp?;
+    final time = lastMessageTime != null
+        ? _formatTime(lastMessageTime.toDate())
+        : '';
+
     return ListTile(
       leading: CircleAvatar(
-        backgroundColor: AppColors.primary,
-        child: Text(
-          thread['peer'].toString().substring(0, 1).toUpperCase(),
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
+        backgroundImage: peerPhoto != null ? NetworkImage(peerPhoto!) : null,
+        backgroundColor: peerPhoto == null ? AppColors.primary : null,
+        child: peerPhoto == null
+            ? Text(
+                peerName.isNotEmpty
+                    ? peerName[0].toUpperCase()
+                    : '?',
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+              )
+            : null,
       ),
       title: Text(
-        thread['peer'] ?? '',
+        peerName,
         style: const TextStyle(fontWeight: FontWeight.w600),
       ),
       subtitle: Text(
-        thread['last'] ?? '',
+        lastMessage,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          color: unread > 0 ? AppColors.textPrimaryLight : AppColors.muted,
-          fontWeight: unread > 0 ? FontWeight.w500 : FontWeight.normal,
+          color:
+              unreadCount > 0 ? AppColors.textPrimaryLight : AppColors.muted,
+          fontWeight:
+              unreadCount > 0 ? FontWeight.w500 : FontWeight.normal,
         ),
       ),
       trailing: Column(
@@ -99,14 +132,16 @@ class ChatThreadTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.end,
         children: [
           Text(
-            thread['time'] ?? '',
+            time,
             style: TextStyle(
-              color: unread > 0 ? AppColors.primary : AppColors.muted,
+              color:
+                  unreadCount > 0 ? AppColors.primary : AppColors.muted,
               fontSize: 12,
-              fontWeight: unread > 0 ? FontWeight.w600 : FontWeight.normal,
+              fontWeight:
+                  unreadCount > 0 ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
-          if (unread > 0) ...[
+          if (unreadCount > 0) ...[
             const SizedBox(height: 4),
             Container(
               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -115,7 +150,7 @@ class ChatThreadTile extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: Text(
-                unread.toString(),
+                unreadCount.toString(),
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 10,
@@ -129,31 +164,47 @@ class ChatThreadTile extends StatelessWidget {
       onTap: onTap,
     );
   }
+
+  String _formatTime(DateTime time) {
+    return '${time.hour.toString().padLeft(2, '0')}:${time.minute.toString().padLeft(2, '0')}';
+  }
 }
 
+/// ===============================
+/// 🔹 CHAT INPUT FIELD
+/// ===============================
+/// Connected to ChatController to send messages
 class ChatInput extends StatefulWidget {
-  final Function(String) onSend;
-  
+  final String chatId;
+  final String receiverId;
+
   const ChatInput({
     super.key,
-    required this.onSend,
+    required this.chatId,
+    required this.receiverId,
   });
-  
+
   @override
   State<ChatInput> createState() => _ChatInputState();
 }
 
 class _ChatInputState extends State<ChatInput> {
   final TextEditingController _controller = TextEditingController();
-  
-  void _sendMessage() {
+
+  Future<void> _sendMessage() async {
     final text = _controller.text.trim();
-    if (text.isNotEmpty) {
-      widget.onSend(text);
-      _controller.clear();
-    }
+    if (text.isEmpty) return;
+
+    final chatController = context.read<ChatController>();
+    await chatController.sendMessage(
+      chatId: widget.chatId,
+      message: text,
+      receiverId: widget.receiverId,
+    );
+
+    _controller.clear();
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -173,13 +224,15 @@ class _ChatInputState extends State<ChatInput> {
           Expanded(
             child: TextField(
               controller: _controller,
+              textInputAction: TextInputAction.send,
+              onSubmitted: (_) => _sendMessage(),
               decoration: const InputDecoration(
                 hintText: 'Type a message...',
                 border: OutlineInputBorder(),
-                contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               ),
               maxLines: null,
-              onSubmitted: (_) => _sendMessage(),
             ),
           ),
           const SizedBox(width: 12),
@@ -195,7 +248,7 @@ class _ChatInputState extends State<ChatInput> {
       ),
     );
   }
-  
+
   @override
   void dispose() {
     _controller.dispose();

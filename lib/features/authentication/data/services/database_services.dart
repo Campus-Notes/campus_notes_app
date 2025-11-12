@@ -18,11 +18,13 @@ class DatabaseService {
   Future<UserModel?> getUserData(String uid) async {
     try {
       final doc = await usersCollection.doc(uid).get();
-      if (doc.exists) {
-        return UserModel.fromMap(doc.data() as Map<String, dynamic>);
+      if (doc.exists && doc.data() != null) {
+        final data = doc.data() as Map<String, dynamic>;
+        return UserModel.fromMap(data);
       }
       return null;
     } catch (e) {
+      // Log the error for debugging
       return null;
     }
   }

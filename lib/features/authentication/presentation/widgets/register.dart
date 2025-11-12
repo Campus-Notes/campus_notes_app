@@ -17,6 +17,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
   final _universityController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmController = TextEditingController();
+
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
   bool _agree = false;
@@ -38,17 +39,20 @@ class _RegisterWidgetState extends State<RegisterWidget> {
       );
       return;
     }
+
     if (!_formKey.currentState!.validate()) return;
 
     final auth = Provider.of<AuthController>(context, listen: false);
+
+    // Fixed: Use named parameters, not positional
     auth.register(
-      _firstNameController.text.trim(),
-      '', // Empty last name
-      _emailController.text.trim(),
-      '', // Empty mobile
-      _universityController.text.trim(),
-      _passwordController.text,
-      _confirmController.text,
+      firstName: _firstNameController.text.trim(),
+      lastName: '', // optional or required by backend
+      email: _emailController.text.trim(),
+      mobile: '',   // optional or required by backend
+      university: _universityController.text.trim(),
+      password: _passwordController.text,
+      confirmPassword: _confirmController.text,
     );
   }
 
@@ -61,7 +65,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // First Name field
+                // First Name
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -87,17 +91,14 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       filled: true,
                       fillColor: Colors.transparent,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     ),
                     validator: (v) => v?.trim().isEmpty == true ? 'Enter your name' : null,
                   ),
                 ),
                 const SizedBox(height: 16),
-            
-                // Email field
+
+                // Email
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -124,10 +125,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       filled: true,
                       fillColor: Colors.transparent,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     ),
                     validator: (v) {
                       if (v?.trim().isEmpty == true) return 'Enter email';
@@ -137,8 +135,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   ),
                 ),
                 const SizedBox(height: 16),
-            
-                // University field
+
+                // University
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -164,17 +162,14 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       filled: true,
                       fillColor: Colors.transparent,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     ),
                     validator: (v) => v?.trim().isEmpty == true ? 'Enter university name' : null,
                   ),
                 ),
                 const SizedBox(height: 16),
-            
-                // Password field
+
+                // Password
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -197,9 +192,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword 
-                            ? Icons.visibility_outlined 
-                            : Icons.visibility_off_outlined,
+                          _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           size: 20,
                         ),
@@ -211,17 +204,14 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       filled: true,
                       fillColor: Colors.transparent,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     ),
                     validator: (v) => v!.length < 8 ? 'Min 8 characters' : null,
                   ),
                 ),
                 const SizedBox(height: 16),
-            
-                // Confirm Password field
+
+                // Confirm Password
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -244,9 +234,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureConfirmPassword 
-                            ? Icons.visibility_outlined 
-                            : Icons.visibility_off_outlined,
+                          _obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
                           color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
                           size: 20,
                         ),
@@ -258,16 +246,13 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       filled: true,
                       fillColor: Colors.transparent,
-                      contentPadding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 16,
-                      ),
+                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                     ),
                     validator: (v) => v != _passwordController.text ? 'Passwords do not match' : null,
                   ),
                 ),
                 const SizedBox(height: 16),
-            
+
                 // Terms & Conditions
                 Row(
                   children: [
@@ -290,7 +275,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   ],
                 ),
                 const SizedBox(height: 20),
-            
+
                 // Create Account Button
                 SizedBox(
                   width: double.infinity,
@@ -299,9 +284,7 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                     onPressed: auth.isLoading ? null : _submit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.greenButton,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(15),
-                      ),
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
                       elevation: 0,
                     ),
                     child: auth.isLoading

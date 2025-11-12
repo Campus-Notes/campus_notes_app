@@ -15,6 +15,7 @@ class NoteModel {
   final DateTime? updatedAt;
   final int viewCount;
   final int purchaseCount;
+  final double earnings; // Total earnings from this note (80% of sales)
 
   NoteModel({
     required this.noteId,
@@ -31,6 +32,7 @@ class NoteModel {
     this.updatedAt,
     this.viewCount = 0,
     this.purchaseCount = 0,
+    this.earnings = 0.0,
   });
 
   Map<String, dynamic> toMap() {
@@ -49,6 +51,7 @@ class NoteModel {
       'updatedAt': updatedAt != null ? Timestamp.fromDate(updatedAt!) : null,
       'viewCount': viewCount,
       'purchaseCount': purchaseCount,
+      'earnings': earnings,
     };
   }
 
@@ -68,6 +71,7 @@ class NoteModel {
       updatedAt: (map['updatedAt'] as Timestamp?)?.toDate(),
       viewCount: map['viewCount'] ?? 0,
       purchaseCount: map['purchaseCount'] ?? 0,
+      earnings: (map['earnings'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
@@ -89,6 +93,7 @@ class NoteModel {
     String? fileEncodedData,
     int? viewCount,
     int? purchaseCount,
+    double? earnings,
   }) {
     return NoteModel(
       noteId: noteId,
@@ -105,12 +110,13 @@ class NoteModel {
       updatedAt: DateTime.now(),
       viewCount: viewCount ?? this.viewCount,
       purchaseCount: purchaseCount ?? this.purchaseCount,
+      earnings: earnings ?? this.earnings,
     );
   }
 
   @override
   String toString() {
     return 'NoteModel(noteId: $noteId, title: $title, subject: $subject, '
-        'ownerUid: $ownerUid, isDonation: $isDonation, price: $price, rating: $rating)';
+        'ownerUid: $ownerUid, isDonation: $isDonation, price: $price, rating: $rating, earnings: $earnings)';
   }
 }

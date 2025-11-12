@@ -289,14 +289,26 @@ class NotesController extends ChangeNotifier {
     }
   }
 
-  /// Load all notes from Firestore
+  /// Load all notes from Firestore excluding current user's own notes
   Future<void> loadAllNotes({int limit = 20}) async {
     try {
       _isLoading = true;
       _error = null;
       notifyListeners();
 
-      _allNotes = await _databaseService.getTrendingNotes(limit: limit);
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        _error = 'User not authenticated';
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      // Use the new method that excludes own notes
+      _allNotes = await _databaseService.getAllNotesExcludingOwn(
+        currentUserUid: currentUser.uid,
+        limit: limit,
+      );
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -306,7 +318,36 @@ class NotesController extends ChangeNotifier {
     }
   }
 
-  /// Search notes by query
+  /// Load trending notes from Firestore excluding current user's own notes
+  Future<void> loadTrendingNotes({int limit = 20}) async {
+    try {
+      _isLoading = true;
+      _error = null;
+      notifyListeners();
+
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        _error = 'User not authenticated';
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      // Use the new method that excludes own notes
+      _allNotes = await _databaseService.getTrendingNotesExcludingOwn(
+        currentUserUid: currentUser.uid,
+        limit: limit,
+      );
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _error = 'Failed to load notes: ${e.toString()}';
+      _isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// Search notes by query excluding current user's own notes
   Future<void> searchNotesFirestore(String query) async {
     try {
       if (query.isEmpty) {
@@ -319,7 +360,19 @@ class NotesController extends ChangeNotifier {
       _error = null;
       notifyListeners();
 
-      _searchResults = await _databaseService.searchNotes(query);
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        _error = 'User not authenticated';
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      // Use the new method that excludes own notes
+      _searchResults = await _databaseService.searchNotesExcludingOwn(
+        query,
+        currentUserUid: currentUser.uid,
+      );
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -329,14 +382,26 @@ class NotesController extends ChangeNotifier {
     }
   }
 
-  /// Get notes by subject
+  /// Get notes by subject excluding current user's own notes
   Future<void> getNotesBySubject(String subject) async {
     try {
       _isLoading = true;
       _error = null;
       notifyListeners();
 
-      _allNotes = await _databaseService.getNotesBySubject(subject);
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        _error = 'User not authenticated';
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      // Use the new method that excludes own notes
+      _allNotes = await _databaseService.getNotesBySubjectExcludingOwn(
+        subject,
+        currentUserUid: currentUser.uid,
+      );
       _isLoading = false;
       notifyListeners();
     } catch (e) {
@@ -478,14 +543,25 @@ class NotesController extends ChangeNotifier {
     }
   }
 
-  /// Get donation notes
+  /// Get donation notes excluding current user's own notes
   Future<void> loadDonationNotes() async {
     try {
       _isLoading = true;
       _error = null;
       notifyListeners();
 
-      _allNotes = await _databaseService.getDonationNotes();
+      final currentUser = _auth.currentUser;
+      if (currentUser == null) {
+        _error = 'User not authenticated';
+        _isLoading = false;
+        notifyListeners();
+        return;
+      }
+
+      // Use the new method that excludes own notes
+      _allNotes = await _databaseService.getDonationNotesExcludingOwn(
+        currentUserUid: currentUser.uid,
+      );
       _isLoading = false;
       notifyListeners();
     } catch (e) {

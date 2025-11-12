@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/app_theme.dart';
+// import '../../../../theme/app_theme.dart';
 
 class SoldNoteCard extends StatelessWidget {
   final Map<String, dynamic> note;
@@ -29,17 +29,16 @@ class SoldNoteCard extends StatelessWidget {
                   width: 48,
                   height: 48,
                   decoration: BoxDecoration(
-                    color: AppColors.primary.withValues(alpha: 0.1),
+                    color: Theme.of(context).colorScheme.primary.withValues(alpha:0.1),
                     borderRadius: BorderRadius.circular(8),
                   ),
-                  child: const Icon(
+                  child: Icon(
                     Icons.description,
-                    color: AppColors.primary,
+                    color: Theme.of(context).colorScheme.primary,
                     size: 24,
                   ),
                 ),
                 const SizedBox(width: 12),
-                
                 // Note details
                 Expanded(
                   child: Column(
@@ -47,10 +46,10 @@ class SoldNoteCard extends StatelessWidget {
                     children: [
                       Text(
                         note['title'],
-                        style: const TextStyle(
+                        style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
-                          color: Colors.black87,
+                          color: Theme.of(context).colorScheme.onSurface,
                         ),
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
@@ -60,38 +59,38 @@ class SoldNoteCard extends StatelessWidget {
                         note['subject'],
                         style: TextStyle(
                           fontSize: 14,
-                          color: Colors.grey[600],
+                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                         ),
                       ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(
+                          const Icon(
                             Icons.star,
                             size: 16,
-                            color: Colors.amber[600],
+                            color: Colors.amber,
                           ),
                           const SizedBox(width: 4),
                           Text(
                             note['rating'].toString(),
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
-                              color: Colors.black87,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           const SizedBox(width: 12),
                           Icon(
                             Icons.people,
                             size: 16,
-                            color: Colors.grey[600],
+                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                           ),
                           const SizedBox(width: 4),
                           Text(
                             '${note['buyerCount']} buyers',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Colors.grey[600],
+                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                             ),
                           ),
                         ],
@@ -99,7 +98,6 @@ class SoldNoteCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                
                 // Earnings section
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -110,16 +108,16 @@ class SoldNoteCard extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: Colors.green[50],
+                        color: Theme.of(context).colorScheme.secondary.withValues(alpha:0.1),
                         borderRadius: BorderRadius.circular(20),
-                        border: Border.all(color: Colors.green[200]!),
+                        border: Border.all(color: Theme.of(context).colorScheme.secondary.withValues(alpha:0.5)),
                       ),
                       child: Text(
                         '₹${note['totalEarned'].toStringAsFixed(0)}',
                         style: TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Colors.green[700],
+                          color: Theme.of(context).colorScheme.secondary,
                         ),
                       ),
                     ),
@@ -128,17 +126,14 @@ class SoldNoteCard extends StatelessWidget {
                       'earned',
                       style: TextStyle(
                         fontSize: 12,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                       ),
                     ),
                   ],
                 ),
               ],
             ),
-            
             const SizedBox(height: 12),
-            
-            // Bottom row with price and date
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
@@ -147,13 +142,13 @@ class SoldNoteCard extends StatelessWidget {
                     Icon(
                       Icons.currency_rupee,
                       size: 16,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                     ),
                     Text(
                       '${note['price'].toStringAsFixed(0)} per sale',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                       ),
                     ),
                   ],
@@ -163,14 +158,14 @@ class SoldNoteCard extends StatelessWidget {
                     Icon(
                       Icons.calendar_today,
                       size: 16,
-                      color: Colors.grey[600],
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                     ),
                     const SizedBox(width: 4),
                     Text(
                       note['dateSold'],
                       style: TextStyle(
                         fontSize: 14,
-                        color: Colors.grey[600],
+                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                       ),
                     ),
                   ],

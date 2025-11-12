@@ -30,7 +30,7 @@ android {
         // *** REQUIRED BY FIREBASE AUTH 23.2.1 ***
         // Firebase now needs API 23 (Android 6.0) or higher.
         // Raising from 21 to 23 drops support for ~2% of very old devices.
-        minSdk = flutter.minSdkVersion                     // <-- FIXED: Enforce minSdk 23 for Firebase Auth
+        minSdk = flutter.minSdkVersion                     // <-- FIXED
         // minSdk = flutter.minSdkVersion   // (old default was 21)
 
         targetSdk = flutter.targetSdkVersion

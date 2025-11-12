@@ -5,7 +5,8 @@ class UserModel {
   final String email;
   final String mobile;
   final String university;
-  final double walletBalance;
+  final double walletBalance; 
+  final double totalEarnings; 
   final int points;
   final bool isUPIProvided;
   final bool isBankDetailsProvided;
@@ -22,6 +23,7 @@ class UserModel {
     required this.mobile,
     required this.university,
     this.walletBalance = 0.0,
+    this.totalEarnings = 0.0,
     this.points = 0,
     this.isUPIProvided = false,
     this.isBankDetailsProvided = false,
@@ -31,10 +33,8 @@ class UserModel {
     required this.createdAt,
   });
 
-  // Computed property for full name
   String get fullName => firstName;
 
-  // Legacy getter for backwards compatibility
   String get name => fullName;
 
   Map<String, dynamic> toMap() {
@@ -46,6 +46,7 @@ class UserModel {
       'mobile': mobile,
       'university': university,
       'walletBalance': walletBalance,
+      'totalEarnings': totalEarnings,
       'points': points,
       'isUPIProvided': isUPIProvided,
       'isBankDetailsProvided': isBankDetailsProvided,
@@ -65,7 +66,8 @@ class UserModel {
       mobile: map['mobile'] ?? '',
       university: map['university'] ?? '',
       walletBalance: (map['walletBalance'] ?? 0.0).toDouble(),
-      points: map['points'] ?? 0,
+      totalEarnings: (map['totalEarnings'] ?? 0.0).toDouble(),
+      points: _convertToInt(map['points']), 
       isUPIProvided: map['isUPIProvided'] ?? false,
       isBankDetailsProvided: map['isBankDetailsProvided'] ?? false,
       upiId: map['upiId'],
@@ -75,13 +77,21 @@ class UserModel {
     );
   }
 
-  // Method to copy with new values (useful for updates)
+  static int _convertToInt(dynamic value) {
+    if (value == null) return 0;
+    if (value is int) return value;
+    if (value is double) return value.round();
+    if (value is String) return int.tryParse(value) ?? 0;
+    return 0;
+  }
+
   UserModel copyWith({
     String? firstName,
     String? lastName,
     String? mobile,
     String? university,
     double? walletBalance,
+    double? totalEarnings,
     int? points,
     bool? isUPIProvided,
     bool? isBankDetailsProvided,
@@ -93,10 +103,11 @@ class UserModel {
       uid: uid,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
-      email: email, // Email cannot be changed
+      email: email, 
       mobile: mobile ?? this.mobile,
       university: university ?? this.university,
       walletBalance: walletBalance ?? this.walletBalance,
+      totalEarnings: totalEarnings ?? this.totalEarnings,
       points: points ?? this.points,
       isUPIProvided: isUPIProvided ?? this.isUPIProvided,
       isBankDetailsProvided: isBankDetailsProvided ?? this.isBankDetailsProvided,
