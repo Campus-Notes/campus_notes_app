@@ -181,7 +181,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               ),
               child: Row(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.info_outline,
                     size: 18,
                     color: AppColors.info,
