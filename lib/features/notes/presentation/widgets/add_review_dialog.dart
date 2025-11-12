@@ -87,9 +87,19 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
       
       setState(() => _isSubmitting = false);
       
+      String errorMessage = 'Failed to submit review';
+      
+      if (e.toString().contains('already reviewed')) {
+        errorMessage = 'You have already reviewed this note';
+      } else if (e.toString().contains('not logged in')) {
+        errorMessage = 'Please log in to submit a review';
+      } else if (e.toString().contains('Rating must be')) {
+        errorMessage = 'Please select a valid rating';
+      }
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to submit review: ${e.toString()}'),
+          content: Text(errorMessage),
           backgroundColor: AppColors.error,
         ),
       );

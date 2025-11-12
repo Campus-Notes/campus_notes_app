@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../../../theme/app_theme.dart';
 import '../../data/services/library_service.dart';
+import '../../data/services/review_service.dart';
 import '../widgets/add_review_dialog.dart';
 import 'pdf_viewer_page.dart';
 
@@ -17,6 +18,7 @@ class LibraryPage extends StatefulWidget {
 
 class _LibraryPageState extends State<LibraryPage> {
   final LibraryService _libraryService = LibraryService();
+  final ReviewService _reviewService = ReviewService();
   List<PurchasedNoteData> _purchasedNotes = [];
   bool _isLoading = true;
   String? _errorMessage;
@@ -247,17 +249,90 @@ class _LibraryPageState extends State<LibraryPage> {
   }
 
   void _showRatingDialog(PurchasedNoteData noteData) async {
-    final result = await showDialog<bool>(
-      context: context,
-      builder: (context) => AddReviewDialog(
-        noteId: noteData.note.noteId,
-        noteTitle: noteData.note.title,
-      ),
-    );
+    final currentUser = FirebaseAuth.instance.currentUser;
+    if (currentUser == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please log in to review notes'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+      return;
+    }
 
-    // If review was submitted successfully, reload the list
-    if (result == true && mounted) {
-      _loadPurchasedNotes();
+    // Check if user has already reviewed this note
+    try {
+      final hasReviewed = await _reviewService.hasUserReviewed(
+        noteData.note.noteId,
+        currentUser.uid,
+      );
+
+      if (hasReviewed) {
+        if (!mounted) return;
+        
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Row(
+              children: [
+                Icon(
+                  Icons.info_outline,
+                  color: AppColors.primary,
+                ),
+                SizedBox(width: 8),
+                Text('Already Reviewed'),
+              ],
+            ),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('You have already reviewed this note.'),
+                const SizedBox(height: 12),
+                Text(
+                  'Current Rating: ${noteData.note.rating.toStringAsFixed(1)} ⭐',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.primary,
+                  ),
+                ),
+              ],
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+
+      // Show the review dialog if not reviewed yet
+      if (!mounted) return;
+      
+      final result = await showDialog<bool>(
+        context: context,
+        builder: (context) => AddReviewDialog(
+          noteId: noteData.note.noteId,
+          noteTitle: noteData.note.title,
+        ),
+      );
+
+      // If review was submitted successfully, reload the list
+      if (result == true && mounted) {
+        _loadPurchasedNotes();
+      }
+    } catch (e) {
+      if (!mounted) return;
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error checking review status: ${e.toString()}'),
+          backgroundColor: AppColors.error,
+        ),
+      );
     }
   }
 
