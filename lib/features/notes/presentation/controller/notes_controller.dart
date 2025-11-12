@@ -24,6 +24,7 @@ class NotesController extends ChangeNotifier {
 
   // State
   bool _isLoading = false;
+  bool _hasLoadedOnce = false;
   String? _error;
   String? _uploadMessage;
   String _searchQuery = '';
@@ -32,6 +33,7 @@ class NotesController extends ChangeNotifier {
   List<NoteItem> get notes => _filteredNotes.isEmpty && _searchQuery.isEmpty ? _notes : _filteredNotes;
   List<PurchaseItem> get purchases => _purchases;
   bool get isLoading => _isLoading;
+  bool get hasLoadedOnce => _hasLoadedOnce;
   String? get error => _error;
   String get searchQuery => _searchQuery;
 
@@ -351,10 +353,12 @@ class NotesController extends ChangeNotifier {
         currentUserUid: currentUser.uid,
         limit: limit,
       );
+      _hasLoadedOnce = true;
       _isLoading = false;
       notifyListeners();
     } catch (e) {
       _error = 'Failed to load notes: ${e.toString()}';
+      _hasLoadedOnce = true;
       _isLoading = false;
       notifyListeners();
     }

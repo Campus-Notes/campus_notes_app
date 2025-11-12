@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 
 import 'package:campus_notes_app/data/dummy_data.dart';
 import 'package:campus_notes_app/services/theme_service.dart';
+import 'package:campus_notes_app/services/security_service.dart';
 import 'package:campus_notes_app/routes/route_names.dart';
 import 'package:campus_notes_app/routes/routes.dart';
 import 'package:campus_notes_app/theme/app_theme.dart';
@@ -31,7 +32,14 @@ import 'features/chat/presentation/controller/chat_controller.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
- 
+  // -------------------------------------------------
+  // 1. Security: Disable screenshots and screen recording
+  // -------------------------------------------------
+  await SecurityService.disableScreenshots();
+
+  // -------------------------------------------------
+  // 2. Firebase initialization
+  // -------------------------------------------------
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -42,7 +50,7 @@ Future<void> main() async {
   );
 
   // -------------------------------------------------
-  // 4. Theme setup
+  // 3. Theme setup
   // -------------------------------------------------
   final themeService = ThemeService();
   await themeService.init();

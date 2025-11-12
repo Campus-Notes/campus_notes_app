@@ -245,8 +245,8 @@ class _UploadPageState extends State<UploadPage> {
                               const SizedBox(height: 4),
                               Text(
                                 _isDonationMode
-                                    ? '❤️ Share knowledge freely + earn 15 bonus points'
-                                    : '💰 Earn 70% of sales + 10 bonus points',
+                                    ? '❤️ Share knowledge freely'
+                                    : '💰 Earn 80% of sales + 10 bonus points',
                                 style: const TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14,
@@ -457,7 +457,7 @@ class _UploadPageState extends State<UploadPage> {
                       ],
                     ),
                   ),
-                  const SizedBox(height: 32),
+                  const SizedBox(height: 80),
                 ],
               ),
             );

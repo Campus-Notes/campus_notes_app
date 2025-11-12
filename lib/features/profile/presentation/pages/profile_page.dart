@@ -312,8 +312,8 @@ class _ProfilePageState extends State<ProfilePage> {
                       children: [
                         Expanded(
                           child: QuickAccessCard(
-                            icon: Icons.upload_file_outlined,
-                            label: 'My Notes',
+                            icon: Icons.shopping_bag_outlined,
+                            label: 'My Sold Notes',
                             onTap: () => Navigator.of(context).pushNamed(AppRoutes.manageNotes),
                           ),
                         ),

@@ -8,7 +8,7 @@ class LocationHeader extends StatelessWidget {
   final List<String> universities;
   final ValueChanged<String?> onUniversityChanged;
   final VoidCallback onSearchTap;
-  final VoidCallback onNotificationTap;
+  final VoidCallback onChatTap;
   final VoidCallback? onCartTap;
 
   const LocationHeader({
@@ -17,7 +17,7 @@ class LocationHeader extends StatelessWidget {
     required this.universities,
     required this.onUniversityChanged,
     required this.onSearchTap,
-    required this.onNotificationTap,
+    required this.onChatTap,
     this.onCartTap,
   });
 
@@ -99,8 +99,8 @@ class LocationHeader extends StatelessWidget {
           },
         ),
         IconButton(
-          icon: const Icon(Icons.notifications_outlined, size: 24, color: iconColor),
-          onPressed: onNotificationTap,
+          icon: const Icon(Icons.message_outlined, size: 24, color: iconColor),
+          onPressed: onChatTap,
         ),
       ],
     );
