@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../../theme/app_theme.dart';
 import '../../../../data/dummy_data.dart';
+import '../widgets/cart_card.dart';
 
 class CartPage extends StatefulWidget {
   const CartPage({super.key});
@@ -78,29 +78,29 @@ class _CartPageState extends State<CartPage> {
         ],
       ),
       body: cartItems.isEmpty
-          ? const Center(
+          ? Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(
                     Icons.shopping_cart_outlined,
                     size: 64,
-                    color: AppColors.muted,
+                    color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.5),
                   ),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   Text(
                     'Your cart is empty',
                     style: TextStyle(
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
-                      color: AppColors.muted,
+                      color: Theme.of(context).colorScheme.onSurface,
                     ),
                   ),
-                  SizedBox(height: 8),
+                  const SizedBox(height: 8),
                   Text(
                     'Add some notes to get started',
                     style: TextStyle(
-                      color: AppColors.muted,
+                      color: Theme.of(context).colorScheme.onSurface.withValues(alpha:0.7),
                     ),
                   ),
                 ],
@@ -115,107 +115,10 @@ class _CartPageState extends State<CartPage> {
                     separatorBuilder: (context, index) => const SizedBox(height: 12),
                     itemBuilder: (context, index) {
                       final item = cartItems[index];
-                      final quantity = quantities[item.id] ?? 1;
                       
-                      return Card(
-                        elevation: 0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(12),
-                          side: const BorderSide(color: Color(0xFFE5E7EB)),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: Row(
-                            children: [
-                              // Note thumbnail
-                              Container(
-                                width: 60,
-                                height: 60,
-                                decoration: BoxDecoration(
-                                  borderRadius: BorderRadius.circular(8),
-                                  color: AppColors.primary.withValues(alpha: 0.08),
-                                ),
-                                child: const Icon(
-                                  Icons.description,
-                                  color: AppColors.primary,
-                                  size: 24,
-                                ),
-                              ),
-                              const SizedBox(width: 12),
-                              
-                              // Note details
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      item.title,
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 14,
-                                      ),
-                                      maxLines: 2,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      item.subject,
-                                      style: const TextStyle(
-                                        color: AppColors.muted,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 8),
-                                    Text(
-                                      '₹${item.price.toStringAsFixed(0)}',
-                                      style: const TextStyle(
-                                        fontWeight: FontWeight.w700,
-                                        fontSize: 16,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              
-                              // Quantity controls
-                                Column(
-                                children: [
-                                  IconButton(
-                                    onPressed: () {},
-                                    icon: const Icon(Icons.delete_outline, size: 20),
-                                    padding: EdgeInsets.zero,
-                                    constraints: const BoxConstraints(),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      IconButton(
-                                        onPressed: () => _updateQuantity(item.id, -1),
-                                        icon: const Icon(Icons.remove, size: 16),
-                                        padding: const EdgeInsets.all(4),
-                                        constraints: const BoxConstraints(),
-                                        style: IconButton.styleFrom(
-                                          backgroundColor: AppColors.primary.withValues(alpha: 0.1),
-                                          shape: const CircleBorder(),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8),
-                                        child: Text(
-                                          quantity.toString(),
-                                          style: const TextStyle(
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                      return CartCard(
+                        item: item,
+                        onDelete: () => _updateQuantity(item.id, -1),
                       );
                     },
                   ),
@@ -227,7 +130,7 @@ class _CartPageState extends State<CartPage> {
                     color: Theme.of(context).scaffoldBackgroundColor,
                     border: Border(
                       top: BorderSide(
-                        color: const Color(0xFFE5E7EB).withValues(alpha: 0.5),
+                        color: Theme.of(context).dividerColor,
                       ),
                     ),
                   ),
@@ -236,36 +139,45 @@ class _CartPageState extends State<CartPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Subtotal'),
-                          Text('₹${subtotal.toStringAsFixed(0)}'),
+                          Text('Subtotal', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                          Text('₹${subtotal.toStringAsFixed(0)}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                         ],
                       ),
-                      const SizedBox(height: 8),
                       const SizedBox(height: 8),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Discount'),
+                          Text('Delivery', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                          Text('₹${deliveryFee.toStringAsFixed(0)}', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Discount', style: TextStyle(color: Theme.of(context).colorScheme.onSurface)),
                           Text('-₹${discount.toStringAsFixed(0)}', 
-                               style: const TextStyle(color: Colors.green)),
+                               style: TextStyle(color: Theme.of(context).colorScheme.primary)),
                         ],
                       ),
                       const Divider(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text(
+                          Text(
                             'Total',
                             style: TextStyle(
                               fontWeight: FontWeight.w700,
                               fontSize: 16,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                           Text(
                             '₹${total.toStringAsFixed(0)}',
-                            style: const TextStyle(
+                            style: TextStyle(
                               fontWeight: FontWeight.w800,
                               fontSize: 16,
+                              color: Theme.of(context).colorScheme.onSurface,
                             ),
                           ),
                         ],
