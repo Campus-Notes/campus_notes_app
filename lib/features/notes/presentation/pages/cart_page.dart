@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:campus_notes_app/features/notes/presentation/pages/cart_checkout_section.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
