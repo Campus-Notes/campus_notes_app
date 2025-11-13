@@ -2,11 +2,17 @@ import 'dart:typed_data';
 import 'package:campus_notes_app/common_widgets/app_bar.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import '../../../../theme/app_theme.dart';
+import '../../../../services/connectivity_service.dart';
 import '../../data/services/library_service.dart';
 import '../../data/services/review_service.dart';
 import '../widgets/add_review_dialog.dart';
+import '../widgets/library_loading_view.dart';
+import '../widgets/library_error_view.dart';
+import '../widgets/library_empty_view.dart';
+import '../widgets/library_note_card.dart';
+import '../widgets/loading_dialog.dart';
 import 'pdf_viewer_page.dart';
 
 class LibraryPage extends StatefulWidget {
@@ -28,7 +34,6 @@ class _LibraryPageState extends State<LibraryPage> {
   void initState() {
     super.initState();
     _loadPurchasedNotes();
-    _checkDownloadStatus();
   }
 
   Future<void> _loadPurchasedNotes() async {
@@ -47,15 +52,46 @@ class _LibraryPageState extends State<LibraryPage> {
         return;
       }
 
-      final notes = await _libraryService.getUserPurchasedNotes(currentUser.uid);
+      // Check if we're offline
+      final connectivity = Provider.of<ConnectivityService>(context, listen: false);
       
-      setState(() {
-        _purchasedNotes = notes;
-        _isLoading = false;
-      });
+      if (connectivity.isOffline) {
+        // When offline, load only locally downloaded notes
+        await _loadOfflineNotes(currentUser.uid);
+      } else {
+        // When online, fetch from Firebase
+        final notes = await _libraryService.getUserPurchasedNotes(currentUser.uid);
+        
+        setState(() {
+          _purchasedNotes = notes;
+          _isLoading = false;
+        });
+        
+        // Check download status AFTER loading notes
+        await _checkDownloadStatus();
+      }
     } catch (e) {
       setState(() {
         _errorMessage = 'Failed to load library: ${e.toString()}';
+        _isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _loadOfflineNotes(String userId) async {
+    try {
+      final downloadedNotes = await _libraryService.getDownloadedNotes(userId);
+      
+      setState(() {
+        _purchasedNotes = downloadedNotes;
+        _isLoading = false;
+        for (var noteData in downloadedNotes) {
+          _downloadStatus[noteData.note.noteId] = true;
+        }
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'No offline notes available';
         _isLoading = false;
       });
     }
@@ -102,25 +138,7 @@ class _LibraryPageState extends State<LibraryPage> {
       
       // Show loading dialog
       if (!mounted) return;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(
-          child: Card(
-            child: Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Loading PDF...'),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+      LoadingDialog.show(context, message: 'Loading PDF...');
 
       // Try to load from downloaded file first
       Uint8List pdfBytes;
@@ -144,7 +162,7 @@ class _LibraryPageState extends State<LibraryPage> {
       }
 
       if (!mounted) return;
-      Navigator.pop(context); // Close loading dialog
+      LoadingDialog.hide(context); // Close loading dialog
 
       // Navigate to PDF viewer
       Navigator.push(
@@ -159,7 +177,7 @@ class _LibraryPageState extends State<LibraryPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      Navigator.pop(context); // Close loading dialog
+      LoadingDialog.hide(context); // Close loading dialog
       
       // Show user-friendly error message
       final isDownloaded = _downloadStatus[noteData.note.noteId] ?? false;
@@ -203,25 +221,7 @@ class _LibraryPageState extends State<LibraryPage> {
     try {
       // Show loading dialog
       if (!mounted) return;
-      showDialog(
-        context: context,
-        barrierDismissible: false,
-        builder: (context) => const Center(
-          child: Card(
-            child: Padding(
-              padding: EdgeInsets.all(24.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  CircularProgressIndicator(),
-                  SizedBox(height: 16),
-                  Text('Downloading...'),
-                ],
-              ),
-            ),
-          ),
-        ),
-      );
+      LoadingDialog.show(context, message: 'Downloading...');
 
       // Save encrypted PDF
       await _libraryService.saveEncryptedPdf(
@@ -236,7 +236,7 @@ class _LibraryPageState extends State<LibraryPage> {
       });
 
       if (!mounted) return;
-      Navigator.pop(context); // Close loading dialog
+      LoadingDialog.hide(context); // Close loading dialog
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -265,7 +265,7 @@ class _LibraryPageState extends State<LibraryPage> {
       );
     } catch (e) {
       if (!mounted) return;
-      Navigator.pop(context); // Close loading dialog
+      LoadingDialog.hide(context); // Close loading dialog
 
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
@@ -365,7 +365,6 @@ class _LibraryPageState extends State<LibraryPage> {
         return;
       }
 
-      // Show the review dialog if not reviewed yet
       if (!mounted) return;
       
       final result = await showDialog<bool>(
@@ -376,7 +375,6 @@ class _LibraryPageState extends State<LibraryPage> {
         ),
       );
 
-      // If review was submitted successfully, reload the list
       if (result == true && mounted) {
         _loadPurchasedNotes();
       }
@@ -390,10 +388,6 @@ class _LibraryPageState extends State<LibraryPage> {
         ),
       );
     }
-  }
-
-  String _formatDate(DateTime date) {
-    return DateFormat('MMM dd, yyyy').format(date);
   }
 
   @override
@@ -417,83 +411,18 @@ class _LibraryPageState extends State<LibraryPage> {
 
   Widget _buildBody(ThemeData theme) {
     if (_isLoading) {
-      return const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Loading your library...'),
-          ],
-        ),
-      );
+      return const LibraryLoadingView();
     }
 
     if (_errorMessage != null) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.error_outline,
-                size: 64,
-                color: AppColors.error.withOpacity(0.5),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                _errorMessage!,
-                textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.error),
-              ),
-              const SizedBox(height: 16),
-              ElevatedButton.icon(
-                onPressed: _loadPurchasedNotes,
-                icon: const Icon(Icons.refresh),
-                label: const Text('Retry'),
-              ),
-            ],
-          ),
-        ),
+      return LibraryErrorView(
+        errorMessage: _errorMessage!,
+        onRetry: _loadPurchasedNotes,
       );
     }
 
     if (_purchasedNotes.isEmpty) {
-      return Center(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                Icons.library_books_outlined,
-                size: 80,
-                color: theme.brightness == Brightness.dark
-                    ? AppColors.textSecondaryDark.withOpacity(0.3)
-                    : AppColors.textSecondaryLight.withOpacity(0.3),
-              ),
-              const SizedBox(height: 24),
-              const Text(
-                'Your library is empty',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Notes you purchase will appear here',
-                style: TextStyle(
-                  color: theme.brightness == Brightness.dark
-                      ? AppColors.textSecondaryDark
-                      : AppColors.textSecondaryLight,
-                ),
-              ),
-            ],
-          ),
-        ),
-      );
+      return const LibraryEmptyView();
     }
 
     return ListView.builder(
@@ -503,200 +432,16 @@ class _LibraryPageState extends State<LibraryPage> {
         final noteData = _purchasedNotes[index];
         final isDownloaded = _downloadStatus[noteData.note.noteId] ?? false;
         
-        return _buildNoteCard(noteData, isDownloaded, theme);
+        return LibraryNoteCard(
+          noteData: noteData,
+          isDownloaded: isDownloaded,
+          onView: () => _viewNote(noteData),
+          onDownloadOrDelete: isDownloaded
+              ? () => _deleteDownload(noteData)
+              : () => _downloadNote(noteData),
+          onRate: () => _showRatingDialog(noteData),
+        );
       },
-    );
-  }
-
-  Widget _buildNoteCard(PurchasedNoteData noteData, bool isDownloaded, ThemeData theme) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 16),
-      elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () => _viewNote(noteData),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // Header with title and rating
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          noteData.note.title,
-                          style: const TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(
-                          noteData.note.subject,
-                          style: const TextStyle(
-                            fontSize: 14,
-                            color: AppColors.primary,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                  if (isDownloaded)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: AppColors.success.withOpacity(0.1),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: const Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.download_done,
-                            size: 16,
-                            color: AppColors.success,
-                          ),
-                          SizedBox(width: 4),
-                          Text(
-                            'Offline',
-                            style: TextStyle(
-                              fontSize: 12,
-                              color: AppColors.success,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                ],
-              ),
-              
-              const SizedBox(height: 12),
-              
-              // Owner and rating info
-              Row(
-                children: [
-                  Icon(
-                    Icons.person_outline,
-                    size: 16,
-                    color: theme.brightness == Brightness.dark
-                        ? AppColors.textSecondaryDark
-                        : AppColors.textSecondaryLight,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    noteData.owner?.fullName ?? 'Unknown',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: theme.brightness == Brightness.dark
-                          ? AppColors.textSecondaryDark
-                          : AppColors.textSecondaryLight,
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  const Icon(
-                    Icons.star,
-                    size: 16,
-                    color: Colors.amber,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    noteData.note.rating.toStringAsFixed(1),
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: theme.brightness == Brightness.dark
-                          ? AppColors.textSecondaryDark
-                          : AppColors.textSecondaryLight,
-                    ),
-                  ),
-                  const Spacer(),
-                  Icon(
-                    Icons.calendar_today,
-                    size: 14,
-                    color: theme.brightness == Brightness.dark
-                        ? AppColors.textSecondaryDark
-                        : AppColors.textSecondaryLight,
-                  ),
-                  const SizedBox(width: 4),
-                  Text(
-                    _formatDate(noteData.purchase.purchasedAt),
-                    style: TextStyle(
-                      fontSize: 12,
-                      color: theme.brightness == Brightness.dark
-                          ? AppColors.textSecondaryDark
-                          : AppColors.textSecondaryLight,
-                    ),
-                  ),
-                ],
-              ),
-
-              const SizedBox(height: 16),
-              const Divider(height: 1),
-              const SizedBox(height: 12),
-
-              // Action buttons
-              Row(
-                children: [
-                  Expanded(
-                    child: ElevatedButton.icon(
-                      onPressed: () => _viewNote(noteData),
-                      icon: const Icon(Icons.visibility, size: 18),
-                      label: const Text('View Note'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: OutlinedButton.icon(
-                      onPressed: isDownloaded
-                          ? () => _deleteDownload(noteData)
-                          : () => _downloadNote(noteData),
-                      icon: Icon(
-                        isDownloaded ? Icons.delete_outline : Icons.download,
-                        size: 18,
-                      ),
-                      label: Text(isDownloaded ? 'Remove' : 'Download'),
-                      style: OutlinedButton.styleFrom(
-                        foregroundColor: isDownloaded ? AppColors.error : AppColors.primary,
-                        side: BorderSide(
-                          color: isDownloaded ? AppColors.error : AppColors.primary,
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    onPressed: () => _showRatingDialog(noteData),
-                    icon: const Icon(Icons.star_border),
-                    tooltip: 'Rate',
-                    color: AppColors.primary,
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 }

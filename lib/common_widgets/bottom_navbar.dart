@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../features/home/presentation/pages/home_page.dart';
 import '../features/notes/presentation/pages/sell_note.dart';
 import '../features/notes/presentation/pages/library_page.dart';
+import 'offline_banner.dart';
 
 class MainShell extends StatefulWidget {
   const MainShell({super.key});
@@ -30,9 +31,16 @@ class _MainShellState extends State<MainShell> {
     
     return Scaffold(
       extendBody: true,
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _pages,
+      body: Column(
+        children: [
+          const OfflineBanner(),
+          Expanded(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: _pages,
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: Padding(
         padding: const EdgeInsets.only(bottom: 20, left: 24, right: 24),

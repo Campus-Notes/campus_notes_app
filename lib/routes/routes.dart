@@ -1,3 +1,4 @@
+import 'package:campus_notes_app/features/notes/presentation/pages/library_page.dart';
 import 'package:campus_notes_app/features/profile/presentation/pages/bank_details.dart';
 import 'package:flutter/material.dart';
 import 'route_names.dart';
@@ -43,5 +44,6 @@ class AppRouter {
         AppRoutes.userProfile: (_) => const UserProfilePage(),
         AppRoutes.changePassword: (_) => const ChangePasswordPage(),
         AppRoutes.bankDetails: (_) => const BankDetailsPage(),
+        AppRoutes.libraryPage: (_) => const LibraryPage(),
       };
 }

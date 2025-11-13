@@ -7,6 +7,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:campus_notes_app/data/dummy_data.dart';
 import 'package:campus_notes_app/services/theme_service.dart';
 import 'package:campus_notes_app/services/security_service.dart';
+import 'package:campus_notes_app/services/connectivity_service.dart';
 import 'package:campus_notes_app/routes/route_names.dart';
 import 'package:campus_notes_app/routes/routes.dart';
 import 'package:campus_notes_app/theme/app_theme.dart';
@@ -61,6 +62,11 @@ Future<void> main() async {
   final themeService = ThemeService();
   await themeService.init();
 
+  // -------------------------------------------------
+  // 4. Connectivity service setup
+  // -------------------------------------------------
+  final connectivityService = ConnectivityService();
+
   runApp(
     MultiProvider(
       providers: [
@@ -70,6 +76,7 @@ Future<void> main() async {
         ChangeNotifierProvider(create: (_) => NotesController()),
         ChangeNotifierProvider(create: (_) => CartController()),
         ChangeNotifierProvider.value(value: themeService),
+        ChangeNotifierProvider.value(value: connectivityService),
         ChangeNotifierProvider(create: (_) => ChatController()),
         ChangeNotifierProvider(
           create: (context) {

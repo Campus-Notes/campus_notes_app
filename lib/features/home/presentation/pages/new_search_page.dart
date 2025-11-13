@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../../constants/subject_constants.dart';
+import '../../../../common_widgets/app_bar.dart';
 import '../../../notes/presentation/controller/notes_controller.dart';
 import '../../../notes/presentation/controller/cart_controller.dart';
 import '../../../notes/data/models/note_model.dart';
@@ -98,15 +99,10 @@ class _NewSearchPageState extends State<NewSearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-      appBar: AppBar(
-        title: Text(
-          'Search Notes',
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        elevation: 0,
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      resizeToAvoidBottomInset: true,
+      appBar: const CustomAppBar(
+        text: 'Search Notes',
+        showBackButton: true,
       ),
       body: Column(
         children: [
@@ -124,6 +120,7 @@ class _NewSearchPageState extends State<NewSearchPage> {
               ],
             ),
             child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
                 // Search Input
                 Container(
@@ -347,30 +344,38 @@ class _NewSearchPageState extends State<NewSearchPage> {
     required String subtitle,
   }) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(
-            icon,
-            size: 80,
-            color: AppColors.muted,
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                icon,
+                size: 80,
+                color: AppColors.muted,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                title,
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimaryLight,
+                ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                subtitle,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: AppColors.textSecondaryLight,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
           ),
-          const SizedBox(height: 16),
-          Text(
-            title,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimaryLight,
-            ),
-          ),
-          const SizedBox(height: 8),
-          Text(
-            subtitle,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondaryLight,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }

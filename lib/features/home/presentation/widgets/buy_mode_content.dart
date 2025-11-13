@@ -5,6 +5,9 @@ import '../../../notes/presentation/controller/cart_controller.dart';
 import '../../../notes/presentation/pages/note_detail_page.dart';
 import '../../../notes/presentation/pages/all_notes_page.dart';
 import '../../../../data/dummy_data.dart';
+import '../../../../services/connectivity_service.dart';
+import '../../../../routes/route_names.dart';
+import '../../../../theme/app_theme.dart';
 import 'featured_note_card.dart';
 import 'popular_note_card.dart';
 import 'section_header.dart';
@@ -15,9 +18,14 @@ class BuyModeContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<NotesController>(
-      builder: (context, notesController, child) {
+    return Consumer2<NotesController, ConnectivityService>(
+      builder: (context, notesController, connectivity, child) {
         final notes = notesController.allNotes;
+
+        // Show offline message prominently if no internet
+        if (connectivity.isOffline) {
+          return _buildOfflineMessage(context);
+        }
 
         // Show shimmer if loading OR if notes haven't been loaded yet (initial state)
         if (notesController.isLoading || !notesController.hasLoadedOnce) {
@@ -270,5 +278,70 @@ class BuyModeContent extends StatelessWidget {
     final sortedNotes = List.from(notes);
     sortedNotes.sort((a, b) => b.purchaseCount.compareTo(a.purchaseCount));
     return sortedNotes;
+  }
+
+  Widget _buildOfflineMessage(BuildContext context) {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: AppColors.primary.withOpacity(0.1),
+                  shape: BoxShape.circle,
+                ),
+                child: const Icon(
+                  Icons.cloud_off_rounded,
+                  size: 80,
+                  color: AppColors.primary,
+                ),
+              ),
+              const SizedBox(height: 24),
+              Text(
+                'No Internet Connection',
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 12),
+              Text(
+                'You\'re currently offline. Browse and view your downloaded notes in your Library.',
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      color: Colors.grey[600],
+                    ),
+                textAlign: TextAlign.center,
+              ),
+              const SizedBox(height: 32),
+              ElevatedButton.icon(
+                onPressed: () {
+                  Navigator.of(context).pushNamed(AppRoutes.libraryPage);
+                },
+                icon: const Icon(Icons.library_books, size: 20),
+                label: const Text('Go to Library'),
+                style: ElevatedButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextButton(
+                onPressed: () {
+                  // Just rebuilding will check connection again
+                  (context as Element).markNeedsBuild();
+                },
+                child: const Text('Retry Connection'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }
