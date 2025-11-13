@@ -24,7 +24,6 @@ class DatabaseService {
       }
       return null;
     } catch (e) {
-      // Log the error for debugging
       return null;
     }
   }

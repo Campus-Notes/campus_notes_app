@@ -33,8 +33,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
   Widget build(BuildContext context) {
     return Consumer<AuthController>(
       builder: (context, auth, child) {
-        // Fixed: Use errorMessage, not error
-        // Fixed: Use justLoggedIn, justRegistered (they exist)
         if (auth.justLoggedIn) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             Navigator.of(context).pushReplacementNamed(AppRoutes.shell);
@@ -49,11 +47,10 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
                 backgroundColor: Colors.green,
               ),
             );
-            _tabController.animateTo(0); // Go to Login tab
+            _tabController.animateTo(0); 
           });
         }
 
-        // Fixed: auth.errorMessage instead of auth.error
         if (auth.errorMessage != null) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -62,12 +59,12 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
                 backgroundColor: Colors.red,
               ),
             );
-            auth.clearError(); // This method exists
+            auth.clearError(); 
           });
         }
 
         return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surface, // M3 compliant
+          backgroundColor: Theme.of(context).colorScheme.surface, 
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -95,7 +92,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
                     ),
                     const SizedBox(height: 40),
 
-                    // TabBar Container
                     Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
@@ -124,7 +120,6 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
 
                     const SizedBox(height: 40),
 
-                    // TabBarView
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.6,
                       child: TabBarView(

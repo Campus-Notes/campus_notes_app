@@ -2,29 +2,18 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../models/user_model.dart';
 import 'database_services.dart';
 
-/// Unified authentication service that works with Firebase Auth + Firestore
 class AuthService {
-  // -----------------------------------------------------------------
-  //  Dependencies
-  // -----------------------------------------------------------------
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final DatabaseService _dbService = DatabaseService();
 
-  /// Optional HTTP base URL – only needed if you ever add a custom backend
   final String baseUrl;
 
   AuthService({this.baseUrl = ''});
 
-  // -----------------------------------------------------------------
-  //  Auth state
-  // -----------------------------------------------------------------
   User? get currentUser => _auth.currentUser;
 
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // -----------------------------------------------------------------
-  //  Register
-  // -----------------------------------------------------------------
   Future<String?> register({
     required String firstName,
     required String lastName,
@@ -71,9 +60,6 @@ class AuthService {
     }
   }
 
-  // -----------------------------------------------------------------
-  //  Login
-  // -----------------------------------------------------------------
   Future<String?> login({
     required String email,
     required String password,
@@ -89,16 +75,10 @@ class AuthService {
     }
   }
 
-  // -----------------------------------------------------------------
-  //  Logout
-  // -----------------------------------------------------------------
   Future<void> logout() async {
     await _auth.signOut();
   }
 
-  // -----------------------------------------------------------------
-  //  Change Password (requires re-authentication)
-  // -----------------------------------------------------------------
   Future<String?> changePassword({
     required String oldPassword,
     required String newPassword,
@@ -122,9 +102,6 @@ class AuthService {
     }
   }
 
-  // -----------------------------------------------------------------
-  //  Update Profile
-  // -----------------------------------------------------------------
   Future<String?> updateProfile({
     required String firstName,
     required String lastName,
@@ -151,10 +128,6 @@ class AuthService {
       return 'Failed to update profile';
     }
   }
-
-  // -----------------------------------------------------------------
-  //  Get Current User Data (from Firestore)
-  // -----------------------------------------------------------------
   Future<UserModel?> getCurrentUserData() async {
     try {
       final user = _auth.currentUser;
@@ -170,9 +143,6 @@ class AuthService {
     }
   }
 
-  // -----------------------------------------------------------------
-  //  Update Bank Details
-  // -----------------------------------------------------------------
   Future<String?> updateBankDetails({
     String? upiId,
     String? bankAccountNumber,
@@ -196,9 +166,6 @@ class AuthService {
     }
   }
 
-  // -----------------------------------------------------------------
-  //  Private: Map Firebase errors to user-friendly messages
-  // -----------------------------------------------------------------
   String _mapFirebaseError(FirebaseAuthException e) {
     switch (e.code) {
       case 'weak-password':

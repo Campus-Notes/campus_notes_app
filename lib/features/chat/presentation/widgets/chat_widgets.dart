@@ -4,9 +4,6 @@ import 'package:provider/provider.dart';
 import '../../../../theme/app_theme.dart';
 import '../controller/chat_controller.dart';
 
-/// ===============================
-/// 🔹 CHAT MESSAGE BUBBLE
-/// ===============================
 class ChatBubble extends StatelessWidget {
   final Map<String, dynamic> message;
   final bool isMe;
@@ -66,10 +63,6 @@ class ChatBubble extends StatelessWidget {
   }
 }
 
-/// ===============================
-/// 🔹 CHAT THREAD TILE
-/// ===============================
-/// Used in chat list to show last message and unread count
 class ChatThreadTile extends StatelessWidget {
   final String chatId;
   final Map<String, dynamic> chatData;
@@ -170,10 +163,6 @@ class ChatThreadTile extends StatelessWidget {
   }
 }
 
-/// ===============================
-/// 🔹 CHAT INPUT FIELD
-/// ===============================
-/// Connected to ChatController to send messages
 class ChatInput extends StatefulWidget {
   final String chatId;
   final String receiverId;

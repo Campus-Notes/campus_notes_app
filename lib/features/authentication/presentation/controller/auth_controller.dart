@@ -4,24 +4,14 @@ import '../../data/services/auth_services.dart';
 import '../../data/models/user_model.dart';
 
 class AuthController extends ChangeNotifier {
-  // --------------------------------------------------------------
-  // Services
-  // --------------------------------------------------------------
   final AuthService _authService;
 
-  // --------------------------------------------------------------
-  // UI state
-  // --------------------------------------------------------------
   bool _isLoading = false;
   String? _errorMessage;
   bool _isLoggedIn = false;
   bool _justLoggedIn = false;
   bool _justRegistered = false;
   bool _justLoggedOut = false;
-
-  // --------------------------------------------------------------
-  // Getters
-  // --------------------------------------------------------------
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isLoggedIn => _isLoggedIn;
@@ -30,9 +20,6 @@ class AuthController extends ChangeNotifier {
   bool get justLoggedOut => _justLoggedOut;
   String? get currentUserUid => _authService.currentUser?.uid;
 
-  // --------------------------------------------------------------
-  // Constructor – inject services
-  // --------------------------------------------------------------
   AuthController({AuthService? authService, String? baseUrl})
       : _authService = authService ?? AuthService(baseUrl: baseUrl ?? '') {
     _checkCurrentUser();
@@ -55,9 +42,6 @@ class AuthController extends ChangeNotifier {
     });
   }
 
-  // --------------------------------------------------------------
-  // Helpers
-  // --------------------------------------------------------------
   Future<void> _checkCurrentUser() async {
     final user = _authService.currentUser;
     _isLoggedIn = user != null;
@@ -74,10 +58,6 @@ class AuthController extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
   }
-
-  // --------------------------------------------------------------
-  // Login / Register / Logout
-  // --------------------------------------------------------------
   Future<void> login(String email, String password) async {
     _setLoading(true);
     _justLoggedIn = false;
@@ -140,9 +120,6 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
-  // --------------------------------------------------------------
-  // Password-reset (Firebase only)
-  // --------------------------------------------------------------
   Future<bool> sendPasswordResetEmail(String email) async {
     _setLoading(true);
 
@@ -166,10 +143,8 @@ class AuthController extends ChangeNotifier {
     }
   }
 
-  // Firebase UI token always returns true
   Future<bool> verifyResetToken(String token) async => true;
 
-  // Confirm new password
   Future<bool> resetPassword(String code, String newPassword) async {
     _setLoading(true);
 
@@ -189,9 +164,6 @@ class AuthController extends ChangeNotifier {
     }
   }
 
-  // --------------------------------------------------------------
-  // Profile + bank
-  // --------------------------------------------------------------
   Future<UserModel?> getCurrentUser() async =>
       await _authService.getCurrentUserData();
 
@@ -250,10 +222,6 @@ class AuthController extends ChangeNotifier {
     _setLoading(false);
     return result;
   }
-
-  // --------------------------------------------------------------
-  // Error mapping
-  // --------------------------------------------------------------
   String _mapFirebaseError(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':

@@ -100,14 +100,12 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // Loading: token verification
     if (_checkingToken) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    // Invalid token
     if (!_tokenValid) {
       return Scaffold(
         appBar: AppBar(),
@@ -117,7 +115,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
       );
     }
 
-    // Valid token: show form
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
@@ -136,7 +133,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
           padding: const EdgeInsets.all(24),
           child: Consumer<AuthController>(
             builder: (context, auth, child) {
-              // Show error once via SnackBar
               if (auth.errorMessage != null) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (!mounted) return;
@@ -171,7 +167,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                     const SizedBox(height: 40),
 
-                    // New Password
                     Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
@@ -218,7 +213,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                     const SizedBox(height: 16),
 
-                    // Confirm Password
                     Container(
                       decoration: BoxDecoration(
                         color: Theme.of(context).colorScheme.surface,
@@ -265,7 +259,6 @@ class _ResetPasswordScreenState extends State<ResetPasswordScreen> {
                     ),
                     const SizedBox(height: 30),
 
-                    // Reset Button
                     SizedBox(
                       width: double.infinity,
                       height: 50,

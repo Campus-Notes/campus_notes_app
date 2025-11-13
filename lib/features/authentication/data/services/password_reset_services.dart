@@ -6,7 +6,6 @@ class PasswordResetService {
 
   PasswordResetService({required this.baseUrl});
 
-  /// POST /auth/forgot-password
   Future<Map<String, dynamic>> sendPasswordResetEmail(String email) async {
     try {
       final response = await http.post(
@@ -28,7 +27,6 @@ class PasswordResetService {
     }
   }
 
-  /// GET /auth/verify-reset-token/:token
   Future<Map<String, dynamic>> verifyResetToken(String token) async {
     try {
       final response = await http.get(
@@ -49,7 +47,6 @@ class PasswordResetService {
     }
   }
 
-  /// POST /auth/reset-password
   Future<Map<String, dynamic>> resetPassword(
     String token,
     String newPassword,

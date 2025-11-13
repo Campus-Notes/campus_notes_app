@@ -40,7 +40,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
 
-    // Determine colors based on theme - use scaffold background for consistency
     final effectiveBackgroundColor = backgroundColor ?? 
         (isDark ? AppColors.backgroundDark : AppColors.backgroundLight);
     final effectiveTextColor = textColor ?? 
@@ -99,14 +98,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 else
                   const SizedBox(width: 40),
 
-                // Title section
                 Expanded(
                   child: centerTitle
                       ? Center(child: _buildTitleSection(context, effectiveTextColor, isTablet, containerHeight))
                       : _buildTitleSection(context, effectiveTextColor, isTablet, containerHeight),
                 ),
 
-                // Side icon or trailing widget
                 SizedBox(
                   width: 40,
                   child: trailing ??
@@ -175,7 +172,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   void _handleBackPress(BuildContext context) {
     final currentRoute = ModalRoute.of(context)?.settings.name;
     
-    // Special navigation logic for specific routes
     if (currentRoute == AppRoutes.userProfile) {
       Navigator.of(context).popUntil((route) {
         return route.settings.name == AppRoutes.profile || route.isFirst;

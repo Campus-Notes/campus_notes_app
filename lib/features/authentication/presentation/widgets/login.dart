@@ -1,5 +1,4 @@
 import 'package:campus_notes_app/features/authentication/presentation/screens/forgot_password_feature.dart';
-import 'package:campus_notes_app/features/authentication/presentation/widgets/phone_otp.dart';
 import 'package:campus_notes_app/theme/app_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,7 +38,6 @@ class _LoginWidgetState extends State<LoginWidget> {
           key: _formKey,
           child: Column(
             children: [
-              // Email
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
@@ -65,7 +63,6 @@ class _LoginWidgetState extends State<LoginWidget> {
               ),
               const SizedBox(height: 16),
 
-              // Password
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
@@ -99,7 +96,6 @@ class _LoginWidgetState extends State<LoginWidget> {
               ),
               const SizedBox(height: 16),
 
-              // Forgot Password → navigates
               Row(
                 children: [
                   const Spacer(),
@@ -115,7 +111,6 @@ class _LoginWidgetState extends State<LoginWidget> {
               ),
               const SizedBox(height: 30),
 
-              // Login button
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -137,53 +132,10 @@ class _LoginWidgetState extends State<LoginWidget> {
                 ),
               ),
               const SizedBox(height: 30),
-
-              // Or login with
-              Text('Or login with',
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 14)),
-              const SizedBox(height: 20),
-              Row(
-                children: [
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: TextButton.icon(
-                        onPressed: () => ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(content: Text('Google login not implemented yet'))),
-                        icon: const Icon(Icons.g_mobiledata, size: 20),
-                        label: const Text('Google', style: TextStyle(fontSize: 14)),
-                      ),
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Container(
-                      height: 50,
-                      decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface,
-                        borderRadius: BorderRadius.circular(15),
-                      ),
-                      child: TextButton.icon(
-                        onPressed: () => _showPhoneOTPDialog(context),
-                        icon: const Icon(Icons.phone_outlined, size: 20),
-                        label: const Text('Phone', style: TextStyle(fontSize: 14)),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
             ],
           ),
         );
       },
     );
-  }
-
-  void _showPhoneOTPDialog(BuildContext context) {
-    showDialog(context: context, builder: (_) => const PhoneOTPDialog());
   }
 }
