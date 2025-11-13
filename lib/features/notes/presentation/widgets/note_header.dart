@@ -80,11 +80,11 @@ class NoteHeaderWidget extends StatelessWidget {
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.primaryContainer.withOpacity(0.5),
+                    color:  const Color.fromARGB(255, 18, 129, 21),
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Text(
-                    'Premium',
+                    'Verified',
                     style: TextStyle(
                       fontSize: 12,
                       fontWeight: FontWeight.bold,

@@ -30,11 +30,14 @@ class _HomePageState extends State<HomePage> {
   ];
 
   final List<Map<String, dynamic>> categories = [
-    {'icon': Icons.computer, 'label': 'Computer Science'},
-    {'icon': Icons.calculate, 'label': 'Mathematics'},
-    {'icon': Icons.science, 'label': 'Physics'},
-    {'icon': Icons.biotech, 'label': 'Biology'},
-    {'icon': Icons.account_balance, 'label': 'Economics'},
+    {'icon': Icons.all_inclusive, 'label': 'All', 'subject': 'All'},
+    {'icon': Icons.computer, 'label': 'Computer Science', 'subject': 'Computer Science'},
+    {'icon': Icons.calculate, 'label': 'Mathematics', 'subject': 'Mathematics'},
+    {'icon': Icons.science, 'label': 'Physics', 'subject': 'Physics'},
+    {'icon': Icons.biotech, 'label': 'Biology', 'subject': 'Biology'},
+    {'icon': Icons.science_outlined, 'label': 'Chemistry', 'subject': 'Chemistry'},
+    {'icon': Icons.menu_book, 'label': 'English', 'subject': 'English'},
+    {'icon': Icons.account_balance, 'label': 'Social', 'subject': 'Social'},
   ];
 
   @override
@@ -45,6 +48,22 @@ class _HomePageState extends State<HomePage> {
       final notesController = Provider.of<NotesController>(context, listen: false);
       notesController.loadTrendingNotes(); // Load trending notes excluding own notes
     });
+  }
+
+  void _onCategoryChanged(int index) {
+    setState(() {
+      selectedCategoryIndex = index;
+    });
+    
+    // Filter notes by subject
+    final notesController = Provider.of<NotesController>(context, listen: false);
+    final selectedSubject = categories[index]['subject'] as String;
+    
+    if (selectedSubject == 'All') {
+      notesController.loadTrendingNotes();
+    } else {
+      notesController.getNotesBySubject(selectedSubject);
+    }
   }
 
   @override
@@ -69,7 +88,9 @@ class _HomePageState extends State<HomePage> {
                         });
                       }
                     },
-                    onSearchTap: () {},
+                    onSearchTap: () {
+                      Navigator.pushNamed(context, '/search');
+                    },
                     onChatTap: () => Navigator.of(context).push(
                       MaterialPageRoute(builder: (_) => const ChatListPage()),
                     ),
@@ -93,11 +114,7 @@ class _HomePageState extends State<HomePage> {
               CategorySelector(
                 selectedIndex: selectedCategoryIndex,
                 categories: categories,
-                onCategoryChanged: (int index) {
-                  setState(() {
-                    selectedCategoryIndex = index;
-                  });
-                },
+                onCategoryChanged: _onCategoryChanged,
               ),
 
             // Main content

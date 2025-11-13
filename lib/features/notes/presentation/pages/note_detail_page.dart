@@ -5,6 +5,7 @@ import 'package:campus_notes_app/features/chat/presentation/pages/chat_thread_pa
 import 'package:campus_notes_app/features/chat/presentation/controller/chat_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:campus_notes_app/theme/app_theme.dart';
+import 'package:campus_notes_app/common_widgets/app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
@@ -434,12 +435,12 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
 
     
     if (_isLoading) {
-      return Scaffold(
-        appBar: AppBar(
-          backgroundColor: Colors.transparent,
-          elevation: 0,
+      return const Scaffold(
+        appBar: CustomAppBar(
+          text: 'Buy Note',
+          usePremiumBackIcon: true,
         ),
-        body: const Center(
+        body: Center(
           child: CircularProgressIndicator(),
         ),
       );
@@ -447,23 +448,9 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
 
     return Scaffold(  
       backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
-          icon: Icon(Icons.arrow_back, color: theme.colorScheme.onSurface),
-        ),
-        actions: [
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.favorite_border, color: theme.colorScheme.onSurface),
-          ),
-          IconButton(
-            onPressed: () {},
-            icon: Icon(Icons.share, color: theme.colorScheme.onSurface),
-          ),
-        ],
+      appBar: CustomAppBar(
+        text: _getNoteTitle(),
+        usePremiumBackIcon: true,
       ),
       body: Column(
         children: [
