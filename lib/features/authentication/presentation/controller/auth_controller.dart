@@ -12,6 +12,7 @@ class AuthController extends ChangeNotifier {
   bool _justLoggedIn = false;
   bool _justRegistered = false;
   bool _justLoggedOut = false;
+  
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isLoggedIn => _isLoggedIn;
@@ -50,7 +51,7 @@ class AuthController extends ChangeNotifier {
 
   void _setLoading(bool loading) {
     _isLoading = loading;
-    if (!loading) _errorMessage = null;
+    // DON'T clear error message here - let the methods handle it
     notifyListeners();
   }
 
@@ -58,7 +59,9 @@ class AuthController extends ChangeNotifier {
     _errorMessage = null;
     notifyListeners();
   }
+
   Future<void> login(String email, String password) async {
+    _errorMessage = null; // Clear previous errors before attempting login
     _setLoading(true);
     _justLoggedIn = false;
 
@@ -67,8 +70,9 @@ class AuthController extends ChangeNotifier {
     if (result == null) {
       _isLoggedIn = true;
       _justLoggedIn = true;
+      _errorMessage = null; // Ensure no error on success
     } else {
-      _errorMessage = result;
+      _errorMessage = result; // Set the error message
     }
 
     _setLoading(false);
@@ -83,6 +87,7 @@ class AuthController extends ChangeNotifier {
     required String password,
     required String confirmPassword,
   }) async {
+    _errorMessage = null; // Clear previous errors
     _setLoading(true);
     _justRegistered = false;
 
@@ -104,6 +109,7 @@ class AuthController extends ChangeNotifier {
     if (result == null) {
       _isLoggedIn = true;
       _justRegistered = true;
+      _errorMessage = null;
     } else {
       _errorMessage = result;
     }
@@ -117,10 +123,12 @@ class AuthController extends ChangeNotifier {
     _justLoggedIn = false;
     _justRegistered = false;
     _justLoggedOut = true;
+    _errorMessage = null;
     notifyListeners();
   }
 
   Future<bool> sendPasswordResetEmail(String email) async {
+    _errorMessage = null;
     _setLoading(true);
 
     try {
@@ -146,6 +154,7 @@ class AuthController extends ChangeNotifier {
   Future<bool> verifyResetToken(String token) async => true;
 
   Future<bool> resetPassword(String code, String newPassword) async {
+    _errorMessage = null;
     _setLoading(true);
 
     try {
@@ -173,6 +182,7 @@ class AuthController extends ChangeNotifier {
     required String mobile,
     required String university,
   }) async {
+    _errorMessage = null;
     _setLoading(true);
 
     final result = await _authService.updateProfile(
@@ -191,6 +201,7 @@ class AuthController extends ChangeNotifier {
     required String oldPassword,
     required String newPassword,
   }) async {
+    _errorMessage = null;
     _setLoading(true);
 
     final result = await _authService.changePassword(
@@ -209,6 +220,7 @@ class AuthController extends ChangeNotifier {
     String? bankAccountNumber,
     String? ifscCode,
   }) async {
+    _errorMessage = null;
     _setLoading(true);
 
     final result = await _authService.updateBankDetails(
@@ -222,6 +234,7 @@ class AuthController extends ChangeNotifier {
     _setLoading(false);
     return result;
   }
+
   String _mapFirebaseError(FirebaseAuthException e) {
     switch (e.code) {
       case 'user-not-found':
