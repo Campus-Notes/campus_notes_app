@@ -264,12 +264,12 @@ class NoteDatabaseService {
         final querySnapshot = await _firestore
             .collection(_notesCollection)
             .orderBy('purchaseCount', descending: true)
-            .limit(limit * 2) // Get more to account for filtering
+            .limit(limit * 3) // Get more to account for filtering
             .get();
 
         return querySnapshot.docs
             .map((doc) => NoteModel.fromSnapshot(doc))
-            .where((note) => note.ownerUid != currentUserUid) // Exclude own notes
+            .where((note) => note.ownerUid != currentUserUid && note.isVerified) // Exclude own notes and unverified
             .take(limit) // Take only the requested amount after filtering
             .toList();
       } catch (indexError) {
@@ -293,12 +293,12 @@ class NoteDatabaseService {
       final querySnapshot = await _firestore
           .collection(_notesCollection)
           .orderBy('createdAt', descending: true)
-          .limit(limit * 2) // Get more to account for filtering
+          .limit(limit * 3) // Get more to account for filtering
           .get();
 
       return querySnapshot.docs
           .map((doc) => NoteModel.fromSnapshot(doc))
-          .where((note) => note.ownerUid != currentUserUid) // Exclude own notes
+          .where((note) => note.ownerUid != currentUserUid && note.isVerified) // Exclude own notes and unverified
           .take(limit) // Take only the requested amount after filtering
           .toList();
     } catch (e) {
@@ -320,7 +320,7 @@ class NoteDatabaseService {
       // Filter, sort, and limit in memory
       final notes = querySnapshot.docs
           .map((doc) => NoteModel.fromSnapshot(doc))
-          .where((note) => note.ownerUid != currentUserUid) // Exclude own notes
+          .where((note) => note.ownerUid != currentUserUid && note.isVerified) // Exclude own notes and unverified
           .toList();
       
       // Sort by createdAt in descending order
@@ -345,7 +345,7 @@ class NoteDatabaseService {
       final querySnapshot = await _firestore
           .collection(_notesCollection)
           .orderBy('createdAt', descending: true)
-          .limit(limit * 2) // Get more to account for filtering
+          .limit(limit * 3) // Get more to account for filtering
           .get();
 
       return querySnapshot.docs
@@ -355,12 +355,13 @@ class NoteDatabaseService {
             final subject = (data['subject'] ?? '').toString().toLowerCase();
             final description = (data['description'] ?? '').toString().toLowerCase();
             final ownerUid = data['ownerUid'] ?? '';
+            final isVerified = data['isVerified'] ?? false;
 
             final matchesQuery = title.contains(lowerQuery) ||
                 subject.contains(lowerQuery) ||
                 description.contains(lowerQuery);
 
-            return matchesQuery && ownerUid != currentUserUid; // Exclude own notes
+            return matchesQuery && ownerUid != currentUserUid && isVerified; // Exclude own notes and unverified
           })
           .map((doc) => NoteModel.fromSnapshot(doc))
           .take(limit) // Take only the requested amount after filtering
@@ -386,7 +387,7 @@ class NoteDatabaseService {
       // Filter, sort, and limit in memory
       final notes = querySnapshot.docs
           .map((doc) => NoteModel.fromSnapshot(doc))
-          .where((note) => note.ownerUid != currentUserUid) // Exclude own notes
+          .where((note) => note.ownerUid != currentUserUid && note.isVerified) // Exclude own notes and unverified
           .toList();
       
       // Sort by createdAt in descending order
@@ -433,11 +434,11 @@ class NoteDatabaseService {
     return _firestore
         .collection(_notesCollection)
         .orderBy('createdAt', descending: true)
-        .limit(limit * 2) // Get more to account for filtering
+        .limit(limit * 3) // Get more to account for filtering
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => NoteModel.fromSnapshot(doc))
-            .where((note) => note.ownerUid != currentUserUid) // Exclude own notes
+            .where((note) => note.ownerUid != currentUserUid && note.isVerified) // Exclude own notes and unverified
             .take(limit) // Take only the requested amount after filtering
             .toList());
   }
