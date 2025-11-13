@@ -38,6 +38,7 @@ class _LoginWidgetState extends State<LoginWidget> {
           key: _formKey,
           child: Column(
             children: [
+              // Email Field
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
@@ -63,6 +64,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               ),
               const SizedBox(height: 16),
 
+              // Password Field
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
@@ -94,8 +96,40 @@ class _LoginWidgetState extends State<LoginWidget> {
                   validator: (v) => (v?.isEmpty == true || v!.length < 6) ? 'Min 6 chars' : null,
                 ),
               ),
+
+              // Error Message Display
+              if (auth.errorMessage != null && !auth.isLoading) ...[
+                const SizedBox(height: 16),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  decoration: BoxDecoration(
+                    color: Colors.red.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: Colors.red.withOpacity(0.3), width: 1),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          auth.errorMessage!,
+                          style: const TextStyle(
+                            color: Colors.red,
+                            fontSize: 14,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+
               const SizedBox(height: 16),
 
+              // Forgot Password Link
               Row(
                 children: [
                   const Spacer(),
@@ -111,6 +145,7 @@ class _LoginWidgetState extends State<LoginWidget> {
               ),
               const SizedBox(height: 30),
 
+              // Login Button
               SizedBox(
                 width: double.infinity,
                 height: 50,

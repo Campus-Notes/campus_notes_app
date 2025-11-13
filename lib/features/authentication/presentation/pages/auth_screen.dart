@@ -63,6 +63,18 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
           });
         }
 
+        if (auth.errorMessage != null && _tabController.index == 1) { 
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(auth.errorMessage!),
+                backgroundColor: Colors.red,
+              ),
+            );
+            auth.clearError(); 
+          });
+        }
+
         return Scaffold(
           backgroundColor: Theme.of(context).colorScheme.surface, 
           body: SafeArea(
