@@ -37,13 +37,11 @@ class ReviewService {
         createdAt: now,
       );
 
-      // Add review to Firestore
       await _firestore
           .collection(_reviewsCollection)
           .doc(reviewId)
           .set(review.toMap());
 
-      // Update the note's average rating
       await _updateNoteAverageRating(noteId);
 
       return review;
@@ -52,7 +50,6 @@ class ReviewService {
     }
   }
 
-  /// Get all reviews for a specific note
   Future<List<ReviewModel>> getNoteReviews(String noteId) async {
     try {
       final querySnapshot = await _firestore
@@ -63,35 +60,30 @@ class ReviewService {
       final reviews = querySnapshot.docs
           .map((doc) => ReviewModel.fromSnapshot(doc))
           .toList();
-      
-      // Sort by createdAt in memory to avoid requiring a composite index
+
       reviews.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      
+
       return reviews;
     } catch (e) {
       rethrow;
     }
   }
 
-  /// Get reviews for a note as a stream
   Stream<List<ReviewModel>> getNoteReviewsStream(String noteId) {
     return _firestore
         .collection(_reviewsCollection)
         .where('noteId', isEqualTo: noteId)
         .snapshots()
         .map((snapshot) {
-          final reviews = snapshot.docs
-              .map((doc) => ReviewModel.fromSnapshot(doc))
-              .toList();
-          
-          // Sort by createdAt in memory to avoid requiring a composite index
-          reviews.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          
-          return reviews;
-        });
+      final reviews =
+          snapshot.docs.map((doc) => ReviewModel.fromSnapshot(doc)).toList();
+
+      reviews.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+      return reviews;
+    });
   }
 
-  /// Check if a user has already reviewed a note
   Future<bool> hasUserReviewed(String noteId, String userUid) async {
     try {
       final querySnapshot = await _firestore
@@ -148,7 +140,6 @@ class ReviewService {
     }
   }
 
-  /// Delete review
   Future<void> deleteReview(String reviewId, String noteId) async {
     try {
       await _firestore.collection(_reviewsCollection).doc(reviewId).delete();
@@ -160,24 +151,23 @@ class ReviewService {
   }
 
   Future<void> _updateNoteAverageRating(String noteId) async {
-  try {
-    final reviews = await getNoteReviews(noteId);
+    try {
+      final reviews = await getNoteReviews(noteId);
 
-    double averageRating = 0.0;
-    if (reviews.isNotEmpty) {
-      final totalRating = reviews.fold<double>(
-        0.0,
-        (acc, review) => acc + review.rating,
-      );
-      averageRating = totalRating / reviews.length;
+      double averageRating = 0.0;
+      if (reviews.isNotEmpty) {
+        final totalRating = reviews.fold<double>(
+          0.0,
+          (acc, review) => acc + review.rating,
+        );
+        averageRating = totalRating / reviews.length;
+      }
+
+      await _noteDatabaseService.updateRating(noteId, averageRating);
+    } catch (e) {
+      rethrow;
     }
-
-    await _noteDatabaseService.updateRating(noteId, averageRating);
-  } catch (e) {
-    rethrow;
   }
-}
-
 
   Future<int> getReviewCount(String noteId) async {
     try {
@@ -202,9 +192,9 @@ class ReviewService {
       final reviews = querySnapshot.docs
           .map((doc) => ReviewModel.fromSnapshot(doc))
           .toList();
-      
+
       reviews.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      
+
       return reviews;
     } catch (e) {
       rethrow;

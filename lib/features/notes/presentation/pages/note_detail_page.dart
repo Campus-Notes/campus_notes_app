@@ -22,7 +22,7 @@ import '../controller/cart_controller.dart';
 
 class NoteDetailPage extends StatefulWidget {
   const NoteDetailPage({super.key, required this.note});
-  final dynamic note; 
+  final dynamic note;
 
   @override
   State<NoteDetailPage> createState() => _NoteDetailPageState();
@@ -33,25 +33,28 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   final NoteDatabaseService _noteDatabaseService = NoteDatabaseService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
   RazorpayService? _razorpayService;
-  
-  bool _isLoading = true; 
+
+  bool _isLoading = true;
   bool _isOwnNote = false;
   bool _hasAlreadyPurchased = false;
-  bool _isPurchasing = false; 
+  bool _isPurchasing = false;
 
   @override
   void initState() {
     super.initState();
     _razorpayService = RazorpayService();
-    
+
     if (widget.note is NoteModel) {
       final noteModel = widget.note as NoteModel;
       debugPrint('🔍 NoteDetailPage initState - Full NoteModel: $noteModel');
-      debugPrint('🔍 NoteDetailPage initState - Description field: "${noteModel.description}"');
-      debugPrint('🔍 NoteDetailPage initState - Description is null: ${noteModel.description == null}');
-      debugPrint('🔍 NoteDetailPage initState - Description isEmpty: ${noteModel.description?.isEmpty}');
+      debugPrint(
+          '🔍 NoteDetailPage initState - Description field: "${noteModel.description}"');
+      debugPrint(
+          '🔍 NoteDetailPage initState - Description is null: ${noteModel.description == null}');
+      debugPrint(
+          '🔍 NoteDetailPage initState - Description isEmpty: ${noteModel.description?.isEmpty}');
     }
-    
+
     _checkNoteOwnershipAndPurchase();
   }
 
@@ -74,7 +77,6 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     }
   }
 
-
   Future<void> _checkNoteOwnershipAndPurchase() async {
     setState(() => _isLoading = true);
 
@@ -85,27 +87,23 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         return;
       }
 
-      // Get full note data if we only have NoteItem
       if (widget.note is NoteItem) {
-        // For dummy data, we'll simulate
         _isOwnNote = false;
         _hasAlreadyPurchased = false;
       } else if (widget.note is NoteModel) {
         final noteModel = widget.note as NoteModel;
-        
-        // Check if user owns this note
+
         _isOwnNote = noteModel.ownerUid == currentUser.uid;
-        
-        // Check if user has already purchased this note
+
         if (!_isOwnNote && !noteModel.isDonation) {
           _hasAlreadyPurchased = await _noteDatabaseService.hasUserPurchased(
             noteModel.noteId,
-            currentUser.uid, 
+            currentUser.uid,
           );
         } else if (noteModel.isDonation) {
           _hasAlreadyPurchased = await _noteDatabaseService.hasUserPurchased(
             noteModel.noteId,
-            currentUser.uid, 
+            currentUser.uid,
           );
         }
       }
@@ -147,29 +145,27 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       if (noteId.isEmpty) {
         throw Exception('Invalid note ID');
       }
-      
+
       if (sellerId.isEmpty) {
         throw Exception('Invalid seller ID');
       }
 
       if (notePrice <= 0) {
-        // Handle free note (donation)
         await _handleFreePurchase(noteId, currentUser.uid);
         return;
       }
 
-      // Get user details for Razorpay
       final userDoc = await FirebaseFirestore.instance
           .collection('users')
           .doc(currentUser.uid)
           .get();
-      
+
       final userData = userDoc.data() ?? {};
-      final userName = '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim();
+      final userName =
+          '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim();
       final userEmail = currentUser.email ?? '';
       final userPhone = userData['phone'] ?? '';
 
-      // Create a pending transaction
       final transaction = await _transactionService.createTransaction(
         buyerId: currentUser.uid,
         sellerId: sellerId,
@@ -178,7 +174,6 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         paymentMethod: 'razorpay',
       );
 
-      // Initiate Razorpay payment
       if (_razorpayService == null) {
         throw Exception('Razorpay service not initialized');
       }
@@ -190,7 +185,6 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         userEmail: userEmail,
         userPhone: userPhone,
         onSuccess: (paymentId, orderId) async {
-          // Payment successful, complete the transaction
           try {
             final success = await _transactionService.completeTransaction(
               transactionId: transaction.transactionId,
@@ -208,7 +202,8 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Payment completed but failed to process: ${e.toString()}'),
+                  content: Text(
+                      'Payment completed but failed to process: ${e.toString()}'),
                   backgroundColor: AppColors.error,
                 ),
               );
@@ -217,12 +212,11 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
           }
         },
         onError: (error) async {
-          // Payment failed
           await _transactionService.cancelTransaction(
             transaction.transactionId,
             'Payment failed: $error',
           );
-          
+
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -234,12 +228,11 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
           }
         },
         onCancel: () async {
-          // Payment cancelled by user
           await _transactionService.cancelTransaction(
             transaction.transactionId,
             'Payment cancelled by user',
           );
-          
+
           if (mounted) {
             setState(() => _isPurchasing = false);
           }
@@ -269,11 +262,11 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
 
     final chatId = await chatController.createOrGetChat(sellerId);
 
-    if (!mounted) return;  // ✅ FIX HERE
+    if (!mounted) return;
 
     final sellerName = await _getSellerName(sellerId);
 
-    if (!mounted) return;  // optional second check
+    if (!mounted) return;
 
     Navigator.push(
       context,
@@ -287,10 +280,8 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     );
   }
 
-
   Future<void> _handleFreePurchase(String noteId, String userId) async {
     try {
-      // For free notes, just record the "purchase" (access)
       await _noteDatabaseService.addPurchase(
         noteId: noteId,
         uid: userId,
@@ -332,7 +323,8 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
           children: [
             Text('You have successfully purchased "${_getNoteTitle()}"'),
             const SizedBox(height: 12),
-            const Text('Rewards earned:', style: TextStyle(fontWeight: FontWeight.bold)),
+            const Text('Rewards earned:',
+                style: TextStyle(fontWeight: FontWeight.bold)),
             Text('• Points: +${(_getNotePrice() * 0.02).toStringAsFixed(2)}'),
             const SizedBox(height: 8),
             const Text('The note has been added to your collection.'),
@@ -349,11 +341,10 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   }
 
   void _addToCart() {
-    // Only allow adding NoteModel to cart (not dummy NoteItem)
     if (widget.note is NoteModel) {
       final cartController = context.read<CartController>();
       final noteModel = widget.note as NoteModel;
-      
+
       if (cartController.isInCart(noteModel.noteId)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -402,7 +393,6 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         );
       }
     } else {
-      // For dummy data
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('${_getNoteTitle()} added to cart!')),
       );
@@ -458,7 +448,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   String _getSellerId() {
     if (widget.note is NoteItem) {
       debugPrint('💰 _getSellerId - Note is NoteItem, returning empty string');
-      return ''; 
+      return '';
     } else if (widget.note is NoteModel) {
       final noteModel = widget.note as NoteModel;
       final sellerId = noteModel.ownerUid;
@@ -468,13 +458,14 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       debugPrint('💰 _getSellerId - Full NoteModel: $noteModel');
       return sellerId;
     }
-    debugPrint('💰 _getSellerId - Note is neither type, returning empty string');
+    debugPrint(
+        '💰 _getSellerId - Note is neither type, returning empty string');
     return '';
   }
 
   String? _getNoteDescription() {
     if (widget.note is NoteItem) {
-      return null; // Dummy data doesn't have description
+      return null;
     } else if (widget.note is NoteModel) {
       final noteModel = widget.note as NoteModel;
       final description = noteModel.description;
@@ -485,7 +476,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
 
   int _getPageCount() {
     if (widget.note is NoteItem) {
-      return 0; // Dummy data doesn't have page count
+      return 0;
     } else if (widget.note is NoteModel) {
       return (widget.note as NoteModel).pageCount;
     }
@@ -503,9 +494,9 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final sellerId = _getSellerId();
-    final showChatButton = !_isOwnNote && sellerId.isNotEmpty && _auth.currentUser != null;
+    final showChatButton =
+        !_isOwnNote && sellerId.isNotEmpty && _auth.currentUser != null;
 
-    
     if (_isLoading) {
       return const Scaffold(
         appBar: CustomAppBar(
@@ -518,7 +509,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       );
     }
 
-    return Scaffold(  
+    return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       appBar: CustomAppBar(
         text: _getNoteTitle(),
@@ -530,30 +521,23 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
             child: ListView(
               padding: EdgeInsets.zero,
               children: [
-                // PDF Preview Section
                 PdfPreviewWidget(
                   hasAlreadyPurchased: _hasAlreadyPurchased,
                   isOwnNote: _isOwnNote,
                   note: widget.note,
-                  onTap: () {
-                  },
+                  onTap: () {},
                 ),
-                
                 const SizedBox(height: 20),
-                
                 NoteHeaderWidget(
                   title: _getNoteTitle(),
                   rating: _getNoteRating(),
                   price: _getNotePrice(),
                   isDonation: _isDonation(),
                 ),
-                
                 const SizedBox(height: 16),
-                
                 StatusIndicatorsWidget(
                   hasAlreadyPurchased: _hasAlreadyPurchased,
                 ),
-                
                 NoteDetailsWidget(
                   subject: _getNoteSubject(),
                   isDonation: _isDonation(),
@@ -561,23 +545,19 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                   description: _getNoteDescription(),
                   pageCount: _getPageCount(),
                 ),
-                
                 const SizedBox(height: 20),
-                
-                // Reviews Section - only show for NoteModel (not dummy data)
                 if (widget.note is NoteModel)
                   ReviewsSectionWidget(
                     noteId: _getNoteId(),
                   ),
-                
                 PurchaseStatusWidget(
                   isOwnNote: _isOwnNote,
                   hasAlreadyPurchased: _hasAlreadyPurchased,
                 ),
-
                 if (showChatButton)
                   Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                     child: ElevatedButton.icon(
                       onPressed: _openChat,
                       icon: const Icon(Icons.chat),
@@ -587,19 +567,16 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                       ),
                     ),
                   ),
-
-                
-                const SizedBox(height: 100), 
+                const SizedBox(height: 100),
               ],
             ),
           ),
-          
           BottomActionBarWidget(
             isOwnNote: _isOwnNote,
             hasAlreadyPurchased: _hasAlreadyPurchased,
             isDonation: _isDonation(),
             price: _getNotePrice(),
-            isLoading: _isPurchasing, 
+            isLoading: _isPurchasing,
             onAddToCart: _addToCart,
             onPurchase: _handlePurchase,
           ),

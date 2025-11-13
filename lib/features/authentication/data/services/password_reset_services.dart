@@ -60,7 +60,10 @@ class PasswordResetService {
 
       final data = jsonDecode(response.body);
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return {'success': true, 'message': data['message'] ?? 'Password reset'};
+        return {
+          'success': true,
+          'message': data['message'] ?? 'Password reset'
+        };
       }
       return {
         'success': false,

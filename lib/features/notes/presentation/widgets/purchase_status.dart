@@ -22,7 +22,6 @@ class PurchaseStatusWidget extends StatelessWidget {
       child: Column(
         children: [
           const SizedBox(height: 24),
-          
           if (isOwnNote)
             Container(
               width: double.infinity,
@@ -50,8 +49,6 @@ class PurchaseStatusWidget extends StatelessWidget {
                 ],
               ),
             ),
-
-          // Already purchased indicator
           if (hasAlreadyPurchased && !isOwnNote)
             Container(
               width: double.infinity,

@@ -15,16 +15,6 @@ class RazorpayService {
     _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
   }
 
-  /// Initialize a payment
-  /// 
-  /// Parameters:
-  /// - amount: Amount in rupees (will be converted to paise)
-  /// - description: Payment description
-  /// - orderId: Optional order ID from backend
-  /// - prefill: User details for prefilling the form
-  /// - onSuccess: Callback when payment succeeds
-  /// - onError: Callback when payment fails
-  /// - onCancel: Callback when payment is cancelled
   Future<void> initiatePayment({
     required double amount,
     required String description,
@@ -34,18 +24,15 @@ class RazorpayService {
     required Function(String error) onError,
     Function()? onCancel,
   }) async {
-    // Validate configuration
     if (!RazorpayConfig.isConfigured) {
       onError(RazorpayConfig.configurationError);
       return;
     }
 
-    // Store callbacks
     _onPaymentSuccess = onSuccess;
     _onPaymentError = onError;
     _onPaymentCancel = onCancel;
 
-    // Convert amount to paise (smallest currency unit)
     final amountInPaise = (amount * 100).toInt();
 
     var options = {
@@ -58,12 +45,10 @@ class RazorpayService {
       'prefill': prefill ?? {},
     };
 
-    // Add order_id if provided
     if (orderId != null && orderId.isNotEmpty) {
       options['order_id'] = orderId;
     }
 
-    // Add company logo if configured
     if (RazorpayConfig.companyLogo.isNotEmpty) {
       options['image'] = RazorpayConfig.companyLogo;
     }
@@ -103,20 +88,16 @@ class RazorpayService {
   void _handleExternalWallet(ExternalWalletResponse response) {
     debugPrint('💳 External Wallet:');
     debugPrint('   Wallet Name: ${response.walletName}');
-    
-    // For external wallets, we treat it as a cancellation
-    // since the payment flow moves outside our app
+
     if (_onPaymentCancel != null) {
       _onPaymentCancel!();
     }
   }
 
-  /// Dispose the Razorpay instance
   void dispose() {
     _razorpay.clear();
   }
 
-  /// Create a simple payment for a note purchase
   Future<void> payForNote({
     required double amount,
     required String noteTitle,
@@ -141,7 +122,6 @@ class RazorpayService {
     );
   }
 
-  /// Create a payment for cart checkout
   Future<void> payForCart({
     required double amount,
     required int itemCount,

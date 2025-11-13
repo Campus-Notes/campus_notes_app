@@ -66,8 +66,8 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
       );
 
       if (!mounted) return;
-      Navigator.of(context).pop(true); // Return true to indicate success
-      
+      Navigator.of(context).pop(true);
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Row(
@@ -84,11 +84,11 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
       );
     } catch (e) {
       if (!mounted) return;
-      
+
       setState(() => _isSubmitting = false);
-      
+
       String errorMessage = 'Failed to submit review';
-      
+
       if (e.toString().contains('already reviewed')) {
         errorMessage = 'You have already reviewed this note';
       } else if (e.toString().contains('not logged in')) {
@@ -96,7 +96,7 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
       } else if (e.toString().contains('Rating must be')) {
         errorMessage = 'Please select a valid rating';
       }
-      
+
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(errorMessage),
@@ -131,7 +131,9 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
                 child: Text(
                   'Rate This Note',
                   style: theme.textTheme.headlineSmall?.copyWith(
-                    color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                    color: isDark
+                        ? AppColors.textPrimaryDark
+                        : AppColors.textPrimaryLight,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -142,7 +144,9 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
           Text(
             widget.noteTitle,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : AppColors.textSecondaryLight,
             ),
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
@@ -154,11 +158,12 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Star Rating Selector
             Text(
               'Your Rating',
               style: theme.textTheme.titleMedium?.copyWith(
-                color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                color: isDark
+                    ? AppColors.textPrimaryDark
+                    : AppColors.textPrimaryLight,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -196,14 +201,13 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
                 ),
               ),
             ],
-            
             const SizedBox(height: 24),
-            
-            // Review Text Field
             Text(
               'Your Review',
               style: theme.textTheme.titleMedium?.copyWith(
-                color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                color: isDark
+                    ? AppColors.textPrimaryDark
+                    : AppColors.textPrimaryLight,
                 fontWeight: FontWeight.bold,
               ),
             ),
@@ -215,18 +219,22 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
               decoration: InputDecoration(
                 hintText: 'Share your thoughts about this note...',
                 hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.textSecondaryLight,
                 ),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                    color:
+                        isDark ? AppColors.borderDark : AppColors.borderLight,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
                   borderSide: BorderSide(
-                    color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                    color:
+                        isDark ? AppColors.borderDark : AppColors.borderLight,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
@@ -238,7 +246,9 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
                 ),
               ),
               style: theme.textTheme.bodyMedium?.copyWith(
-                color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                color: isDark
+                    ? AppColors.textPrimaryDark
+                    : AppColors.textPrimaryLight,
               ),
             ),
           ],
@@ -250,7 +260,9 @@ class _AddReviewDialogState extends State<AddReviewDialog> {
           child: Text(
             'Cancel',
             style: TextStyle(
-              color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+              color: isDark
+                  ? AppColors.textSecondaryDark
+                  : AppColors.textSecondaryLight,
             ),
           ),
         ),

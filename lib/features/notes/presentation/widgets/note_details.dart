@@ -19,20 +19,18 @@ class NoteDetailsWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
-    // Debug print to check description value
+
     debugPrint('🔍 NoteDetailsWidget - Description: $description');
     debugPrint('🔍 NoteDetailsWidget - PageCount: $pageCount');
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Divider(color: theme.colorScheme.outline.withOpacity(0.2), thickness: 1),
-          
+          Divider(
+              color: theme.colorScheme.outline.withOpacity(0.2), thickness: 1),
           const SizedBox(height: 16),
-          
           Text(
             'Description',
             style: theme.textTheme.titleMedium?.copyWith(
@@ -41,18 +39,15 @@ class NoteDetailsWidget extends StatelessWidget {
           ),
           const SizedBox(height: 8),
           Text(
-            (description != null && description!.isNotEmpty) 
-              ? description! 
-              : 'Comprehensive $subject notes covering all key topics. High-quality content perfect for exam preparation and academic reference.',
+            (description != null && description!.isNotEmpty)
+                ? description!
+                : 'Comprehensive $subject notes covering all key topics. High-quality content perfect for exam preparation and academic reference.',
             style: theme.textTheme.bodyMedium?.copyWith(
               color: theme.colorScheme.onSurfaceVariant,
               height: 1.5,
             ),
           ),
-          
           const SizedBox(height: 24),
-          
-          // Details section
           Text(
             'Details',
             style: theme.textTheme.titleMedium?.copyWith(
@@ -60,14 +55,17 @@ class NoteDetailsWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 12),
-          
           _buildDetailRow('Subject', subject, theme),
           _buildDetailRow('Format', 'PDF Document', theme),
           if (pageCount > 0)
-            _buildDetailRow('Pages', '$pageCount ${pageCount == 1 ? 'page' : 'pages'}', theme),
-          _buildDetailRow('Type', isDonation ? 'Donation' : 'Premium', theme),
+            _buildDetailRow('Pages',
+                '$pageCount ${pageCount == 1 ? 'page' : 'pages'}', theme),
+          _buildDetailRow('Type', isDonation ? 'Donation' : 'Paid', theme),
           if (!isDonation)
-            _buildDetailRow('Revenue Split', '70% to seller, 5% points to seller, 2% points to buyer', theme),
+            _buildDetailRow(
+                'Revenue Split',
+                '70% to seller, 5% points to seller, 2% points to buyer',
+                theme),
         ],
       ),
     );

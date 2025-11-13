@@ -15,15 +15,16 @@ class BankDetailsPage extends StatefulWidget {
   State<BankDetailsPage> createState() => _BankDetailsPageState();
 }
 
-class _BankDetailsPageState extends State<BankDetailsPage> with SingleTickerProviderStateMixin {
+class _BankDetailsPageState extends State<BankDetailsPage>
+    with SingleTickerProviderStateMixin {
   late TabController _tabController;
   final _upiFormKey = GlobalKey<FormState>();
   final _bankFormKey = GlobalKey<FormState>();
-  
+
   final _upiIdController = TextEditingController();
   final _accountNumberController = TextEditingController();
   final _ifscController = TextEditingController();
-  
+
   UserModel? _currentUser;
   bool _isLoading = true;
 
@@ -46,7 +47,7 @@ class _BankDetailsPageState extends State<BankDetailsPage> with SingleTickerProv
   Future<void> _loadUserData() async {
     final auth = Provider.of<AuthController>(context, listen: false);
     final user = await auth.getCurrentUser();
-    
+
     if (user != null && mounted) {
       setState(() {
         _currentUser = user;
@@ -64,7 +65,7 @@ class _BankDetailsPageState extends State<BankDetailsPage> with SingleTickerProv
 
   Future<void> _saveUpiDetails() async {
     if (!_upiFormKey.currentState!.validate()) return;
-    
+
     final auth = Provider.of<AuthController>(context, listen: false);
     final result = await auth.updateBankDetails(
       upiId: _upiIdController.text.trim(),
@@ -78,7 +79,7 @@ class _BankDetailsPageState extends State<BankDetailsPage> with SingleTickerProv
             backgroundColor: Colors.green,
           ),
         );
-        _loadUserData(); // Reload to get updated data
+        _loadUserData();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -92,7 +93,7 @@ class _BankDetailsPageState extends State<BankDetailsPage> with SingleTickerProv
 
   Future<void> _saveBankDetails() async {
     if (!_bankFormKey.currentState!.validate()) return;
-    
+
     final auth = Provider.of<AuthController>(context, listen: false);
     final result = await auth.updateBankDetails(
       bankAccountNumber: _accountNumberController.text.trim(),
@@ -107,7 +108,7 @@ class _BankDetailsPageState extends State<BankDetailsPage> with SingleTickerProv
             backgroundColor: Colors.green,
           ),
         );
-        _loadUserData(); // Reload to get updated data
+        _loadUserData();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -158,10 +159,7 @@ class _BankDetailsPageState extends State<BankDetailsPage> with SingleTickerProv
       body: SafeArea(
         child: Column(
           children: [
-            // Status Cards
             PaymentStatusSection(user: _currentUser!),
-
-            // Tab Bar
             Container(
               margin: const EdgeInsets.symmetric(horizontal: 16),
               decoration: BoxDecoration(
@@ -191,10 +189,7 @@ class _BankDetailsPageState extends State<BankDetailsPage> with SingleTickerProv
                 ],
               ),
             ),
-
             const SizedBox(height: 16),
-
-            // Tab Content
             Expanded(
               child: TabBarView(
                 controller: _tabController,

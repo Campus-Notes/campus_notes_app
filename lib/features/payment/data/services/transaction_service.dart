@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/foundation.dart';
 import 'package:uuid/uuid.dart';
 import '../models/transaction_model.dart';
 import '../models/user_credit_models.dart';
@@ -12,9 +13,9 @@ class TransactionService {
 
   Map<String, double> calculateTransactionAmounts(double price) {
     return {
-      'sellerAmount': price * 0.80,    // 80% to seller
-      'sellerPoints': price * 0.05,    // 5% as seller reward points
-      'buyerPoints': price * 0.02,     // 2% as buyer reward points
+      'sellerAmount': price * 0.80,
+      'sellerPoints': price * 0.05,
+      'buyerPoints': price * 0.02,
     };
   }
 
@@ -88,8 +89,8 @@ class TransactionService {
         },
       );
 
-      // Update seller's wallet balance, total earnings, and points
-      final sellerDoc = _firestore.collection('users').doc(transaction.sellerId);
+      final sellerDoc =
+          _firestore.collection('users').doc(transaction.sellerId);
       batch.update(sellerDoc, {
         'walletBalance': FieldValue.increment(transaction.sellerAmount),
         'totalEarnings': FieldValue.increment(transaction.sellerAmount),
@@ -136,7 +137,6 @@ class TransactionService {
         sellerPointsCredit.toMap(),
       );
 
-      // Update buyer points only (Razorpay handles payment, not wallet)
       final buyerDoc = _firestore.collection('users').doc(transaction.buyerId);
       batch.update(buyerDoc, {
         'points': FieldValue.increment(transaction.buyerPoints),
@@ -180,16 +180,14 @@ class TransactionService {
 
       final noteDoc = _firestore.collection('notes').doc(transaction.noteId);
       final noteData = await noteDoc.get();
-      
+
       if (noteData.exists) {
         batch.update(noteDoc, {
           'purchaseCount': FieldValue.increment(1),
           'purchaserIds': FieldValue.arrayUnion([transaction.buyerId]),
-          'earnings': FieldValue.increment(transaction.sellerAmount), // Add earnings tracking (80% of sale price)
+          'earnings': FieldValue.increment(transaction.sellerAmount),
         });
-      } else {
-        // Note not found when updating purchase count
-      }
+      } else {}
 
       batch.set(
         _firestore
@@ -206,18 +204,16 @@ class TransactionService {
 
       await batch.commit();
       return true;
-      
     } catch (e) {
-      
       try {
         await _firestore
             .collection(_transactionsCollection)
             .doc(transactionId)
             .update({'status': 'failed', 'failureReason': e.toString()});
       } catch (updateError) {
-        // Failed to update transaction status
+        debugPrint('Error updating transaction status: $updateError');
       }
-      
+
       rethrow;
     }
   }

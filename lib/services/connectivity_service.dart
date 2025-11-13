@@ -12,7 +12,8 @@ class ConnectivityService extends ChangeNotifier {
 
   ConnectivityService() {
     _initConnectivity();
-    _connectivitySubscription = _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
+    _connectivitySubscription =
+        _connectivity.onConnectivityChanged.listen(_updateConnectionStatus);
   }
 
   Future<void> _initConnectivity() async {
@@ -21,22 +22,21 @@ class ConnectivityService extends ChangeNotifier {
       _updateConnectionStatus(result);
     } catch (e) {
       debugPrint('Error checking connectivity: $e');
-      _isOnline = true; // Assume online if we can't check
+      _isOnline = true;
       notifyListeners();
     }
   }
 
   void _updateConnectionStatus(List<ConnectivityResult> results) {
-    // User is online if they have any connection (wifi, mobile, ethernet)
-    final hasConnection = results.any((result) => 
-      result == ConnectivityResult.wifi || 
-      result == ConnectivityResult.mobile ||
-      result == ConnectivityResult.ethernet
-    );
-    
+    final hasConnection = results.any((result) =>
+        result == ConnectivityResult.wifi ||
+        result == ConnectivityResult.mobile ||
+        result == ConnectivityResult.ethernet);
+
     if (_isOnline != hasConnection) {
       _isOnline = hasConnection;
-      debugPrint('📡 Connectivity changed: ${_isOnline ? "ONLINE" : "OFFLINE"}');
+      debugPrint(
+          '📡 Connectivity changed: ${_isOnline ? "ONLINE" : "OFFLINE"}');
       notifyListeners();
     }
   }

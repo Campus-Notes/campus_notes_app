@@ -28,7 +28,7 @@ class _MainShellState extends State<MainShell> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       extendBody: true,
       body: Column(
@@ -49,16 +49,16 @@ class _MainShellState extends State<MainShell> {
           child: Container(
             height: 70,
             decoration: BoxDecoration(
-              color: theme.brightness == Brightness.dark 
-                  ? AppColors.surfaceDark 
+              color: theme.brightness == Brightness.dark
+                  ? AppColors.surfaceDark
                   : AppColors.surfaceLight,
               borderRadius: BorderRadius.circular(40),
               border: theme.brightness == Brightness.light
-                ? Border.all(
-                    color: const Color.fromRGBO(0, 0, 0, 0.12),
-                    width: 1.5,
-                  )
-                : null,
+                  ? Border.all(
+                      color: const Color.fromRGBO(0, 0, 0, 0.12),
+                      width: 1.5,
+                    )
+                  : null,
               boxShadow: [
                 BoxShadow(
                   blurRadius: 20,
@@ -94,8 +94,8 @@ class _MainShellState extends State<MainShell> {
                       size: 28,
                       color: _selectedIndex == index
                           ? Colors.white
-                          : (theme.brightness == Brightness.dark 
-                              ? AppColors.textSecondaryDark 
+                          : (theme.brightness == Brightness.dark
+                              ? AppColors.textSecondaryDark
                               : AppColors.textSecondaryLight),
                     ),
                   ),

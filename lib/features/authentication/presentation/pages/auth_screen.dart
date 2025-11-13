@@ -47,7 +47,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
                 backgroundColor: Colors.green,
               ),
             );
-            _tabController.animateTo(0); 
+            _tabController.animateTo(0);
           });
         }
 
@@ -59,11 +59,11 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
                 backgroundColor: Colors.red,
               ),
             );
-            auth.clearError(); 
+            auth.clearError();
           });
         }
 
-        if (auth.errorMessage != null && _tabController.index == 1) { 
+        if (auth.errorMessage != null && _tabController.index == 1) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
@@ -71,12 +71,12 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
                 backgroundColor: Colors.red,
               ),
             );
-            auth.clearError(); 
+            auth.clearError();
           });
         }
 
         return Scaffold(
-          backgroundColor: Theme.of(context).colorScheme.surface, 
+          backgroundColor: Theme.of(context).colorScheme.surface,
           body: SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(24.0),
@@ -99,14 +99,19 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
                       'Sign in-up to enjoy the best managing experience',
                       style: TextStyle(
                         fontSize: 14,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                       ),
                     ),
                     const SizedBox(height: 40),
-
                     Container(
                       decoration: BoxDecoration(
-                        color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.8),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .surface
+                            .withValues(alpha: 0.8),
                         borderRadius: BorderRadius.circular(25),
                       ),
                       child: TabBar(
@@ -118,7 +123,8 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
                         indicatorSize: TabBarIndicatorSize.tab,
                         dividerColor: Colors.transparent,
                         labelColor: Theme.of(context).colorScheme.onPrimary,
-                        unselectedLabelColor: Theme.of(context).colorScheme.onSurface,
+                        unselectedLabelColor:
+                            Theme.of(context).colorScheme.onSurface,
                         labelStyle: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -129,9 +135,7 @@ class _AuthenticationScreenState extends State<AuthenticationScreen>
                         ],
                       ),
                     ),
-
                     const SizedBox(height: 40),
-
                     SizedBox(
                       height: MediaQuery.of(context).size.height * 0.6,
                       child: TabBarView(

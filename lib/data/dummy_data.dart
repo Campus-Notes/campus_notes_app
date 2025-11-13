@@ -1,14 +1,13 @@
-
 class NoteItem {
   final String id;
   final String title;
   final String subject;
   final String seller;
-  final double price; 
+  final double price;
   final double rating;
   final int pages;
   final List<String> tags;
-  
+
   const NoteItem({
     required this.id,
     required this.title,
@@ -56,10 +55,10 @@ final dummyNotes = [
 
 class Message {
   final String id;
-  final String sender; // "me" or name
+  final String sender;
   final String text;
   final DateTime time;
-  
+
   const Message({
     required this.id,
     required this.sender,
@@ -110,7 +109,7 @@ class PurchaseItem {
   final String subject;
   final DateTime date;
   final double amount;
-  
+
   const PurchaseItem({
     required this.id,
     required this.title,

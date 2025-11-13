@@ -24,7 +24,9 @@ class CartCheckoutSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartController>();
-    final maxPoints = userPoints > cart.subtotal ? cart.subtotal : userPoints;
+    final maxPoints = userPoints.round().toDouble() > cart.subtotal
+        ? cart.subtotal
+        : userPoints.round().toDouble();
     final finalAmount = cart.subtotal - pointsToRedeem;
 
     return Container(
@@ -54,7 +56,8 @@ class CartCheckoutSection extends StatelessWidget {
                 ),
               _PriceRow('Subtotal', cart.subtotal),
               if (pointsToRedeem > 0)
-                _PriceRow('Points Redeemed', -pointsToRedeem, color: AppColors.success),
+                _PriceRow('Points Redeemed', -pointsToRedeem,
+                    color: AppColors.success),
               const Divider(height: 24),
               _PriceRow('Total to Pay', finalAmount, isTotal: true),
               const SizedBox(height: 16),
@@ -62,7 +65,8 @@ class CartCheckoutSection extends StatelessWidget {
                 width: double.infinity,
                 height: 56,
                 child: ElevatedButton(
-                  onPressed: isProcessing ? null : () => onCheckout(finalAmount),
+                  onPressed:
+                      isProcessing ? null : () => onCheckout(finalAmount),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.primary,
                     shape: RoundedRectangleBorder(
@@ -123,7 +127,7 @@ class _PointsRedeemCard extends StatelessWidget {
               const Text('Redeem Points (1 point = ₹1)',
                   style: TextStyle(fontWeight: FontWeight.w600)),
               const Spacer(),
-              Text('${userPoints.toStringAsFixed(0)} pts',
+              Text('${userPoints.round()} pts',
                   style: const TextStyle(
                       color: AppColors.primary, fontWeight: FontWeight.bold)),
             ],

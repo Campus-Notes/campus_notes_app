@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../../data/dummy_data.dart';
 import '../pages/note_detail_page.dart';
+import '../../../../common_widgets/verified_badge.dart';
 
 class NoteCard extends StatelessWidget {
   const NoteCard({super.key, required this.item});
@@ -13,7 +14,9 @@ class NoteCard extends StatelessWidget {
     return Card(
       elevation: 0,
       margin: const EdgeInsets.symmetric(vertical: 6),
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12), side: const BorderSide(color:  Color(0xFFE5E7EB))),
+      shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: const BorderSide(color: Color(0xFFE5E7EB))),
       child: InkWell(
         borderRadius: BorderRadius.circular(12),
         onTap: () => Navigator.of(context).push(
@@ -51,47 +54,30 @@ class NoteCard extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 4),
-                        // Verified badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                          decoration: BoxDecoration(
-                            color: Colors.blue.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(
-                                Icons.verified,
-                                size: 10,
-                                color: Colors.blue[700],
-                              ),
-                              const SizedBox(width: 2),
-                              Text(
-                                'Verified',
-                                style: TextStyle(
-                                  fontSize: 8,
-                                  fontWeight: FontWeight.w600,
-                                  color: Colors.blue[700],
-                                ),
-                              ),
-                            ],
-                          ),
+                        const VerifiedBadge(
+                          fontSize: 8,
+                          iconSize: 10,
                         ),
                       ],
                     ),
                     const SizedBox(height: 4),
-                    Text(item.subject, style: const TextStyle(color: AppColors.muted)),
+                    Text(item.subject,
+                        style: const TextStyle(color: AppColors.muted)),
                     const SizedBox(height: 8),
                     Row(
                       children: [
                         Icon(Icons.star, size: 16, color: Colors.amber[600]),
                         const SizedBox(width: 4),
-                        Text(item.rating.toStringAsFixed(1), style: const TextStyle(fontWeight: FontWeight.w600)),
+                        Text(item.rating.toStringAsFixed(1),
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w600)),
                         const SizedBox(width: 12),
-                        Text('${item.pages} pages', style: const TextStyle(color: AppColors.muted)),
+                        Text('${item.pages} pages',
+                            style: const TextStyle(color: AppColors.muted)),
                         const Spacer(),
-                        Text('₹${item.price.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.w800)),
+                        Text('₹${item.price.toStringAsFixed(0)}',
+                            style:
+                                const TextStyle(fontWeight: FontWeight.w800)),
                       ],
                     ),
                   ],

@@ -35,7 +35,8 @@ class LocationHeader extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
             isExpanded: true,
             underline: const SizedBox(),
-            icon: const Icon(Icons.keyboard_arrow_down, size: 20, color: iconColor),
+            icon: const Icon(Icons.keyboard_arrow_down,
+                size: 20, color: iconColor),
             style: TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
@@ -48,7 +49,7 @@ class LocationHeader extends StatelessWidget {
               );
             }).toList(),
             focusColor: Colors.transparent,
-            borderRadius: BorderRadius.circular(12), 
+            borderRadius: BorderRadius.circular(12),
             onChanged: onUniversityChanged,
           ),
         ),
@@ -56,17 +57,18 @@ class LocationHeader extends StatelessWidget {
           icon: const Icon(Icons.search, size: 24, color: iconColor),
           onPressed: onSearchTap,
         ),
-        // Cart icon with badge
         Consumer<CartController>(
           builder: (context, cart, child) {
             return Stack(
               clipBehavior: Clip.none,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.shopping_cart_outlined, size: 24, color: iconColor),
-                  onPressed: onCartTap ?? () {
-                    Navigator.pushNamed(context, '/cart');
-                  },
+                  icon: const Icon(Icons.shopping_cart_outlined,
+                      size: 24, color: iconColor),
+                  onPressed: onCartTap ??
+                      () {
+                        Navigator.pushNamed(context, '/cart');
+                      },
                 ),
                 if (cart.itemCount > 0)
                   Positioned(

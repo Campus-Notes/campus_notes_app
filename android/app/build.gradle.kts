@@ -15,6 +15,7 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+        isCoreLibraryDesugaringEnabled = true
     }
 
     kotlinOptions {
@@ -23,7 +24,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.campus_notes_app"
-        minSdk = 23
+        minSdk = flutter.minSdkVersion
         targetSdk = 33
         versionCode = flutter.versionCode.toInt()
         versionName = flutter.versionName
@@ -42,4 +43,5 @@ flutter {
 
 dependencies {
     // Firebase dependencies auto-added by FlutterFire
+    coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:2.0.4")
 }

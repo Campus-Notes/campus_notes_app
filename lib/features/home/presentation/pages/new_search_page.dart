@@ -25,10 +25,9 @@ class _NewSearchPageState extends State<NewSearchPage> {
   @override
   void initState() {
     super.initState();
-    // Load all notes when the page is first opened
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final notesController = Provider.of<NotesController>(context, listen: false);
-      // Make sure we have notes loaded
+      final notesController =
+          Provider.of<NotesController>(context, listen: false);
       if (notesController.allNotes.isEmpty && !notesController.hasLoadedOnce) {
         notesController.loadAllNotes();
       }
@@ -55,25 +54,26 @@ class _NewSearchPageState extends State<NewSearchPage> {
       _isSearching = true;
     });
 
-    final notesController = Provider.of<NotesController>(context, listen: false);
-    
-    // Get all notes and filter locally for better control
+    final notesController =
+        Provider.of<NotesController>(context, listen: false);
+
     List<NoteModel> results = List.from(notesController.allNotes);
 
-    // Filter by search query (title, description, subject)
     results = results.where((note) {
       final titleMatch = note.title.toLowerCase().contains(query.toLowerCase());
-      final descMatch = note.description?.toLowerCase().contains(query.toLowerCase()) ?? false;
-      final subjectMatch = note.subject.toLowerCase().contains(query.toLowerCase());
+      final descMatch =
+          note.description?.toLowerCase().contains(query.toLowerCase()) ??
+              false;
+      final subjectMatch =
+          note.subject.toLowerCase().contains(query.toLowerCase());
       return titleMatch || descMatch || subjectMatch;
     }).toList();
 
-    // Filter by subject
     if (_selectedSubject != 'All') {
-      results = results.where((note) => note.subject == _selectedSubject).toList();
+      results =
+          results.where((note) => note.subject == _selectedSubject).toList();
     }
 
-    // Filter by rating
     if (_selectedRating != 'All') {
       final minRating = double.parse(_selectedRating);
       results = results.where((note) => note.rating >= minRating).toList();
@@ -106,7 +106,6 @@ class _NewSearchPageState extends State<NewSearchPage> {
       ),
       body: Column(
         children: [
-          // Search Bar Section
           Container(
             padding: const EdgeInsets.all(16),
             decoration: BoxDecoration(
@@ -122,7 +121,6 @@ class _NewSearchPageState extends State<NewSearchPage> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Search Input
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).scaffoldBackgroundColor,
@@ -137,9 +135,10 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     style: Theme.of(context).textTheme.bodyLarge,
                     decoration: InputDecoration(
                       hintText: 'Search by title, description, or subject...',
-                      hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondaryLight,
-                      ),
+                      hintStyle:
+                          Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: AppColors.textSecondaryLight,
+                              ),
                       prefixIcon: const Icon(
                         Icons.search,
                         color: AppColors.primary,
@@ -157,17 +156,14 @@ class _NewSearchPageState extends State<NewSearchPage> {
                       ),
                     ),
                     onChanged: (value) {
-                      setState(() {}); // Rebuild to show/hide clear button
+                      setState(() {});
                     },
                     onSubmitted: (value) => _performSearch(),
                   ),
                 ),
                 const SizedBox(height: 12),
-
-                // Filter Row
                 Row(
                   children: [
-                    // Subject Filter
                     Expanded(
                       child: _buildFilterDropdown(
                         label: 'Subject',
@@ -183,8 +179,6 @@ class _NewSearchPageState extends State<NewSearchPage> {
                       ),
                     ),
                     const SizedBox(width: 12),
-
-                    // Rating Filter
                     Expanded(
                       child: _buildFilterDropdown(
                         label: 'Rating',
@@ -202,8 +196,6 @@ class _NewSearchPageState extends State<NewSearchPage> {
                   ],
                 ),
                 const SizedBox(height: 12),
-
-                // Search Button
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
@@ -223,10 +215,11 @@ class _NewSearchPageState extends State<NewSearchPage> {
                         const SizedBox(width: 8),
                         Text(
                           'Search',
-                          style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.titleMedium?.copyWith(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),
@@ -235,8 +228,6 @@ class _NewSearchPageState extends State<NewSearchPage> {
               ],
             ),
           ),
-
-          // Results Section
           Expanded(
             child: _buildSearchResults(),
           ),
@@ -360,17 +351,17 @@ class _NewSearchPageState extends State<NewSearchPage> {
               Text(
                 title,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.textPrimaryLight,
-                ),
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.textPrimaryLight,
+                    ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 8),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondaryLight,
-                ),
+                      color: AppColors.textSecondaryLight,
+                    ),
                 textAlign: TextAlign.center,
               ),
             ],
@@ -405,7 +396,6 @@ class _NewSearchPageState extends State<NewSearchPage> {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Icon
                   Container(
                     padding: const EdgeInsets.all(12),
                     decoration: BoxDecoration(
@@ -419,8 +409,6 @@ class _NewSearchPageState extends State<NewSearchPage> {
                     ),
                   ),
                   const SizedBox(width: 12),
-
-                  // Note Details
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -430,17 +418,20 @@ class _NewSearchPageState extends State<NewSearchPage> {
                             Expanded(
                               child: Text(
                                 note.title,
-                                style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                                  fontWeight: FontWeight.bold,
-                                ),
+                                style: Theme.of(context)
+                                    .textTheme
+                                    .titleMedium
+                                    ?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                               ),
                             ),
                             const SizedBox(width: 8),
-                            // Verified badge
                             Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
                                 color: Colors.blue.withValues(alpha: 0.1),
                                 borderRadius: BorderRadius.circular(6),
@@ -478,19 +469,24 @@ class _NewSearchPageState extends State<NewSearchPage> {
                             const SizedBox(width: 4),
                             Text(
                               note.subject,
-                              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                color: AppColors.textSecondaryLight,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .bodySmall
+                                  ?.copyWith(
+                                    color: AppColors.textSecondaryLight,
+                                  ),
                             ),
                           ],
                         ),
-                        if (note.description != null && note.description!.isNotEmpty) ...[
+                        if (note.description != null &&
+                            note.description!.isNotEmpty) ...[
                           const SizedBox(height: 8),
                           Text(
                             note.description!,
-                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                              color: AppColors.textSecondaryLight,
-                            ),
+                            style:
+                                Theme.of(context).textTheme.bodySmall?.copyWith(
+                                      color: AppColors.textSecondaryLight,
+                                    ),
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                           ),
@@ -501,11 +497,8 @@ class _NewSearchPageState extends State<NewSearchPage> {
                 ],
               ),
               const SizedBox(height: 12),
-
-              // Bottom Row - Price, Rating, Actions
               Row(
                 children: [
-                  // Price
                   if (!note.isDonation) ...[
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -525,10 +518,13 @@ class _NewSearchPageState extends State<NewSearchPage> {
                           ),
                           Text(
                             note.price?.toStringAsFixed(0) ?? '0',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: AppColors.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
+                                  color: AppColors.primary,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ],
                       ),
@@ -553,18 +549,19 @@ class _NewSearchPageState extends State<NewSearchPage> {
                           const SizedBox(width: 4),
                           Text(
                             'FREE',
-                            style: Theme.of(context).textTheme.titleSmall?.copyWith(
-                              color: Colors.green,
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleSmall
+                                ?.copyWith(
+                                  color: Colors.green,
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ],
                       ),
                     ),
                   ],
                   const SizedBox(width: 12),
-
-                  // Rating
                   Container(
                     padding: const EdgeInsets.symmetric(
                       horizontal: 8,
@@ -584,17 +581,15 @@ class _NewSearchPageState extends State<NewSearchPage> {
                         const SizedBox(width: 4),
                         Text(
                           note.rating.toStringAsFixed(1),
-                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                          style:
+                              Theme.of(context).textTheme.bodySmall?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                  ),
                         ),
                       ],
                     ),
                   ),
-
                   const Spacer(),
-
-                  // Add to Cart Button
                   if (!note.isDonation)
                     Consumer<CartController>(
                       builder: (context, cartController, child) {
@@ -625,8 +620,12 @@ class _NewSearchPageState extends State<NewSearchPage> {
                             }
                           },
                           icon: Icon(
-                            isInCart ? Icons.shopping_cart : Icons.add_shopping_cart,
-                            color: isInCart ? AppColors.primary : AppColors.textSecondaryLight,
+                            isInCart
+                                ? Icons.shopping_cart
+                                : Icons.add_shopping_cart,
+                            color: isInCart
+                                ? AppColors.primary
+                                : AppColors.textSecondaryLight,
                           ),
                         );
                       },

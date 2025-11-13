@@ -9,7 +9,6 @@ class WalletService {
   static const String _walletCreditsSubcollection = 'wallet_credits';
   static const String _pointsCreditsSubcollection = 'points_credits';
 
-  /// Check if a user has purchased a specific note
   Future<bool> hasUserPurchased(String userId, String noteId) async {
     try {
       if (userId.isEmpty || noteId.isEmpty) {
@@ -29,7 +28,6 @@ class WalletService {
     }
   }
 
-  /// Get list of note IDs purchased by a user
   Future<List<String>> getUserPurchasedNoteIds(String userId) async {
     try {
       final querySnapshot = await _firestore
@@ -44,13 +42,9 @@ class WalletService {
     }
   }
 
-  /// Get user's current wallet balance
   Future<double> getWalletBalance(String userId) async {
     try {
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(userId)
-          .get();
+      final userDoc = await _firestore.collection('users').doc(userId).get();
 
       if (userDoc.exists) {
         final data = userDoc.data() as Map<String, dynamic>;
@@ -62,13 +56,9 @@ class WalletService {
     }
   }
 
-  /// Get user's total earnings (lifetime earnings)
   Future<double> getTotalEarnings(String userId) async {
     try {
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(userId)
-          .get();
+      final userDoc = await _firestore.collection('users').doc(userId).get();
 
       if (userDoc.exists) {
         final data = userDoc.data() as Map<String, dynamic>;
@@ -80,13 +70,9 @@ class WalletService {
     }
   }
 
-  /// Get user's points balance
   Future<double> getPointsBalance(String userId) async {
     try {
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(userId)
-          .get();
+      final userDoc = await _firestore.collection('users').doc(userId).get();
 
       if (userDoc.exists) {
         final data = userDoc.data() as Map<String, dynamic>;
@@ -98,7 +84,6 @@ class WalletService {
     }
   }
 
-  /// Get user's wallet transaction history
   Future<List<WalletCreditModel>> getWalletHistory({
     required String userId,
     int? limit,
@@ -120,7 +105,7 @@ class WalletService {
       }
 
       final querySnapshot = await query.get();
-      
+
       return querySnapshot.docs
           .map((doc) => WalletCreditModel.fromSnapshot(doc))
           .toList();
@@ -129,7 +114,6 @@ class WalletService {
     }
   }
 
-  /// Get user's points transaction history
   Future<List<PointsCreditModel>> getPointsHistory({
     required String userId,
     int? limit,
@@ -151,7 +135,7 @@ class WalletService {
       }
 
       final querySnapshot = await query.get();
-      
+
       return querySnapshot.docs
           .map((doc) => PointsCreditModel.fromSnapshot(doc))
           .toList();
@@ -160,7 +144,6 @@ class WalletService {
     }
   }
 
-  /// Get user's purchase history with details
   Future<List<Map<String, dynamic>>> getPurchaseHistory({
     required String userId,
     int? limit,
@@ -177,7 +160,7 @@ class WalletService {
       }
 
       final querySnapshot = await query.get();
-      
+
       return querySnapshot.docs.map((doc) {
         final data = doc.data() as Map<String, dynamic>;
         return {
@@ -192,10 +175,9 @@ class WalletService {
     }
   }
 
-  /// Get user's transaction history (both buying and selling)
   Future<List<TransactionModel>> getTransactionHistory({
     required String userId,
-    String? type, // 'buyer', 'seller', or null for both
+    String? type,
     int? limit,
     DocumentSnapshot? lastDocument,
   }) async {
@@ -204,13 +186,11 @@ class WalletService {
           .collection(_transactionsCollection)
           .where('status', isEqualTo: 'completed');
 
-      // Filter by user role
       if (type == 'buyer') {
         query = query.where('buyerId', isEqualTo: userId);
       } else if (type == 'seller') {
         query = query.where('sellerId', isEqualTo: userId);
       } else {
-        // Get both - need to do separate queries and merge
         final buyerQuery = _firestore
             .collection(_transactionsCollection)
             .where('status', isEqualTo: 'completed')
@@ -226,7 +206,7 @@ class WalletService {
         if (limit != null) {
           final buyerDocs = await buyerQuery.limit(limit ~/ 2).get();
           final sellerDocs = await sellerQuery.limit(limit ~/ 2).get();
-          
+
           final allDocs = [...buyerDocs.docs, ...sellerDocs.docs];
           allDocs.sort((a, b) {
             final aData = a.data();
@@ -243,7 +223,7 @@ class WalletService {
         } else {
           final buyerDocs = await buyerQuery.get();
           final sellerDocs = await sellerQuery.get();
-          
+
           final allDocs = [...buyerDocs.docs, ...sellerDocs.docs];
           allDocs.sort((a, b) {
             final aData = a.data();
@@ -270,7 +250,7 @@ class WalletService {
       }
 
       final querySnapshot = await query.get();
-      
+
       return querySnapshot.docs
           .map((doc) => TransactionModel.fromSnapshot(doc))
           .toList();
@@ -279,7 +259,6 @@ class WalletService {
     }
   }
 
-  /// Handle wallet withdrawal - decreases walletBalance but maintains totalEarnings
   Future<bool> processWithdrawal({
     required String userId,
     required double amount,
@@ -292,27 +271,24 @@ class WalletService {
       }
 
       final userDoc = _firestore.collection('users').doc(userId);
-      
-      // Check current wallet balance
+
       final userData = await userDoc.get();
       if (!userData.exists) {
         throw Exception('User not found');
       }
 
-      final currentBalance = (userData.data() as Map<String, dynamic>)['walletBalance'] ?? 0.0;
+      final currentBalance =
+          (userData.data() as Map<String, dynamic>)['walletBalance'] ?? 0.0;
       if (currentBalance < amount) {
         throw Exception('Insufficient wallet balance');
       }
 
       final batch = _firestore.batch();
-      
-      // Update user wallet balance (decrease)
+
       batch.update(userDoc, {
         'walletBalance': FieldValue.increment(-amount),
-        // Note: totalEarnings remains unchanged
       });
 
-      // Create withdrawal record
       final withdrawalId = _firestore
           .collection('users')
           .doc(userId)
@@ -323,12 +299,13 @@ class WalletService {
       final withdrawalCredit = WalletCreditModel(
         creditId: withdrawalId,
         userId: userId,
-        noteId: '', // No note associated with withdrawal
-        transactionId: '', // No transaction associated with withdrawal
+        noteId: '',
+        transactionId: '',
         amount: -amount,
         type: 'withdrawal',
         creditedAt: DateTime.now(),
-        description: 'Wallet withdrawal via $withdrawalMethod${withdrawalDetails != null ? ' - $withdrawalDetails' : ''}',
+        description:
+            'Wallet withdrawal via $withdrawalMethod${withdrawalDetails != null ? ' - $withdrawalDetails' : ''}',
         status: 'completed',
       );
 
@@ -343,7 +320,6 @@ class WalletService {
 
       await batch.commit();
       return true;
-
     } catch (e) {
       return false;
     }
@@ -351,10 +327,7 @@ class WalletService {
 
   Future<Map<String, dynamic>> getWalletSummary(String userId) async {
     try {
-      final userDoc = await _firestore
-          .collection('users')
-          .doc(userId)
-          .get();
+      final userDoc = await _firestore.collection('users').doc(userId).get();
 
       double walletBalance = 0.0;
       double totalEarnings = 0.0;

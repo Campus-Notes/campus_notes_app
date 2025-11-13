@@ -21,7 +21,7 @@ class ReviewsSectionWidget extends StatefulWidget {
 class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
   final ReviewService _reviewService = ReviewService();
   final DatabaseService _databaseService = DatabaseService();
-  
+
   List<ReviewModel> _reviews = [];
   final Map<String, UserModel?> _userCache = {};
   bool _isLoading = true;
@@ -42,8 +42,7 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
 
     try {
       final reviews = await _reviewService.getNoteReviews(widget.noteId);
-      
-      // Load user data for each review
+
       for (final review in reviews) {
         if (!_userCache.containsKey(review.userUid)) {
           final user = await _databaseService.getUserData(review.userUid);
@@ -124,7 +123,6 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section Header
           Row(
             children: [
               const Icon(
@@ -136,14 +134,17 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
               Text(
                 'Reviews',
                 style: theme.textTheme.headlineSmall?.copyWith(
-                  color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                  color: isDark
+                      ? AppColors.textPrimaryDark
+                      : AppColors.textPrimaryLight,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               const Spacer(),
               if (_reviewCount > 0)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(
                     color: AppColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -159,8 +160,6 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
             ],
           ),
           const SizedBox(height: 16),
-          
-          // Content
           if (_isLoading)
             const Center(
               child: Padding(
@@ -199,7 +198,7 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
                   children: [
                     Icon(
                       Icons.chat_bubble_outline,
-                      color: isDark 
+                      color: isDark
                           ? AppColors.textSecondaryDark.withValues(alpha: 0.5)
                           : AppColors.textSecondaryLight.withValues(alpha: 0.5),
                       size: 48,
@@ -208,14 +207,18 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
                     Text(
                       'No reviews yet',
                       style: theme.textTheme.titleMedium?.copyWith(
-                        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                        color: isDark
+                            ? AppColors.textSecondaryDark
+                            : AppColors.textSecondaryLight,
                       ),
                     ),
                     const SizedBox(height: 4),
                     Text(
                       'Be the first to review this note',
                       style: theme.textTheme.bodySmall?.copyWith(
-                        color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                        color: isDark
+                            ? AppColors.textSecondaryDark
+                            : AppColors.textSecondaryLight,
                       ),
                     ),
                   ],
@@ -234,7 +237,7 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
               itemBuilder: (context, index) {
                 final review = _reviews[index];
                 final user = _userCache[review.userUid];
-                
+
                 return _buildReviewItem(review, user, theme, isDark);
               },
             ),
@@ -252,16 +255,14 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // User info and rating
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // User avatar
             CircleAvatar(
               radius: 20,
               backgroundColor: AppColors.primary.withValues(alpha: 0.1),
               child: Text(
-                (user?.firstName.isNotEmpty == true 
+                (user?.firstName.isNotEmpty == true
                     ? user!.firstName[0].toUpperCase()
                     : '?'),
                 style: theme.textTheme.titleMedium?.copyWith(
@@ -271,8 +272,6 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
               ),
             ),
             const SizedBox(width: 12),
-            
-            // User name and rating
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -280,7 +279,9 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
                   Text(
                     user?.fullName ?? 'Anonymous',
                     style: theme.textTheme.titleMedium?.copyWith(
-                      color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+                      color: isDark
+                          ? AppColors.textPrimaryDark
+                          : AppColors.textPrimaryLight,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -292,7 +293,9 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
                       Text(
                         _formatDate(review.createdAt),
                         style: theme.textTheme.bodySmall?.copyWith(
-                          color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                          color: isDark
+                              ? AppColors.textSecondaryDark
+                              : AppColors.textSecondaryLight,
                         ),
                       ),
                     ],
@@ -302,14 +305,14 @@ class _ReviewsSectionWidgetState extends State<ReviewsSectionWidget> {
             ),
           ],
         ),
-        
-        // Review description
         if (review.description.isNotEmpty) ...[
           const SizedBox(height: 12),
           Text(
             review.description,
             style: theme.textTheme.bodyMedium?.copyWith(
-              color: isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight,
+              color: isDark
+                  ? AppColors.textPrimaryDark
+                  : AppColors.textPrimaryLight,
             ),
           ),
         ],

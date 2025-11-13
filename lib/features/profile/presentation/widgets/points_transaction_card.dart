@@ -15,12 +15,11 @@ class PointsTransactionCard extends StatelessWidget {
     final isPositive = transaction.points > 0;
     final icon = _getIconForType(transaction.type);
     final color = isPositive ? AppColors.success : AppColors.error;
-    
-    // Format date
+
     final now = DateTime.now();
     final difference = now.difference(transaction.creditedAt);
     final String timeAgo;
-    
+
     if (difference.inDays > 0) {
       timeAgo = '${difference.inDays}d ago';
     } else if (difference.inHours > 0) {
@@ -60,7 +59,8 @@ class PointsTransactionCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  transaction.description ?? _getTransactionTitle(transaction.type),
+                  transaction.description ??
+                      _getTransactionTitle(transaction.type),
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,

@@ -38,7 +38,6 @@ class _LoginWidgetState extends State<LoginWidget> {
           key: _formKey,
           child: Column(
             children: [
-              // Email Field
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
@@ -47,24 +46,35 @@ class _LoginWidgetState extends State<LoginWidget> {
                 child: TextFormField(
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.onSurface),
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.email_outlined,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), size: 20),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
+                        size: 20),
                     hintText: 'Email Address',
                     hintStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 16),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
+                        fontSize: 16),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none),
                     filled: true,
                     fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
                   ),
-                  validator: (v) => v?.trim().isEmpty == true ? 'Enter email' : null,
+                  validator: (v) =>
+                      v?.trim().isEmpty == true ? 'Enter email' : null,
                 ),
               ),
               const SizedBox(height: 16),
-
-              // Password Field
               Container(
                 decoration: BoxDecoration(
                   color: Theme.of(context).colorScheme.surface,
@@ -73,44 +83,65 @@ class _LoginWidgetState extends State<LoginWidget> {
                 child: TextFormField(
                   controller: _passwordController,
                   obscureText: _obscurePassword,
-                  style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                  style:
+                      TextStyle(color: Theme.of(context).colorScheme.onSurface),
                   decoration: InputDecoration(
                     prefixIcon: Icon(Icons.lock_outline,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), size: 20),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
+                        size: 20),
                     hintText: 'Password',
                     hintStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6), fontSize: 16),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
+                        fontSize: 16),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        _obscurePassword
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                         size: 20,
                       ),
-                      onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                      onPressed: () =>
+                          setState(() => _obscurePassword = !_obscurePassword),
                     ),
-                    border: OutlineInputBorder(borderRadius: BorderRadius.circular(15), borderSide: BorderSide.none),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(15),
+                        borderSide: BorderSide.none),
                     filled: true,
                     fillColor: Colors.transparent,
-                    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                    contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 16),
                   ),
-                  validator: (v) => (v?.isEmpty == true || v!.length < 6) ? 'Min 6 chars' : null,
+                  validator: (v) => (v?.isEmpty == true || v!.length < 6)
+                      ? 'Min 6 chars'
+                      : null,
                 ),
               ),
-
-              // Error Message Display
               if (auth.errorMessage != null && !auth.isLoading) ...[
                 const SizedBox(height: 16),
                 Container(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                   decoration: BoxDecoration(
                     color: Colors.red.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.red.withOpacity(0.3), width: 1),
+                    border: Border.all(
+                        color: Colors.red.withOpacity(0.3), width: 1),
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.error_outline, color: Colors.red, size: 20),
+                      const Icon(Icons.error_outline,
+                          color: Colors.red, size: 20),
                       const SizedBox(width: 10),
                       Expanded(
                         child: Text(
@@ -126,26 +157,24 @@ class _LoginWidgetState extends State<LoginWidget> {
                   ),
                 ),
               ],
-
               const SizedBox(height: 16),
-
-              // Forgot Password Link
               Row(
                 children: [
                   const Spacer(),
                   TextButton(
                     onPressed: () {
                       Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const ForgotPasswordScreen()),
+                        MaterialPageRoute(
+                            builder: (_) => const ForgotPasswordScreen()),
                       );
                     },
-                    child: const Text('Forgot Password?', style: TextStyle(color: AppColors.blueLink, fontSize: 14)),
+                    child: const Text('Forgot Password?',
+                        style:
+                            TextStyle(color: AppColors.blueLink, fontSize: 14)),
                   ),
                 ],
               ),
               const SizedBox(height: 30),
-
-              // Login Button
               SizedBox(
                 width: double.infinity,
                 height: 50,
@@ -153,17 +182,22 @@ class _LoginWidgetState extends State<LoginWidget> {
                   onPressed: auth.isLoading ? null : _signIn,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.greenButton,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(15)),
                     elevation: 0,
                   ),
                   child: auth.isLoading
                       ? const SizedBox(
                           height: 20,
                           width: 20,
-                          child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
+                          child: CircularProgressIndicator(
+                              color: Colors.white, strokeWidth: 2),
                         )
                       : const Text('Login',
-                          style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.w600)),
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600)),
                 ),
               ),
               const SizedBox(height: 30),

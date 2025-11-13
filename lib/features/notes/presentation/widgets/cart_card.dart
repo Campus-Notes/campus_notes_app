@@ -36,7 +36,6 @@ class CartCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Note thumbnail
               Container(
                 width: 80,
                 height: 80,
@@ -62,8 +61,6 @@ class CartCard extends StatelessWidget {
                 ),
               ),
               const SizedBox(width: 16),
-              
-              // Note details
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

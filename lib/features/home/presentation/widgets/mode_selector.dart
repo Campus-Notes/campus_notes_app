@@ -51,9 +51,9 @@ class ModeSelector extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 12),
         decoration: BoxDecoration(
-          color: isSelected 
-            ? AppColors.primary.withValues(alpha: 0.1) 
-            : Theme.of(context).colorScheme.surface,
+          color: isSelected
+              ? AppColors.primary.withValues(alpha: 0.1)
+              : Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
             color: isSelected ? AppColors.primary : Colors.transparent,
@@ -65,18 +65,24 @@ class ModeSelector extends StatelessWidget {
           children: [
             Icon(
               icon,
-              color: isSelected 
-                ? AppColors.primary 
-                : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              color: isSelected
+                  ? AppColors.primary
+                  : Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.7),
               size: 20,
             ),
             const SizedBox(width: 8),
             Text(
               label,
               style: TextStyle(
-                color: isSelected 
-                  ? AppColors.primary 
-                  : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.8),
+                color: isSelected
+                    ? AppColors.primary
+                    : Theme.of(context)
+                        .colorScheme
+                        .onSurface
+                        .withValues(alpha: 0.8),
                 fontWeight: FontWeight.w600,
                 fontSize: 14,
               ),

@@ -56,18 +56,19 @@ class DatabaseService {
   }) async {
     try {
       final Map<String, dynamic> updates = {};
-      
+
       if (upiId != null) {
         updates['upiId'] = upiId;
         updates['isUPIProvided'] = upiId.isNotEmpty;
       }
-      
+
       if (bankAccountNumber != null && ifscCode != null) {
         updates['bankAccountNumber'] = bankAccountNumber;
         updates['ifscCode'] = ifscCode;
-        updates['isBankDetailsProvided'] = bankAccountNumber.isNotEmpty && ifscCode.isNotEmpty;
+        updates['isBankDetailsProvided'] =
+            bankAccountNumber.isNotEmpty && ifscCode.isNotEmpty;
       }
-      
+
       if (updates.isNotEmpty) {
         await usersCollection.doc(uid).update(updates);
       }
@@ -84,15 +85,15 @@ class DatabaseService {
   }) async {
     try {
       final Map<String, dynamic> updates = {};
-      
+
       if (walletBalance != null) {
         updates['walletBalance'] = walletBalance;
       }
-      
+
       if (points != null) {
         updates['points'] = points;
       }
-      
+
       if (updates.isNotEmpty) {
         await usersCollection.doc(uid).update(updates);
       }

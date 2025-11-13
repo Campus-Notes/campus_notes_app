@@ -5,7 +5,7 @@ class CartController extends ChangeNotifier {
   final Map<String, NoteModel> _items = {};
 
   Map<String, NoteModel> get items => {..._items};
-  
+
   int get itemCount => _items.length;
 
   bool isInCart(String noteId) => _items.containsKey(noteId);
@@ -34,6 +34,6 @@ class CartController extends ChangeNotifier {
   }
 
   List<NoteModel> get cartNotes => _items.values.toList();
-  
+
   List<String> get noteIds => _items.keys.toList();
 }

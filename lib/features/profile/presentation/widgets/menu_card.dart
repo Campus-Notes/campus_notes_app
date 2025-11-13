@@ -19,7 +19,7 @@ class MenuItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     return Column(
       children: [
         InkWell(
@@ -30,10 +30,10 @@ class MenuItem extends StatelessWidget {
             child: Row(
               children: [
                 Icon(
-                  icon, 
-                  size: 24, 
-                  color: isDark 
-                      ? AppColors.textSecondaryDark 
+                  icon,
+                  size: 24,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
                       : AppColors.textSecondaryLight,
                 ),
                 const SizedBox(width: 16),
@@ -41,17 +41,17 @@ class MenuItem extends StatelessWidget {
                   child: Text(
                     title,
                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: isDark 
-                          ? AppColors.textPrimaryDark 
-                          : AppColors.textPrimaryLight,
-                      fontWeight: FontWeight.w500,
-                    ),
+                          color: isDark
+                              ? AppColors.textPrimaryDark
+                              : AppColors.textPrimaryLight,
+                          fontWeight: FontWeight.w500,
+                        ),
                   ),
                 ),
                 Icon(
-                  Icons.chevron_right, 
-                  color: isDark 
-                      ? AppColors.textSecondaryDark.withValues(alpha: 0.6) 
+                  Icons.chevron_right,
+                  color: isDark
+                      ? AppColors.textSecondaryDark.withValues(alpha: 0.6)
                       : AppColors.textSecondaryLight.withValues(alpha: 0.6),
                 ),
               ],
@@ -62,9 +62,9 @@ class MenuItem extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(left: 60),
             child: Divider(
-              height: 1, 
-              color: isDark 
-                  ? AppColors.borderDark.withValues(alpha: 0.3) 
+              height: 1,
+              color: isDark
+                  ? AppColors.borderDark.withValues(alpha: 0.3)
                   : AppColors.borderLight,
             ),
           ),

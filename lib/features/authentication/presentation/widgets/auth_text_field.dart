@@ -9,7 +9,7 @@ class AuthTextField extends StatelessWidget {
   final String? Function(String?)? validator;
   final Widget? prefixIcon;
   final Widget? suffixIcon;
-  
+
   const AuthTextField({
     super.key,
     required this.label,
@@ -21,7 +21,7 @@ class AuthTextField extends StatelessWidget {
     this.prefixIcon,
     this.suffixIcon,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -30,8 +30,8 @@ class AuthTextField extends StatelessWidget {
         Text(
           label,
           style: Theme.of(context).textTheme.labelMedium?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+                fontWeight: FontWeight.w600,
+              ),
         ),
         const SizedBox(height: 8),
         TextFormField(

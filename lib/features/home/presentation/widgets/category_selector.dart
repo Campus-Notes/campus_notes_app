@@ -37,7 +37,8 @@ class CategorySelector extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryItem(BuildContext context, IconData icon, String label, bool isSelected, VoidCallback onTap) {
+  Widget _buildCategoryItem(BuildContext context, IconData icon, String label,
+      bool isSelected, VoidCallback onTap) {
     return GestureDetector(
       onTap: onTap,
       child: Column(
@@ -46,12 +47,19 @@ class CategorySelector extends StatelessWidget {
             width: 64,
             height: 64,
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.primary : Theme.of(context).colorScheme.surface,
+              color: isSelected
+                  ? AppColors.primary
+                  : Theme.of(context).colorScheme.surface,
               borderRadius: BorderRadius.circular(16),
             ),
             child: Icon(
               icon,
-              color: isSelected ? Colors.white : Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+              color: isSelected
+                  ? Colors.white
+                  : Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.7),
               size: 28,
             ),
           ),

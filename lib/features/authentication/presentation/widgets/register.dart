@@ -46,9 +46,9 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
     auth.register(
       firstName: _firstNameController.text.trim(),
-      lastName: '', 
+      lastName: '',
       email: _emailController.text.trim(),
-      mobile: '',   
+      mobile: '',
       university: _universityController.text.trim(),
       password: _passwordController.text,
       confirmPassword: _confirmController.text,
@@ -71,16 +71,23 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   ),
                   child: TextFormField(
                     controller: _firstNameController,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface),
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.person_outline,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                         size: 20,
                       ),
                       hintText: 'Full Name',
                       hintStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                         fontSize: 16,
                       ),
                       border: OutlineInputBorder(
@@ -89,13 +96,14 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       filled: true,
                       fillColor: Colors.transparent,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
                     ),
-                    validator: (v) => v?.trim().isEmpty == true ? 'Enter your name' : null,
+                    validator: (v) =>
+                        v?.trim().isEmpty == true ? 'Enter your name' : null,
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -104,16 +112,23 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   child: TextFormField(
                     controller: _emailController,
                     keyboardType: TextInputType.emailAddress,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface),
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.email_outlined,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                         size: 20,
                       ),
                       hintText: 'Email Address',
                       hintStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                         fontSize: 16,
                       ),
                       border: OutlineInputBorder(
@@ -122,7 +137,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       filled: true,
                       fillColor: Colors.transparent,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
                     ),
                     validator: (v) {
                       if (v?.trim().isEmpty == true) return 'Enter email';
@@ -132,7 +148,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -140,16 +155,23 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   ),
                   child: TextFormField(
                     controller: _universityController,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface),
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.school_outlined,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                         size: 20,
                       ),
                       hintText: 'University Name',
                       hintStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                         fontSize: 16,
                       ),
                       border: OutlineInputBorder(
@@ -158,13 +180,15 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       filled: true,
                       fillColor: Colors.transparent,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
                     ),
-                    validator: (v) => v?.trim().isEmpty == true ? 'Enter university name' : null,
+                    validator: (v) => v?.trim().isEmpty == true
+                        ? 'Enter university name'
+                        : null,
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -173,25 +197,38 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   child: TextFormField(
                     controller: _passwordController,
                     obscureText: _obscurePassword,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface),
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.lock_outline,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                         size: 20,
                       ),
                       hintText: 'Password',
                       hintStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                         fontSize: 16,
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscurePassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          _obscurePassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.6),
                           size: 20,
                         ),
-                        onPressed: () => setState(() => _obscurePassword = !_obscurePassword),
+                        onPressed: () => setState(
+                            () => _obscurePassword = !_obscurePassword),
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
@@ -199,13 +236,13 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       filled: true,
                       fillColor: Colors.transparent,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
                     ),
                     validator: (v) => v!.length < 8 ? 'Min 8 characters' : null,
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -214,25 +251,38 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   child: TextFormField(
                     controller: _confirmController,
                     obscureText: _obscureConfirmPassword,
-                    style: TextStyle(color: Theme.of(context).colorScheme.onSurface),
+                    style: TextStyle(
+                        color: Theme.of(context).colorScheme.onSurface),
                     decoration: InputDecoration(
                       prefixIcon: Icon(
                         Icons.lock_outline,
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                         size: 20,
                       ),
                       hintText: 'Confirm Password',
                       hintStyle: TextStyle(
-                        color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                        color: Theme.of(context)
+                            .colorScheme
+                            .onSurface
+                            .withValues(alpha: 0.6),
                         fontSize: 16,
                       ),
                       suffixIcon: IconButton(
                         icon: Icon(
-                          _obscureConfirmPassword ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-                          color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                          _obscureConfirmPassword
+                              ? Icons.visibility_outlined
+                              : Icons.visibility_off_outlined,
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.6),
                           size: 20,
                         ),
-                        onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                        onPressed: () => setState(() =>
+                            _obscureConfirmPassword = !_obscureConfirmPassword),
                       ),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(15),
@@ -240,13 +290,15 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       ),
                       filled: true,
                       fillColor: Colors.transparent,
-                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 16),
                     ),
-                    validator: (v) => v != _passwordController.text ? 'Passwords do not match' : null,
+                    validator: (v) => v != _passwordController.text
+                        ? 'Passwords do not match'
+                        : null,
                   ),
                 ),
                 const SizedBox(height: 16),
-
                 Row(
                   children: [
                     Checkbox(
@@ -254,7 +306,11 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                       onChanged: (v) => setState(() => _agree = v ?? false),
                       checkColor: Theme.of(context).colorScheme.onPrimary,
                       activeColor: AppColors.greenButton,
-                      side: BorderSide(color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6)),
+                      side: BorderSide(
+                          color: Theme.of(context)
+                              .colorScheme
+                              .onSurface
+                              .withValues(alpha: 0.6)),
                     ),
                     Flexible(
                       child: Text(
@@ -268,7 +324,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                   ],
                 ),
                 const SizedBox(height: 20),
-
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -276,7 +331,8 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                     onPressed: auth.isLoading ? null : _submit,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.greenButton,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(15)),
                       elevation: 0,
                     ),
                     child: auth.isLoading

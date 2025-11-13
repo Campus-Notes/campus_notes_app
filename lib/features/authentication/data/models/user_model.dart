@@ -5,8 +5,8 @@ class UserModel {
   final String email;
   final String mobile;
   final String university;
-  final double walletBalance; 
-  final double totalEarnings; 
+  final double walletBalance;
+  final double totalEarnings;
   final double points;
   final bool isUPIProvided;
   final bool isBankDetailsProvided;
@@ -73,7 +73,8 @@ class UserModel {
       upiId: map['upiId'],
       bankAccountNumber: map['bankAccountNumber'],
       ifscCode: map['ifscCode'],
-      createdAt: DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
+      createdAt:
+          DateTime.parse(map['createdAt'] ?? DateTime.now().toIso8601String()),
     );
   }
 
@@ -95,14 +96,15 @@ class UserModel {
       uid: uid,
       firstName: firstName ?? this.firstName,
       lastName: lastName ?? this.lastName,
-      email: email, 
+      email: email,
       mobile: mobile ?? this.mobile,
       university: university ?? this.university,
       walletBalance: walletBalance ?? this.walletBalance,
       totalEarnings: totalEarnings ?? this.totalEarnings,
       points: points ?? this.points,
       isUPIProvided: isUPIProvided ?? this.isUPIProvided,
-      isBankDetailsProvided: isBankDetailsProvided ?? this.isBankDetailsProvided,
+      isBankDetailsProvided:
+          isBankDetailsProvided ?? this.isBankDetailsProvided,
       upiId: upiId ?? this.upiId,
       bankAccountNumber: bankAccountNumber ?? this.bankAccountNumber,
       ifscCode: ifscCode ?? this.ifscCode,

@@ -4,12 +4,12 @@ class WalletCreditModel {
   final String creditId;
   final String userId;
   final String noteId;
-  final String transactionId; 
+  final String transactionId;
   final double amount;
-  final String type; 
+  final String type;
   final DateTime creditedAt;
   final String? description;
-  final String status; 
+  final String status;
 
   WalletCreditModel({
     required this.creditId,
@@ -69,12 +69,12 @@ class PointsCreditModel {
   final String creditId;
   final String userId;
   final String noteId;
-  final String transactionId; // Reference to the main transaction
+  final String transactionId;
   final double points;
-  final String type; // 'selling_bonus', 'buying_bonus', 'referral', etc.
+  final String type;
   final DateTime creditedAt;
   final String? description;
-  final String status; // 'completed', 'pending', 'failed'
+  final String status;
 
   PointsCreditModel({
     required this.creditId,
