@@ -13,6 +13,7 @@ abstract class AppRoutes {
   static const upload = '/upload';
   static const chat = '/chat';
   static const profile = '/profile';
+  static const libraryPage = '/library';
 
   // Notes & Payments
   static const noteDetail = '/note-detail';

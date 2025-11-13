@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../models/note_model.dart';
 import '../models/purchase_model.dart';
 import 'note_database_service.dart';
@@ -70,9 +71,121 @@ class LibraryService {
       // Sort by purchase date (most recent first)
       purchasedNotes.sort((a, b) => b.purchase.purchasedAt.compareTo(a.purchase.purchasedAt));
 
+      // Cache the library data for offline use
+      await _cacheLibraryData(currentUserUid, purchasedNotes);
+
       return purchasedNotes;
     } catch (e) {
       rethrow;
+    }
+  }
+
+  /// Get downloaded notes for offline viewing
+  Future<List<PurchasedNoteData>> getDownloadedNotes(String currentUserUid) async {
+    try {
+      // Try to load from cache first
+      final cachedNotes = await _loadCachedLibraryData(currentUserUid);
+      
+      if (cachedNotes.isEmpty) {
+        return [];
+      }
+
+      // Filter only downloaded notes
+      List<PurchasedNoteData> downloadedNotes = [];
+      for (var noteData in cachedNotes) {
+        final isDownloaded = await isPdfDownloaded(
+          noteData.note.noteId,
+          noteData.note.fileName,
+        );
+        if (isDownloaded) {
+          downloadedNotes.add(noteData);
+        }
+      }
+
+      return downloadedNotes;
+    } catch (e) {
+      return [];
+    }
+  }
+
+  /// Cache library data for offline access
+  Future<void> _cacheLibraryData(String userId, List<PurchasedNoteData> notes) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      
+      // Store simple metadata for offline access
+      final metadata = notes.map((noteData) => {
+        'noteId': noteData.note.noteId,
+        'title': noteData.note.title,
+        'subject': noteData.note.subject,
+        'fileName': noteData.note.fileName,
+        'rating': noteData.note.rating,
+        'price': noteData.note.price,
+        'ownerUid': noteData.note.ownerUid,
+        'purchaseDate': noteData.purchase.purchasedAt.toIso8601String(),
+        'ownerName': noteData.owner?.fullName ?? 'Unknown',
+      }).toList();
+      
+      final jsonString = jsonEncode(metadata);
+      await prefs.setString('library_cache_$userId', jsonString);
+    } catch (e) {
+      // Silently fail if caching doesn't work
+    }
+  }
+
+  /// Load cached library data
+  Future<List<PurchasedNoteData>> _loadCachedLibraryData(String userId) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final jsonString = prefs.getString('library_cache_$userId');
+      
+      if (jsonString == null) {
+        return [];
+      }
+
+      final List<dynamic> metadata = jsonDecode(jsonString);
+      
+      return metadata.map((json) {
+        // Create minimal models from cached metadata
+        final note = NoteModel(
+          noteId: json['noteId'],
+          title: json['title'],
+          subject: json['subject'],
+          fileName: json['fileName'],
+          fileEncodedData: '', // Not needed for downloaded files
+          rating: (json['rating'] as num).toDouble(),
+          price: (json['price'] as num?)?.toDouble(),
+          ownerUid: json['ownerUid'],
+          createdAt: DateTime.now(), // Not critical for offline viewing
+          isDonation: (json['price'] == null),
+          purchaseCount: 0,
+        );
+        
+        final purchase = PurchaseModel(
+          purchaseId: 'offline',
+          name: json['title'],
+          uid: userId,
+          purchasedAt: DateTime.parse(json['purchaseDate']),
+        );
+        
+        final owner = UserModel(
+          uid: json['ownerUid'],
+          email: '',
+          firstName: json['ownerName'],
+          lastName: '',
+          mobile: '',
+          university: '',
+          createdAt: DateTime.now(),
+        );
+        
+        return PurchasedNoteData(
+          note: note,
+          purchase: purchase,
+          owner: owner,
+        );
+      }).toList();
+    } catch (e) {
+      return [];
     }
   }
 
@@ -116,7 +229,6 @@ class LibraryService {
     }
   }
 
-  /// Load and decrypt saved PDF
   Future<Uint8List> loadEncryptedPdf(String noteId, String fileName) async {
     try {
       final directory = await getApplicationDocumentsDirectory();
@@ -127,10 +239,8 @@ class LibraryService {
         throw Exception('PDF file not found');
       }
 
-      // Read encrypted bytes
       final encryptedBytes = await file.readAsBytes();
 
-      // Decrypt using XOR
       final decryptedBytes = _encryptBytes(encryptedBytes, noteId);
 
       return decryptedBytes;
@@ -139,7 +249,6 @@ class LibraryService {
     }
   }
 
-  /// Check if PDF is downloaded
   Future<bool> isPdfDownloaded(String noteId, String fileName) async {
     try {
       final directory = await getApplicationDocumentsDirectory();
@@ -151,7 +260,6 @@ class LibraryService {
     }
   }
 
-  /// Delete downloaded PDF
   Future<void> deleteDownloadedPdf(String noteId, String fileName) async {
     try {
       final directory = await getApplicationDocumentsDirectory();
@@ -166,7 +274,6 @@ class LibraryService {
     }
   }
 
-  /// Get total size of downloaded library
   Future<int> getLibrarySize() async {
     try {
       final directory = await getApplicationDocumentsDirectory();
@@ -188,9 +295,6 @@ class LibraryService {
     }
   }
 
-  // ==================== Helper Methods ====================
-
-  /// Hash file name for storage
   String _hashFileName(String noteId, String fileName) {
     final input = '$noteId-$fileName';
     final bytes = utf8.encode(input);
