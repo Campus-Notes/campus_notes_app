@@ -46,7 +46,8 @@ class HelpSupportPage extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.chat_bubble_outline, color: AppColors.primary),
+            leading:
+                const Icon(Icons.chat_bubble_outline, color: AppColors.primary),
             title: const Text('Live Chat'),
             subtitle: const Text('Connect with a support agent'),
             onTap: () {
@@ -56,9 +57,11 @@ class HelpSupportPage extends StatelessWidget {
             },
           ),
           ListTile(
-            leading: const Icon(Icons.bug_report_outlined, color: AppColors.primary),
+            leading:
+                const Icon(Icons.bug_report_outlined, color: AppColors.primary),
             title: const Text('Report an Issue'),
-            subtitle: const Text('Help us improve by reporting bugs or problems'),
+            subtitle:
+                const Text('Help us improve by reporting bugs or problems'),
             onTap: () {
               Navigator.of(context).pushNamed(AppRoutes.reportIssue);
             },
@@ -84,7 +87,8 @@ class HelpSupportPage extends StatelessWidget {
 
   Widget _buildFaqItem(String question, String answer) {
     return ExpansionTile(
-      title: Text(question, style: const TextStyle(fontWeight: FontWeight.w600)),
+      title:
+          Text(question, style: const TextStyle(fontWeight: FontWeight.w600)),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),

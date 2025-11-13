@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../../data/dummy_data.dart';
+import '../../../../common_widgets/verified_badge.dart';
 
 class PopularNoteCard extends StatelessWidget {
   final NoteItem note;
@@ -22,7 +23,9 @@ class PopularNoteCard extends StatelessWidget {
         elevation: 0,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(16),
-          side: BorderSide(color: Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
+          side: BorderSide(
+              color:
+                  Theme.of(context).colorScheme.outline.withValues(alpha: 0.2)),
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
@@ -31,7 +34,6 @@ class PopularNoteCard extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             child: Row(
               children: [
-                // Note thumbnail
                 Container(
                   width: 70,
                   height: 70,
@@ -46,8 +48,6 @@ class PopularNoteCard extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 16),
-                
-                // Note details
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -66,30 +66,20 @@ class PopularNoteCard extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 4),
-                          // Verified badge
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 2),
                             decoration: BoxDecoration(
-                              color: Colors.blue.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(6),
                             ),
-                            child: Row(
+                            child: const Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                Icon(
-                                  Icons.verified,
-                                  size: 12,
-                                  color: Colors.blue[700],
+                                VerifiedBadge(
+                                  fontSize: 12,
+                                  iconSize: 12,
                                 ),
-                                const SizedBox(width: 2),
-                                Text(
-                                  'Verified',
-                                  style: TextStyle(
-                                    fontSize: 9,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.blue[700],
-                                  ),
-                                ),
+                                SizedBox(width: 4),
                               ],
                             ),
                           ),
@@ -107,7 +97,8 @@ class PopularNoteCard extends StatelessWidget {
                       Row(
                         children: [
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 3),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 6, vertical: 3),
                             decoration: BoxDecoration(
                               color: AppColors.success.withValues(alpha: 0.1),
                               borderRadius: BorderRadius.circular(6),
@@ -115,7 +106,8 @@ class PopularNoteCard extends StatelessWidget {
                             child: Row(
                               mainAxisSize: MainAxisSize.min,
                               children: [
-                                const Icon(Icons.star, size: 12, color: AppColors.success),
+                                const Icon(Icons.star,
+                                    size: 12, color: AppColors.success),
                                 const SizedBox(width: 2),
                                 Text(
                                   note.rating.toStringAsFixed(1),
@@ -129,7 +121,8 @@ class PopularNoteCard extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          const Icon(Icons.description, size: 12, color: AppColors.muted),
+                          const Icon(Icons.description,
+                              size: 12, color: AppColors.muted),
                           const SizedBox(width: 2),
                           Text(
                             '${note.pages}p',
@@ -143,8 +136,6 @@ class PopularNoteCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                
-                // Price and action
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [

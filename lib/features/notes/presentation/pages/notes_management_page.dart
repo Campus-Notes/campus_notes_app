@@ -10,9 +10,24 @@ class NotesManagementPage extends StatefulWidget {
 
 class _NotesManagementPageState extends State<NotesManagementPage> {
   final List<Map<String, dynamic>> _myNotes = [
-    {'id': 'm1', 'title': 'My DS Cheatsheet', 'status': 'Published', 'price': 59},
-    {'id': 'm2', 'title': 'Linear Algebra Key Points', 'status': 'Draft', 'price': 0},
-    {'id': 'm3', 'title': 'Operating Systems Concepts', 'status': 'Pending Review', 'price': 75},
+    {
+      'id': 'm1',
+      'title': 'My DS Cheatsheet',
+      'status': 'Published',
+      'price': 59
+    },
+    {
+      'id': 'm2',
+      'title': 'Linear Algebra Key Points',
+      'status': 'Draft',
+      'price': 0
+    },
+    {
+      'id': 'm3',
+      'title': 'Operating Systems Concepts',
+      'status': 'Pending Review',
+      'price': 75
+    },
   ];
 
   void _editNote(Map<String, dynamic> note) {
@@ -77,15 +92,22 @@ class _NotesManagementPageState extends State<NotesManagementPage> {
                   leading: Container(
                     width: 44,
                     height: 44,
-                    decoration: BoxDecoration(color: AppColors.primary.withValues(alpha: 0.08), borderRadius: BorderRadius.circular(8)),
-                    child: const Icon(Icons.description, color: AppColors.primary),
+                    decoration: BoxDecoration(
+                        color: AppColors.primary.withValues(alpha: 0.08),
+                        borderRadius: BorderRadius.circular(8)),
+                    child:
+                        const Icon(Icons.description, color: AppColors.primary),
                   ),
                   title: Text(n['title'] as String),
-                  subtitle: Text('Status: ${n['status']} • Price: ₹${n['price']}'),
+                  subtitle:
+                      Text('Status: ${n['status']} • Price: ₹${n['price']}'),
                   trailing: PopupMenuButton(
                     itemBuilder: (_) => const [
                       PopupMenuItem(value: 'edit', child: Text('Edit')),
-                      PopupMenuItem(value: 'delete', child: Text('Delete', style: TextStyle(color: AppColors.error))),
+                      PopupMenuItem(
+                          value: 'delete',
+                          child: Text('Delete',
+                              style: TextStyle(color: AppColors.error))),
                     ],
                     onSelected: (v) {
                       if (v == 'edit') {

@@ -26,7 +26,6 @@ class LandingScreen extends StatelessWidget {
               child: Column(
                 children: [
                   const SizedBox(height: 25),
-
                   const Text(
                     "CampusNotes+",
                     style: TextStyle(
@@ -36,9 +35,7 @@ class LandingScreen extends StatelessWidget {
                       color: Colors.black87,
                     ),
                   ),
-
                   const SizedBox(height: 12),
-
                   const Text(
                     "Unlock knowledge the smart way 📚",
                     textAlign: TextAlign.center,
@@ -48,17 +45,13 @@ class LandingScreen extends StatelessWidget {
                       color: Colors.black87,
                     ),
                   ),
-
                   const SizedBox(height: 30),
-
                   Image.asset(
                     'assets/images/image.png',
                     height: 260,
                     fit: BoxFit.contain,
                   ),
-
                   const SizedBox(height: 26),
-
                   const Text(
                     "Your one-stop platform for buying and selling\nhigh-quality academic notes.",
                     textAlign: TextAlign.center,
@@ -69,9 +62,7 @@ class LandingScreen extends StatelessWidget {
                       color: Colors.black87,
                     ),
                   ),
-
                   const SizedBox(height: 10),
-
                   const Text(
                     "Keep your information safe with us.",
                     textAlign: TextAlign.center,
@@ -80,14 +71,13 @@ class LandingScreen extends StatelessWidget {
                       color: Colors.grey,
                     ),
                   ),
-
                   const SizedBox(height: 40),
-
                   SizedBox(
                     width: double.infinity,
                     height: 52,
                     child: ElevatedButton(
-                      onPressed: () => Navigator.pushNamed(context, AppRoutes.authentication),
+                      onPressed: () => Navigator.pushNamed(
+                          context, AppRoutes.authentication),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF4C9AFF),
                         shape: RoundedRectangleBorder(
@@ -106,16 +96,16 @@ class LandingScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 14),
-
                   SizedBox(
                     width: double.infinity,
                     height: 52,
                     child: OutlinedButton(
-                      onPressed: () => Navigator.pushNamed(context, AppRoutes.register),
+                      onPressed: () =>
+                          Navigator.pushNamed(context, AppRoutes.register),
                       style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: Color(0xFF4C9AFF), width: 2),
+                        side: const BorderSide(
+                            color: Color(0xFF4C9AFF), width: 2),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(14),
                         ),
@@ -130,7 +120,6 @@ class LandingScreen extends StatelessWidget {
                       ),
                     ),
                   ),
-
                   const SizedBox(height: 32),
                 ],
               ),

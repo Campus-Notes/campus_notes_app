@@ -24,7 +24,7 @@ class _UploadPageState extends State<UploadPage> {
   String? _pickedFileName;
   List<int>? _pickedFileBytes;
   bool _isDonationMode = false;
-  String _selectedSubject = subjects[0]; // Default to first subject
+  String _selectedSubject = subjects[0];
 
   @override
   void dispose() {
@@ -40,12 +40,12 @@ class _UploadPageState extends State<UploadPage> {
         type: FileType.custom,
         allowedExtensions: ['pdf'],
         allowMultiple: false,
-        withData: true, 
+        withData: true,
       );
 
       if (result != null && result.files.isNotEmpty) {
         final file = result.files.first;
-        
+
         if (file.bytes == null) {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
@@ -53,7 +53,8 @@ class _UploadPageState extends State<UploadPage> {
                 content: const Text('Error: Could not read PDF file'),
                 backgroundColor: Colors.red,
                 behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             );
           }
@@ -65,10 +66,12 @@ class _UploadPageState extends State<UploadPage> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('File too large: ${fileSizeMB.toStringAsFixed(2)}MB (max 10MB)'),
+                content: Text(
+                    'File too large: ${fileSizeMB.toStringAsFixed(2)}MB (max 10MB)'),
                 backgroundColor: Colors.red,
                 behavior: SnackBarBehavior.floating,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12)),
               ),
             );
           }
@@ -79,14 +82,16 @@ class _UploadPageState extends State<UploadPage> {
           _pickedFileName = file.name;
           _pickedFileBytes = file.bytes;
         });
-        
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('PDF selected: ${file.name} 📄 (${fileSizeMB.toStringAsFixed(2)}MB)'),
+              content: Text(
+                  'PDF selected: ${file.name} 📄 (${fileSizeMB.toStringAsFixed(2)}MB)'),
               backgroundColor: Colors.green,
               behavior: SnackBarBehavior.floating,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12)),
             ),
           );
         }
@@ -98,7 +103,8 @@ class _UploadPageState extends State<UploadPage> {
             content: Text('Error picking file: $e'),
             backgroundColor: Colors.red,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           ),
         );
       }
@@ -116,7 +122,8 @@ class _UploadPageState extends State<UploadPage> {
           content: const Text('Please attach a PDF file'),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
       return;
@@ -125,13 +132,13 @@ class _UploadPageState extends State<UploadPage> {
     if (!mounted) return;
 
     final notesController = context.read<NotesController>();
-    
+
     final success = await notesController.uploadNoteWithBytes(
       title: _titleCtrl.text.trim(),
       subject: _selectedSubject,
-      description: _descriptionCtrl.text.trim().isEmpty 
-        ? null 
-        : _descriptionCtrl.text.trim(),
+      description: _descriptionCtrl.text.trim().isEmpty
+          ? null
+          : _descriptionCtrl.text.trim(),
       isDonation: _isDonationMode,
       price: _isDonationMode ? null : double.tryParse(_priceCtrl.text),
       fileName: _pickedFileName!,
@@ -156,7 +163,8 @@ class _UploadPageState extends State<UploadPage> {
           ),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
       Navigator.pop(context);
@@ -167,7 +175,8 @@ class _UploadPageState extends State<UploadPage> {
           content: Text(error),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         ),
       );
       notesController.clearError();
@@ -246,7 +255,7 @@ class _UploadPageState extends State<UploadPage> {
                               Text(
                                 _isDonationMode
                                     ? '❤️ Share knowledge freely'
-                                    : '💰 Earn 80% of sales + 10 bonus points',
+                                    : '💰 Earn 80% of sales + 5% bonus points',
                                 style: const TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14,
@@ -258,13 +267,12 @@ class _UploadPageState extends State<UploadPage> {
                       ],
                     ),
                   ),
-
-                  // Donation Mode Toggle
                   Container(
                     margin: const EdgeInsets.only(bottom: 20),
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: _isDonationMode ? Colors.green[50] : Colors.grey[50],
+                      color:
+                          _isDonationMode ? Colors.green[50] : Colors.grey[50],
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: _isDonationMode
@@ -340,21 +348,16 @@ class _UploadPageState extends State<UploadPage> {
                       ],
                     ),
                   ),
-
-                  // Form Fields
                   Formfield(
                     controller: _titleCtrl,
                     label: 'Note Title',
                     hint: 'e.g., Data Structures Complete Notes',
                     icon: Icons.title,
                     textInputAction: TextInputAction.next,
-                    validator: (v) =>
-                        (v == null || v.trim().isEmpty)
-                            ? 'Please enter a title'
-                            : null,
+                    validator: (v) => (v == null || v.trim().isEmpty)
+                        ? 'Please enter a title'
+                        : null,
                   ),
-                  
-                  // Subject Dropdown
                   const SizedBox(height: 16),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -369,9 +372,12 @@ class _UploadPageState extends State<UploadPage> {
                           const SizedBox(width: 8),
                           Text(
                             'Subject',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
                           ),
                         ],
                       ),
@@ -395,7 +401,8 @@ class _UploadPageState extends State<UploadPage> {
                               color: AppColors.primary,
                             ),
                             style: Theme.of(context).textTheme.bodyLarge,
-                            dropdownColor: Theme.of(context).colorScheme.surface,
+                            dropdownColor:
+                                Theme.of(context).colorScheme.surface,
                             items: subjects.map((String subject) {
                               return DropdownMenuItem<String>(
                                 value: subject,
@@ -404,7 +411,8 @@ class _UploadPageState extends State<UploadPage> {
                                     Icon(
                                       getSubjectIcon(subject),
                                       size: 20,
-                                      color: AppColors.primary.withValues(alpha: 0.7),
+                                      color: AppColors.primary
+                                          .withValues(alpha: 0.7),
                                     ),
                                     const SizedBox(width: 12),
                                     Text(subject),
@@ -425,14 +433,12 @@ class _UploadPageState extends State<UploadPage> {
                     ],
                   ),
                   const SizedBox(height: 16),
-                  
                   if (!_isDonationMode)
                     Formfield(
                       controller: _priceCtrl,
                       label: 'Price',
                       hint: 'Enter price in rupees',
                       icon: Icons.currency_rupee,
-                      prefix: '₹ ',
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
                       validator: (v) =>
@@ -453,7 +459,6 @@ class _UploadPageState extends State<UploadPage> {
                     onTap: _pickFile,
                   ),
                   const SizedBox(height: 8),
-                  
                   if (notesController.uploadMessage != null)
                     Container(
                       width: double.infinity,
@@ -473,7 +478,6 @@ class _UploadPageState extends State<UploadPage> {
                         ),
                       ),
                     ),
-
                   const SizedBox(height: 40),
                   PremiumButton(
                     text: notesController.isLoading
@@ -488,8 +492,6 @@ class _UploadPageState extends State<UploadPage> {
                     onPressed: notesController.isLoading ? null : _submit,
                   ),
                   const SizedBox(height: 16),
-                  
-                  // Secondary Info
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(

@@ -24,10 +24,10 @@ import '../common_widgets/bottom_navbar.dart';
 
 class AppRouter {
   static Map<String, WidgetBuilder> get routes => {
-        AppRoutes.splash: (_) => const SplashScreen(), 
-        AppRoutes.onboarding: (_) => const OnboardingPage(), 
+        AppRoutes.splash: (_) => const SplashScreen(),
+        AppRoutes.onboarding: (_) => const OnboardingPage(),
         AppRoutes.shell: (_) => const MainShell(),
-        AppRoutes.landing: (_) => const LandingScreen(), 
+        AppRoutes.landing: (_) => const LandingScreen(),
         AppRoutes.authentication: (_) => const AuthenticationScreen(),
         AppRoutes.search: (_) => const NewSearchPage(),
         AppRoutes.cart: (_) => const CartPage(),
@@ -38,8 +38,8 @@ class AppRouter {
         AppRoutes.donations: (_) => const DonationsPage(),
         AppRoutes.reportIssue: (_) => const ReportIssuePage(),
         AppRoutes.about: (_) => const AboutPage(),
-        AppRoutes.helpSupport: (_) => const HelpSupportPage(), 
-        AppRoutes.privacyPolicy: (_) => const PrivacyPolicyPage(), 
+        AppRoutes.helpSupport: (_) => const HelpSupportPage(),
+        AppRoutes.privacyPolicy: (_) => const PrivacyPolicyPage(),
         AppRoutes.settings: (_) => const SettingsPage(),
         AppRoutes.userProfile: (_) => const UserProfilePage(),
         AppRoutes.changePassword: (_) => const ChangePasswordPage(),

@@ -10,7 +10,7 @@ class TransactionModel {
   final double sellerPoints;
   final double buyerPoints;
   final DateTime transactionDate;
-  final String status; // 'pending', 'completed', 'failed'
+  final String status;
   final String? paymentMethod;
   final String? paymentId;
   final String? razorpayOrderId;
@@ -59,7 +59,8 @@ class TransactionModel {
       sellerAmount: (map['sellerAmount'] as num?)?.toDouble() ?? 0.0,
       sellerPoints: (map['sellerPoints'] as num?)?.toDouble() ?? 0.0,
       buyerPoints: (map['buyerPoints'] as num?)?.toDouble() ?? 0.0,
-      transactionDate: (map['transactionDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      transactionDate:
+          (map['transactionDate'] as Timestamp?)?.toDate() ?? DateTime.now(),
       status: map['status'] ?? 'pending',
       paymentMethod: map['paymentMethod'],
       paymentId: map['paymentId'],

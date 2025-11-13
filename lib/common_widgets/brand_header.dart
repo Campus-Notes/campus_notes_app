@@ -19,17 +19,17 @@ class BrandHeader extends StatelessWidget {
         Text(
           title,
           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-            color: AppColors.text,
-            fontWeight: FontWeight.bold,
-          ),
+                color: AppColors.text,
+                fontWeight: FontWeight.bold,
+              ),
         ),
         const SizedBox(height: 8),
         Text(
           subtitle,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: AppColors.muted,
-            height: 1.5,
-          ),
+                color: AppColors.muted,
+                height: 1.5,
+              ),
         ),
       ],
     );

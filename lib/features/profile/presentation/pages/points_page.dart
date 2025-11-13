@@ -16,7 +16,7 @@ class PointsPage extends StatefulWidget {
 class _PointsPageState extends State<PointsPage> {
   final WalletService _walletService = WalletService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   double _points = 0.0;
   bool _isLoading = true;
   List<PointsCreditModel> _pointsHistory = [];
@@ -31,12 +31,12 @@ class _PointsPageState extends State<PointsPage> {
 
   Future<void> _loadPointsData() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final currentUser = _auth.currentUser;
       if (currentUser != null) {
         final points = await _walletService.getPointsBalance(currentUser.uid);
-        
+
         if (mounted) {
           setState(() {
             _points = points;
@@ -58,7 +58,7 @@ class _PointsPageState extends State<PointsPage> {
 
   Future<void> _loadPointsHistory() async {
     setState(() => _isLoadingHistory = true);
-    
+
     try {
       final currentUser = _auth.currentUser;
       if (currentUser != null) {
@@ -66,7 +66,7 @@ class _PointsPageState extends State<PointsPage> {
           userId: currentUser.uid,
           limit: 50,
         );
-        
+
         if (mounted) {
           setState(() {
             _pointsHistory = history;
@@ -108,7 +108,6 @@ class _PointsPageState extends State<PointsPage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Points Balance Card
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
@@ -170,10 +169,7 @@ class _PointsPageState extends State<PointsPage> {
                         ],
                       ),
                     ),
-                    
                     const SizedBox(height: 16),
-                    
-                    // Points Info
                     Container(
                       padding: const EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -204,21 +200,19 @@ class _PointsPageState extends State<PointsPage> {
                             ],
                           ),
                           const SizedBox(height: 12),
-                          _buildInfoRow(context, 'Sell notes', 'Earn points for each sale'),
+                          _buildInfoRow(context, 'Sell notes',
+                              'Earn points for each sale'),
                           const SizedBox(height: 8),
-                          _buildInfoRow(context, 'Purchase notes', 'Get bonus points'),
+                          _buildInfoRow(
+                              context, 'Purchase notes', 'Get bonus points'),
                         ],
                       ),
                     ),
-                    
                     const SizedBox(height: 32),
-                    
-                    // Points History
                     PointsTransactionList(
                       transactions: _pointsHistory,
                       isLoading: _isLoadingHistory,
                     ),
-                    
                     const SizedBox(height: 16),
                   ],
                 ),

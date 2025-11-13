@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class AppColors {
-  // Primary 
-  static const Color primary = Color(0xFF6366F1); 
+  static const Color primary = Color(0xFF6366F1);
   static const Color primaryDark = Color(0xFF4F46E5);
   static const Color primaryLight = Color(0xFF818CF8);
-  
+
   static const Color darkBackground = Color(0xFF121212);
   static const Color darkSurface = Color(0xFF1E1E1E);
   static const Color darkCard = Color(0xFF2C2C2E);
@@ -14,29 +13,29 @@ class AppColors {
   static const Color darkSecondaryText = Color(0xFF8E8E93);
   static const Color greenButton = Color(0xFF34C759);
   static const Color blueLink = Color(0xFF007AFF);
-  
+
   static const Color backgroundLight = Color(0xFFFAFAFA);
   static const Color backgroundDark = Color(0xFF121212);
-  
+
   static const Color surfaceLight = Colors.white;
   static const Color surfaceDark = Color(0xFF1E1E1E);
-  
+
   static const Color textPrimaryLight = Color(0xFF1F2937);
   static const Color textPrimaryDark = Color(0xFFE5E7EB);
   static const Color textSecondaryLight = Color(0xFF6B7280);
   static const Color textSecondaryDark = Color(0xFF9CA3AF);
-  
+
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
   static const Color error = Color(0xFFEF4444);
   static const Color info = Color(0xFF3B82F6);
-  
+
   static const Color muted = Color(0xFF6B7280);
   static const Color mutedDark = Color(0xFF9CA3AF);
-  
+
   static const Color borderLight = Color(0xFFE5E7EB);
   static const Color borderDark = Color(0xFF374151);
-  
+
   static const background = backgroundLight;
   static const text = textPrimaryLight;
 }
@@ -226,7 +225,6 @@ class AppTheme {
 
   static TextTheme _buildTextTheme(Color textColor) {
     return TextTheme(
-      // Display styles (largest headings) - Poppins Bold
       displayLarge: GoogleFonts.poppins(
         fontSize: 32,
         fontWeight: FontWeight.bold,
@@ -242,8 +240,6 @@ class AppTheme {
         fontWeight: FontWeight.bold,
         color: textColor,
       ),
-      
-      // Headline styles (section headings) - Poppins Bold
       headlineLarge: GoogleFonts.poppins(
         fontSize: 22,
         fontWeight: FontWeight.bold,
@@ -259,8 +255,6 @@ class AppTheme {
         fontWeight: FontWeight.bold,
         color: textColor,
       ),
-      
-      // Title styles (card titles, button text) - Poppins Bold
       titleLarge: GoogleFonts.poppins(
         fontSize: 16,
         fontWeight: FontWeight.bold,
@@ -276,8 +270,6 @@ class AppTheme {
         fontWeight: FontWeight.w600,
         color: textColor,
       ),
-      
-      // Body styles (regular text) - Nunito Regular
       bodyLarge: GoogleFonts.nunito(
         fontSize: 16,
         fontWeight: FontWeight.normal,
@@ -293,8 +285,6 @@ class AppTheme {
         fontWeight: FontWeight.normal,
         color: textColor,
       ),
-      
-      // Label styles (labels, captions) - Nunito Regular
       labelLarge: GoogleFonts.nunito(
         fontSize: 14,
         fontWeight: FontWeight.w500,

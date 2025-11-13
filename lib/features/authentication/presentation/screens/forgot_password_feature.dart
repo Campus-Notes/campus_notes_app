@@ -25,7 +25,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     if (!_formKey.currentState!.validate()) return;
 
     final auth = Provider.of<AuthController>(context, listen: false);
-    final success = await auth.sendPasswordResetEmail(_emailController.text.trim());
+    final success =
+        await auth.sendPasswordResetEmail(_emailController.text.trim());
 
     if (!mounted) return;
 
@@ -35,7 +36,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(auth.errorMessage!)),
       );
-      auth.clearError(); 
+      auth.clearError();
     }
   }
 
@@ -70,9 +71,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 });
               }
 
-              return _emailSent
-                  ? _buildSuccessView()
-                  : _buildFormView(auth);
+              return _emailSent ? _buildSuccessView() : _buildFormView(auth);
             },
           ),
         ),
@@ -99,7 +98,8 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           Text(
             'Enter your email address and we\'ll send you a link to reset your password.',
             style: TextStyle(
-              color: Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
+              color:
+                  Theme.of(context).colorScheme.surface.withValues(alpha: 0.7),
               fontSize: 16,
             ),
           ),
@@ -116,12 +116,18 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               decoration: InputDecoration(
                 prefixIcon: Icon(
                   Icons.email_outlined,
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.6),
                   size: 20,
                 ),
                 hintText: 'Email Address',
                 hintStyle: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.6),
                   fontSize: 16,
                 ),
                 border: OutlineInputBorder(
@@ -225,7 +231,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           'We\'ve sent a password reset link to',
           textAlign: TextAlign.center,
           style: TextStyle(
-            color: Theme.of(context).colorScheme.surfaceContainerLowest.withValues(alpha: 0.7),
+            color: Theme.of(context)
+                .colorScheme
+                .surfaceContainerLowest
+                .withValues(alpha: 0.7),
             fontSize: 16,
           ),
         ),
@@ -250,7 +259,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
             children: [
               Icon(
                 Icons.info_outline,
-                color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
+                color: Theme.of(context)
+                    .colorScheme
+                    .onSurface
+                    .withValues(alpha: 0.6),
                 size: 20,
               ),
               const SizedBox(height: 8),
@@ -258,7 +270,10 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
                 'Didn\'t receive the email? Check your spam folder or',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .onSurface
+                      .withValues(alpha: 0.7),
                   fontSize: 14,
                 ),
               ),

@@ -28,15 +28,12 @@ class WalletTransactionList extends StatelessWidget {
             Text(
               'Transaction History',
               style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
+                    fontWeight: FontWeight.bold,
+                  ),
             ),
           ],
         ),
-        
         const SizedBox(height: 16),
-        
-        // History List
         if (isLoading)
           const Center(
             child: Padding(
@@ -48,7 +45,8 @@ class WalletTransactionList extends StatelessWidget {
           Container(
             padding: const EdgeInsets.all(32),
             decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
+              color:
+                  Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.3),
               borderRadius: BorderRadius.circular(12),
             ),
             child: Center(
@@ -57,7 +55,10 @@ class WalletTransactionList extends StatelessWidget {
                   Icon(
                     Icons.receipt_long_outlined,
                     size: 48,
-                    color: Theme.of(context).colorScheme.onSurfaceVariant.withOpacity(0.5),
+                    color: Theme.of(context)
+                        .colorScheme
+                        .onSurfaceVariant
+                        .withOpacity(0.5),
                   ),
                   const SizedBox(height: 12),
                   Text(

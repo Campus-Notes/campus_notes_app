@@ -11,7 +11,14 @@ class SearchFilters extends StatefulWidget {
 
 class _SearchFiltersState extends State<SearchFilters> {
   final subjects = const ['All', 'CS', 'Math', 'Economics'];
-  final tags = const ['All', 'semester-3', 'semester-4', 'first-year', 'dm', 'dsa'];
+  final tags = const [
+    'All',
+    'semester-3',
+    'semester-4',
+    'first-year',
+    'dm',
+    'dsa'
+  ];
 
   String selectedSubject = 'All';
   String selectedTag = 'All';

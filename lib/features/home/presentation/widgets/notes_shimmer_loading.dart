@@ -13,7 +13,6 @@ class NotesShimmerLoading extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: [
-        // Featured card shimmer
         Shimmer.fromColors(
           baseColor: baseColor,
           highlightColor: highlightColor,
@@ -26,8 +25,6 @@ class NotesShimmerLoading extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 24),
-
-        // Section header shimmer
         Shimmer.fromColors(
           baseColor: baseColor,
           highlightColor: highlightColor,
@@ -54,8 +51,6 @@ class NotesShimmerLoading extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-
-        // Note cards shimmer
         for (int i = 0; i < 3; i++)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),
@@ -71,10 +66,7 @@ class NotesShimmerLoading extends StatelessWidget {
               ),
             ),
           ),
-
         const SizedBox(height: 20),
-
-        // Another section header shimmer
         Shimmer.fromColors(
           baseColor: baseColor,
           highlightColor: highlightColor,
@@ -101,8 +93,6 @@ class NotesShimmerLoading extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
-
-        // More note cards shimmer
         for (int i = 0; i < 3; i++)
           Padding(
             padding: const EdgeInsets.only(bottom: 12),

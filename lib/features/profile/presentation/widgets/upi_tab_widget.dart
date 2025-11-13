@@ -29,7 +29,6 @@ class _UpiTabWidgetState extends State<UpiTabWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Info Card
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -51,17 +50,14 @@ class _UpiTabWidgetState extends State<UpiTabWidget> {
                     child: Text(
                       'Add your UPI ID to receive payments quickly and securely',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.blue[700],
-                      ),
+                            color: Colors.blue[700],
+                          ),
                     ),
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // UPI ID Field
             TextFormField(
               controller: widget.upiIdController,
               decoration: InputDecoration(
@@ -73,20 +69,21 @@ class _UpiTabWidgetState extends State<UpiTabWidget> {
                 ),
                 filled: true,
                 fillColor: Colors.grey.withValues(alpha: 0.07),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                  borderSide:
+                      const BorderSide(color: AppColors.primary, width: 2),
                 ),
               ),
               validator: (value) {
-                if (value?.trim().isEmpty == true) return null; // UPI is optional
-                
-                // Basic UPI ID validation
+                if (value?.trim().isEmpty == true) return null;
+
                 final upiRegex = RegExp(r'^[a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+$');
                 if (!upiRegex.hasMatch(value!)) {
                   return 'Enter a valid UPI ID (e.g., user@paytm)';
@@ -94,10 +91,7 @@ class _UpiTabWidgetState extends State<UpiTabWidget> {
                 return null;
               },
             ),
-
             const SizedBox(height: 32),
-
-            // Save Button
             Consumer<AuthController>(
               builder: (context, auth, child) {
                 return SizedBox(
@@ -123,10 +117,13 @@ class _UpiTabWidgetState extends State<UpiTabWidget> {
                           )
                         : Text(
                             'Save UPI Details',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                   ),
                 );

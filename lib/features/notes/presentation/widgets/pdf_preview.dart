@@ -9,7 +9,7 @@ class PdfPreviewWidget extends StatelessWidget {
   final bool hasAlreadyPurchased;
   final bool isOwnNote;
   final VoidCallback? onTap;
-  final dynamic note; 
+  final dynamic note;
 
   const PdfPreviewWidget({
     super.key,
@@ -39,7 +39,9 @@ class PdfPreviewWidget extends StatelessWidget {
     final theme = Theme.of(context);
     final pdfBytes = _getPdfBytes();
     final showPreview = pdfBytes != null;
-    
+
+    final shouldShowLock = showPreview && !hasAlreadyPurchased && !isOwnNote;
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: GestureDetector(
@@ -67,7 +69,7 @@ class PdfPreviewWidget extends StatelessWidget {
               children: [
                 if (showPreview)
                   IgnorePointer(
-                    ignoring: true, 
+                    ignoring: shouldShowLock,
                     child: SfPdfViewer.memory(
                       pdfBytes,
                       enableDoubleTapZooming: false,
@@ -85,7 +87,6 @@ class PdfPreviewWidget extends StatelessWidget {
                     ),
                   )
                 else
-                  // Fallback gradient background
                   Container(
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
@@ -118,16 +119,14 @@ class PdfPreviewWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                
-                if (showPreview)
+                if (showPreview && shouldShowLock)
                   BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 15.0, sigmaY: 15.0),
                     child: Container(
                       color: theme.colorScheme.surface.withOpacity(0.2),
                     ),
                   ),
-                
-                if (showPreview)
+                if (shouldShowLock)
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.black.withOpacity(0.1),
@@ -139,7 +138,8 @@ class PdfPreviewWidget extends StatelessWidget {
                           Container(
                             padding: const EdgeInsets.all(20),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.surface.withOpacity(0.95),
+                              color:
+                                  theme.colorScheme.surface.withOpacity(0.95),
                               shape: BoxShape.circle,
                               boxShadow: [
                                 BoxShadow(
@@ -162,7 +162,8 @@ class PdfPreviewWidget extends StatelessWidget {
                               vertical: 14,
                             ),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.surface.withOpacity(0.95),
+                              color:
+                                  theme.colorScheme.surface.withOpacity(0.95),
                               borderRadius: BorderRadius.circular(30),
                               boxShadow: [
                                 BoxShadow(
@@ -186,7 +187,8 @@ class PdfPreviewWidget extends StatelessWidget {
                               vertical: 6,
                             ),
                             decoration: BoxDecoration(
-                              color: theme.colorScheme.primary.withOpacity(0.15),
+                              color:
+                                  theme.colorScheme.primary.withOpacity(0.15),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
@@ -202,7 +204,6 @@ class PdfPreviewWidget extends StatelessWidget {
                       ),
                     ),
                   ),
-                
                 if (showPreview)
                   Positioned(
                     top: 16,
@@ -213,11 +214,16 @@ class PdfPreviewWidget extends StatelessWidget {
                         vertical: 6,
                       ),
                       decoration: BoxDecoration(
-                        color: theme.colorScheme.primary,
+                        color: shouldShowLock
+                            ? theme.colorScheme.primary
+                            : Colors.green,
                         borderRadius: BorderRadius.circular(20),
                         boxShadow: [
                           BoxShadow(
-                            color: theme.colorScheme.primary.withOpacity(0.4),
+                            color: (shouldShowLock
+                                    ? theme.colorScheme.primary
+                                    : Colors.green)
+                                .withOpacity(0.4),
                             blurRadius: 8,
                             offset: const Offset(0, 2),
                           ),
@@ -227,13 +233,15 @@ class PdfPreviewWidget extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Icon(
-                            Icons.visibility_outlined,
+                            shouldShowLock
+                                ? Icons.visibility_outlined
+                                : Icons.visibility,
                             size: 16,
                             color: theme.colorScheme.onPrimary,
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            'PREVIEW',
+                            shouldShowLock ? 'PREVIEW' : 'FULL ACCESS',
                             style: TextStyle(
                               color: theme.colorScheme.onPrimary,
                               fontSize: 11,

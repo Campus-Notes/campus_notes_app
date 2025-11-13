@@ -42,12 +42,14 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
         return;
       }
 
-      final myNotes = await _noteDatabaseService.getUserNotes(currentUser.uid, limit: 100);
+      final myNotes =
+          await _noteDatabaseService.getUserNotes(currentUser.uid, limit: 100);
 
       List<NoteWithPurchases> soldNotes = [];
       for (final note in myNotes) {
         if (!note.isDonation) {
-          final purchases = await _noteDatabaseService.getNotePurchases(note.noteId);
+          final purchases =
+              await _noteDatabaseService.getNotePurchases(note.noteId);
           if (purchases.isNotEmpty) {
             soldNotes.add(NoteWithPurchases(note: note, purchases: purchases));
           }
@@ -167,7 +169,9 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
                 'When someone purchases your notes, they will appear here',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.textSecondaryLight,
                 ),
               ),
             ],
@@ -186,10 +190,11 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
     );
   }
 
-  Widget _buildSoldNoteCard(NoteWithPurchases soldNote, bool isDark, ThemeData theme) {
+  Widget _buildSoldNoteCard(
+      NoteWithPurchases soldNote, bool isDark, ThemeData theme) {
     final note = soldNote.note;
     final totalSales = soldNote.purchases.length;
-    final totalEarnings = note.earnings; 
+    final totalEarnings = note.earnings;
     final latestPurchase = soldNote.purchases.first;
 
     return Card(
@@ -203,7 +208,6 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header with title and stats
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -231,7 +235,8 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: AppColors.success.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -258,10 +263,7 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
                 ),
               ],
             ),
-
             const SizedBox(height: 12),
-
-            // Stats row
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -280,7 +282,9 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
                           'Earnings',
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                            color: isDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondaryLight,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -298,7 +302,8 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
                   Container(
                     width: 1,
                     height: 40,
-                    color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                    color:
+                        isDark ? AppColors.borderDark : AppColors.borderLight,
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -309,7 +314,9 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
                           'Price',
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                            color: isDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondaryLight,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -327,7 +334,8 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
                   Container(
                     width: 1,
                     height: 40,
-                    color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                    color:
+                        isDark ? AppColors.borderDark : AppColors.borderLight,
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -338,13 +346,16 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
                           'Rating',
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                            color: isDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondaryLight,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 18),
+                            const Icon(Icons.star,
+                                color: Colors.amber, size: 18),
                             const SizedBox(width: 4),
                             Text(
                               note.rating.toStringAsFixed(1),
@@ -361,23 +372,24 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
                 ],
               ),
             ),
-
             const SizedBox(height: 12),
-
-            // Latest purchase info
             Row(
               children: [
                 Icon(
                   Icons.access_time,
                   size: 14,
-                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.textSecondaryLight,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   'Last sold: ${_formatDate(latestPurchase.purchasedAt)}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.textSecondaryLight,
                   ),
                 ),
                 const Spacer(),
@@ -385,7 +397,9 @@ class _MySoldNotesPageState extends State<MySoldNotesPage> {
                   latestPurchase.name,
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.textSecondaryLight,
                   ),
                 ),
               ],

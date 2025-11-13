@@ -16,7 +16,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   final _oldPasswordController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
-  
+
   bool _obscureOldPassword = true;
   bool _obscureNewPassword = true;
   bool _obscureConfirmPassword = true;
@@ -77,8 +77,6 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const SizedBox(height: 20),
-                
-                // Instructions
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -107,15 +105,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     ],
                   ),
                 ),
-                
                 const SizedBox(height: 32),
-                
-                // Current Password
                 _passwordField(
                   controller: _oldPasswordController,
                   label: 'Current Password',
                   obscureText: _obscureOldPassword,
-                  onToggleVisibility: () => setState(() => _obscureOldPassword = !_obscureOldPassword),
+                  onToggleVisibility: () => setState(
+                      () => _obscureOldPassword = !_obscureOldPassword),
                   validator: (value) {
                     if (value?.isEmpty == true) {
                       return 'Enter current password';
@@ -123,15 +119,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     return null;
                   },
                 ),
-                
                 const SizedBox(height: 24),
-                
-                // New Password
                 _passwordField(
                   controller: _newPasswordController,
                   label: 'New Password',
                   obscureText: _obscureNewPassword,
-                  onToggleVisibility: () => setState(() => _obscureNewPassword = !_obscureNewPassword),
+                  onToggleVisibility: () => setState(
+                      () => _obscureNewPassword = !_obscureNewPassword),
                   validator: (value) {
                     if (value?.isEmpty == true) {
                       return 'Enter new password';
@@ -142,15 +136,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     return null;
                   },
                 ),
-                
                 const SizedBox(height: 24),
-                
-                // Confirm Password
                 _passwordField(
                   controller: _confirmPasswordController,
                   label: 'Confirm New Password',
                   obscureText: _obscureConfirmPassword,
-                  onToggleVisibility: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
+                  onToggleVisibility: () => setState(
+                      () => _obscureConfirmPassword = !_obscureConfirmPassword),
                   validator: (value) {
                     if (value?.isEmpty == true) {
                       return 'Confirm your new password';
@@ -161,10 +153,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     return null;
                   },
                 ),
-                
                 const SizedBox(height: 40),
-                
-                // Change Password Button
                 Consumer<AuthController>(
                   builder: (context, auth, child) {
                     return SizedBox(
@@ -199,10 +188,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                     );
                   },
                 ),
-                
                 const SizedBox(height: 20),
-                
-                // Security Tips
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -226,9 +212,11 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      _securityTip('Use a mix of letters, numbers, and symbols'),
+                      _securityTip(
+                          'Use a mix of letters, numbers, and symbols'),
                       _securityTip('Avoid using personal information'),
-                      _securityTip('Don\'t reuse passwords from other accounts'),
+                      _securityTip(
+                          'Don\'t reuse passwords from other accounts'),
                       _securityTip('Consider using a password manager'),
                     ],
                   ),
@@ -260,14 +248,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
         ),
         suffixIcon: IconButton(
           icon: Icon(
-            obscureText ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+            obscureText
+                ? Icons.visibility_outlined
+                : Icons.visibility_off_outlined,
             color: Colors.grey,
           ),
           onPressed: onToggleVisibility,
         ),
         filled: true,
         fillColor: Colors.grey.withValues(alpha: 0.07),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding:
+            const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -303,8 +294,8 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             child: Text(
               tip,
               style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: Colors.grey[600],
-              ),
+                    color: Colors.grey[600],
+                  ),
             ),
           ),
         ],

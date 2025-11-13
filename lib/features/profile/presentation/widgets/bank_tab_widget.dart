@@ -31,7 +31,6 @@ class _BankTabWidgetState extends State<BankTabWidget> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Info Card
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -53,17 +52,14 @@ class _BankTabWidgetState extends State<BankTabWidget> {
                     child: Text(
                       'Your bank details are secured with industry-standard encryption',
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Colors.green[700],
-                      ),
+                            color: Colors.green[700],
+                          ),
                     ),
                   ),
                 ],
               ),
             ),
-
             const SizedBox(height: 24),
-
-            // Account Number Field
             TextFormField(
               controller: widget.accountNumberController,
               keyboardType: TextInputType.number,
@@ -76,14 +72,16 @@ class _BankTabWidgetState extends State<BankTabWidget> {
                 ),
                 filled: true,
                 fillColor: Colors.grey.withValues(alpha: 0.07),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                  borderSide:
+                      const BorderSide(color: AppColors.primary, width: 2),
                 ),
               ),
               validator: (value) {
@@ -96,10 +94,7 @@ class _BankTabWidgetState extends State<BankTabWidget> {
                 return null;
               },
             ),
-
             const SizedBox(height: 20),
-
-            // IFSC Code Field
             TextFormField(
               controller: widget.ifscController,
               textCapitalization: TextCapitalization.characters,
@@ -112,14 +107,16 @@ class _BankTabWidgetState extends State<BankTabWidget> {
                 ),
                 filled: true,
                 fillColor: Colors.grey.withValues(alpha: 0.07),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                contentPadding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
                   borderSide: BorderSide.none,
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: const BorderSide(color: AppColors.primary, width: 2),
+                  borderSide:
+                      const BorderSide(color: AppColors.primary, width: 2),
                 ),
               ),
               validator: (value) {
@@ -133,9 +130,7 @@ class _BankTabWidgetState extends State<BankTabWidget> {
                 return null;
               },
             ),
-
             const SizedBox(height: 32),
-
             Consumer<AuthController>(
               builder: (context, auth, child) {
                 return SizedBox(
@@ -161,16 +156,18 @@ class _BankTabWidgetState extends State<BankTabWidget> {
                           )
                         : Text(
                             'Save Bank Details',
-                            style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                              color: Colors.white,
-                              fontWeight: FontWeight.w600,
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .titleMedium
+                                ?.copyWith(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.w600,
+                                ),
                           ),
                   ),
                 );
               },
             ),
-
             const SizedBox(height: 20),
           ],
         ),

@@ -23,7 +23,7 @@ class BottomActionBarWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -39,13 +39,13 @@ class BottomActionBarWidget extends StatelessWidget {
       child: SafeArea(
         child: Row(
           children: [
-            // Add to Cart button
             if (!isOwnNote && !hasAlreadyPurchased)
               Container(
                 width: 56,
                 height: 56,
                 decoration: BoxDecoration(
-                  border: Border.all(color: theme.colorScheme.primary, width: 2),
+                  border:
+                      Border.all(color: theme.colorScheme.primary, width: 2),
                   borderRadius: BorderRadius.circular(16),
                 ),
                 child: IconButton(
@@ -56,19 +56,17 @@ class BottomActionBarWidget extends StatelessWidget {
                   ),
                 ),
               ),
-            
-            if (!isOwnNote && !hasAlreadyPurchased)
-              const SizedBox(width: 12),
-            
-            // Main action button
+            if (!isOwnNote && !hasAlreadyPurchased) const SizedBox(width: 12),
             Expanded(
               child: ElevatedButton(
-                onPressed: (isOwnNote || hasAlreadyPurchased || isLoading) ? null : onPurchase,
+                onPressed: (isOwnNote || hasAlreadyPurchased || isLoading)
+                    ? null
+                    : onPurchase,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: isOwnNote 
+                  backgroundColor: isOwnNote
                       ? theme.colorScheme.outline.withOpacity(0.3)
-                      : hasAlreadyPurchased 
-                          ? Colors.green 
+                      : hasAlreadyPurchased
+                          ? Colors.green
                           : theme.colorScheme.primary,
                   foregroundColor: isOwnNote
                       ? theme.colorScheme.onSurfaceVariant
@@ -86,7 +84,9 @@ class BottomActionBarWidget extends StatelessWidget {
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
                           valueColor: AlwaysStoppedAnimation<Color>(
-                            isOwnNote ? theme.colorScheme.onSurfaceVariant : Colors.white,
+                            isOwnNote
+                                ? theme.colorScheme.onSurfaceVariant
+                                : Colors.white,
                           ),
                         ),
                       )

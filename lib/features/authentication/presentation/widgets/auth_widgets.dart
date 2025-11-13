@@ -6,7 +6,7 @@ class AuthButton extends StatelessWidget {
   final bool isLoading;
   final bool isOutlined;
   final Widget? icon;
-  
+
   const AuthButton({
     super.key,
     required this.text,
@@ -15,7 +15,7 @@ class AuthButton extends StatelessWidget {
     this.isOutlined = false,
     this.icon,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     if (isOutlined) {
@@ -24,13 +24,13 @@ class AuthButton extends StatelessWidget {
         child: _buildChild(),
       );
     }
-    
+
     return ElevatedButton(
       onPressed: isLoading ? null : onPressed,
       child: _buildChild(),
     );
   }
-  
+
   Widget _buildChild() {
     if (isLoading) {
       return const SizedBox(
@@ -39,7 +39,7 @@ class AuthButton extends StatelessWidget {
         child: CircularProgressIndicator(strokeWidth: 2),
       );
     }
-    
+
     if (icon != null) {
       return Row(
         mainAxisSize: MainAxisSize.min,
@@ -50,7 +50,7 @@ class AuthButton extends StatelessWidget {
         ],
       );
     }
-    
+
     return Text(text);
   }
 }
@@ -59,14 +59,14 @@ class SocialLoginButton extends StatelessWidget {
   final String text;
   final Widget icon;
   final VoidCallback? onPressed;
-  
+
   const SocialLoginButton({
     super.key,
     required this.text,
     required this.icon,
     this.onPressed,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return OutlinedButton(

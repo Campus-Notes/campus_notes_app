@@ -63,7 +63,7 @@ class _PremiumButtonState extends State<PremiumButton>
   @override
   Widget build(BuildContext context) {
     final isEnabled = widget.onPressed != null && !widget.isLoading;
-    
+
     return AnimatedBuilder(
       animation: _scaleAnimation,
       builder: (context, child) {
@@ -78,38 +78,39 @@ class _PremiumButtonState extends State<PremiumButton>
               width: double.infinity,
               height: 56,
               decoration: BoxDecoration(
-                gradient: widget.isSecondary 
-                  ? null
-                  : isEnabled
-                    ? LinearGradient(
-                        colors: [
-                          AppColors.primary,
-                          AppColors.primary.withValues(alpha: 0.8),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      )
-                    : LinearGradient(
-                        colors: [
-                          Colors.grey[300]!,
-                          Colors.grey[400]!,
-                        ],
-                      ),
+                gradient: widget.isSecondary
+                    ? null
+                    : isEnabled
+                        ? LinearGradient(
+                            colors: [
+                              AppColors.primary,
+                              AppColors.primary.withValues(alpha: 0.8),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          )
+                        : LinearGradient(
+                            colors: [
+                              Colors.grey[300]!,
+                              Colors.grey[400]!,
+                            ],
+                          ),
                 color: widget.isSecondary ? Colors.white : null,
                 borderRadius: BorderRadius.circular(16),
                 border: widget.isSecondary
-                  ? Border.all(
-                      color: isEnabled ? AppColors.primary : Colors.grey[300]!,
-                      width: 2,
-                    )
-                  : null,
+                    ? Border.all(
+                        color:
+                            isEnabled ? AppColors.primary : Colors.grey[300]!,
+                        width: 2,
+                      )
+                    : null,
                 boxShadow: [
                   BoxShadow(
                     color: widget.isSecondary
-                      ? Colors.transparent
-                      : isEnabled
-                        ? AppColors.primary.withValues(alpha: 0.3)
-                        : Colors.grey.withValues(alpha: 0.2),
+                        ? Colors.transparent
+                        : isEnabled
+                            ? AppColors.primary.withValues(alpha: 0.3)
+                            : Colors.grey.withValues(alpha: 0.2),
                     blurRadius: 15,
                     offset: const Offset(0, 5),
                   ),
@@ -119,41 +120,47 @@ class _PremiumButtonState extends State<PremiumButton>
                 color: Colors.transparent,
                 child: Center(
                   child: widget.isLoading
-                    ? SizedBox(
-                        width: 24,
-                        height: 24,
-                        child: CircularProgressIndicator(
-                          strokeWidth: 3,
-                          valueColor: AlwaysStoppedAnimation<Color>(
-                            widget.isSecondary ? AppColors.primary : Colors.white,
-                          ),
-                        ),
-                      )
-                    : Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          if (widget.icon != null) ...[
-                            Icon(
-                              widget.icon,
-                              size: 20,
-                              color: widget.isSecondary
-                                ? (isEnabled ? AppColors.primary : Colors.grey[500])
-                                : Colors.white,
+                      ? SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 3,
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              widget.isSecondary
+                                  ? AppColors.primary
+                                  : Colors.white,
                             ),
-                            const SizedBox(width: 8),
+                          ),
+                        )
+                      : Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            if (widget.icon != null) ...[
+                              Icon(
+                                widget.icon,
+                                size: 20,
+                                color: widget.isSecondary
+                                    ? (isEnabled
+                                        ? AppColors.primary
+                                        : Colors.grey[500])
+                                    : Colors.white,
+                              ),
+                              const SizedBox(width: 8),
+                            ],
+                            Text(
+                              widget.text,
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                                color: widget.isSecondary
+                                    ? (isEnabled
+                                        ? AppColors.primary
+                                        : Colors.grey[500])
+                                    : Colors.white,
+                              ),
+                            ),
                           ],
-                          Text(
-                            widget.text,
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                              color: widget.isSecondary
-                                ? (isEnabled ? AppColors.primary : Colors.grey[500])
-                                : Colors.white,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
                 ),
               ),
             ),

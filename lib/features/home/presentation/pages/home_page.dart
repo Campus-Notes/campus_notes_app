@@ -1,7 +1,7 @@
 import 'package:campus_notes_app/features/home/presentation/widgets/buy_mode_content.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../../../chat/presentation/pages/chat_list_page.dart'; 
+import '../../../chat/presentation/pages/chat_list_page.dart';
 import '../../../notes/presentation/controller/notes_controller.dart';
 import '../widgets/location_header.dart';
 import '../widgets/mode_selector.dart';
@@ -31,11 +31,19 @@ class _HomePageState extends State<HomePage> {
 
   final List<Map<String, dynamic>> categories = [
     {'icon': Icons.all_inclusive, 'label': 'All', 'subject': 'All'},
-    {'icon': Icons.computer, 'label': 'Computer Science', 'subject': 'Computer Science'},
+    {
+      'icon': Icons.computer,
+      'label': 'Computer Science',
+      'subject': 'Computer Science'
+    },
     {'icon': Icons.calculate, 'label': 'Mathematics', 'subject': 'Mathematics'},
     {'icon': Icons.science, 'label': 'Physics', 'subject': 'Physics'},
     {'icon': Icons.biotech, 'label': 'Biology', 'subject': 'Biology'},
-    {'icon': Icons.science_outlined, 'label': 'Chemistry', 'subject': 'Chemistry'},
+    {
+      'icon': Icons.science_outlined,
+      'label': 'Chemistry',
+      'subject': 'Chemistry'
+    },
     {'icon': Icons.menu_book, 'label': 'English', 'subject': 'English'},
     {'icon': Icons.account_balance, 'label': 'Social', 'subject': 'Social'},
   ];
@@ -43,10 +51,10 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    // Load notes when the home page is initialized
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final notesController = Provider.of<NotesController>(context, listen: false);
-      notesController.loadTrendingNotes(); // Load trending notes excluding own notes
+      final notesController =
+          Provider.of<NotesController>(context, listen: false);
+      notesController.loadTrendingNotes();
     });
   }
 
@@ -54,11 +62,11 @@ class _HomePageState extends State<HomePage> {
     setState(() {
       selectedCategoryIndex = index;
     });
-    
-    // Filter notes by subject
-    final notesController = Provider.of<NotesController>(context, listen: false);
+
+    final notesController =
+        Provider.of<NotesController>(context, listen: false);
     final selectedSubject = categories[index]['subject'] as String;
-    
+
     if (selectedSubject == 'All') {
       notesController.loadTrendingNotes();
     } else {
@@ -73,7 +81,6 @@ class _HomePageState extends State<HomePage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Header section
             Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
@@ -96,7 +103,6 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   const SizedBox(height: 16),
-
                   ModeSelector(
                     isBuyMode: isBuyMode,
                     onModeChanged: (bool buyMode) {
@@ -109,15 +115,12 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
             ),
-
             if (isBuyMode)
               CategorySelector(
                 selectedIndex: selectedCategoryIndex,
                 categories: categories,
                 onCategoryChanged: _onCategoryChanged,
               ),
-
-            // Main content
             Expanded(
               child: AnimatedSwitcher(
                 duration: const Duration(milliseconds: 300),

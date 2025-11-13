@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../routes/route_names.dart';
 import '../../../../services/theme_service.dart';
+import '../../../../services/notification_service.dart';
 import '../../../../common_widgets/app_bar.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -12,9 +13,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  bool appNotifications = true;
-  bool chatNotifications = true;
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -30,7 +28,8 @@ class _SettingsPageState extends State<SettingsPage> {
               builder: (context, themeService, child) {
                 return Container(
                   margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(12),
@@ -43,7 +42,8 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   child: Row(
                     children: [
-                      Icon(themeService.themeModeIcon, color: Theme.of(context).colorScheme.primary),
+                      Icon(themeService.themeModeIcon,
+                          color: Theme.of(context).colorScheme.primary),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -66,7 +66,8 @@ class _SettingsPageState extends State<SettingsPage> {
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 6),
                         decoration: BoxDecoration(
-                          border: Border.all(color: Colors.grey.withOpacity(0.3)),
+                          border:
+                              Border.all(color: Colors.grey.withOpacity(0.3)),
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: DropdownButtonHideUnderline(
@@ -123,28 +124,38 @@ class _SettingsPageState extends State<SettingsPage> {
             Text(
               'Notifications',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                color: Theme.of(context).colorScheme.primary,
-              ),
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
             ),
             const SizedBox(height: 8),
-            SwitchListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
-              value: appNotifications,
-              onChanged: (v) => setState(() => appNotifications = v),
-              title: Text(
-                'App notifications',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              subtitle: Text(
-                'Receive push notifications from the app',
-                style: Theme.of(context).textTheme.bodyMedium,
-              ),
-              secondary: const Icon(Icons.notifications_outlined),
+            Consumer<NotificationService>(
+              builder: (context, notificationService, child) {
+                return SwitchListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  value: notificationService.notificationsEnabled,
+                  onChanged: (v) async {
+                    if (v) {
+                      await notificationService.enableNotifications();
+                    } else {
+                      await notificationService.disableNotifications();
+                    }
+                  },
+                  title: Text(
+                    'App notifications',
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                  subtitle: Text(
+                    'Receive push notifications from the app',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  secondary: const Icon(Icons.notifications_outlined),
+                );
+              },
             ),
             SwitchListTile(
               contentPadding: const EdgeInsets.symmetric(horizontal: 8.0),
-              value: chatNotifications,
-              onChanged: (v) => setState(() => chatNotifications = v),
+              value: true,
+              onChanged: (v) {},
               title: Text(
                 'Chat notifications',
                 style: Theme.of(context).textTheme.bodyLarge,
@@ -160,13 +171,15 @@ class _SettingsPageState extends State<SettingsPage> {
               context,
               icon: Icons.help_outline,
               title: 'Help & Support',
-              onTap: () => Navigator.of(context).pushNamed(AppRoutes.helpSupport),
+              onTap: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.helpSupport),
             ),
             _buildListTile(
               context,
               icon: Icons.privacy_tip_outlined,
               title: 'Privacy Policy',
-              onTap: () => Navigator.of(context).pushNamed(AppRoutes.privacyPolicy),
+              onTap: () =>
+                  Navigator.of(context).pushNamed(AppRoutes.privacyPolicy),
             ),
             _buildListTile(
               context,

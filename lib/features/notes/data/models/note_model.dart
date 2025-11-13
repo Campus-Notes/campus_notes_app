@@ -15,9 +15,9 @@ class NoteModel {
   final DateTime? updatedAt;
   final int viewCount;
   final int purchaseCount;
-  final double earnings; 
-  final bool isVerified; 
-  final int pageCount; 
+  final double earnings;
+  final bool isVerified;
+  final int pageCount;
 
   NoteModel({
     required this.noteId,
@@ -62,11 +62,10 @@ class NoteModel {
   }
 
   factory NoteModel.fromMap(Map<String, dynamic> map, String docId) {
-    
     final descriptionValue = map['description'] as String?;
-    
+
     final ownerUidValue = map['ownerUid'] ?? '';
-    
+
     return NoteModel(
       noteId: map['noteId'] ?? docId,
       title: map['title'] ?? '',
@@ -74,7 +73,8 @@ class NoteModel {
       description: descriptionValue,
       ownerUid: ownerUidValue,
       isDonation: map['isDonation'] ?? false,
-      price: map['isDonation'] == true ? null : (map['price'] as num?)?.toDouble(),
+      price:
+          map['isDonation'] == true ? null : (map['price'] as num?)?.toDouble(),
       rating: (map['rating'] as num?)?.toDouble() ?? 0.0,
       fileName: map['fileName'] ?? '',
       fileEncodedData: map['fileEncodedData'] ?? '',

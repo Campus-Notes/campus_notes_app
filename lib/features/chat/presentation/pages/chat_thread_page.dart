@@ -55,8 +55,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       receiverId: widget.peerId,
     );
     _ctrl.clear();
-    
-    // Scroll to bottom after sending
+
     if (_scrollCtrl.hasClients) {
       _scrollCtrl.animateTo(
         0,
@@ -68,12 +67,12 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
 
   String _formatTime(Timestamp? timestamp) {
     if (timestamp == null) return '';
-    
+
     final dt = timestamp.toDate();
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final messageDate = DateTime(dt.year, dt.month, dt.day);
-    
+
     if (messageDate == today) {
       return DateFormat('HH:mm').format(dt);
     } else if (messageDate == today.subtract(const Duration(days: 1))) {
@@ -92,7 +91,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
     required bool isLastInGroup,
   }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
@@ -105,7 +104,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
         decoration: BoxDecoration(
           color: isMe
               ? AppColors.primary
-              : isDark 
+              : isDark
                   ? const Color(0xFF2C2C2E)
                   : const Color(0xFFF1F3F5),
           borderRadius: BorderRadius.only(
@@ -129,9 +128,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               text,
               style: TextStyle(
                 fontSize: 15,
-                color: isMe 
-                    ? Colors.white 
-                    : isDark 
+                color: isMe
+                    ? Colors.white
+                    : isDark
                         ? Colors.white.withValues(alpha: 0.9)
                         : Colors.black87,
                 height: 1.4,
@@ -142,7 +141,7 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
               time,
               style: TextStyle(
                 fontSize: 11,
-                color: isMe 
+                color: isMe
                     ? Colors.white.withValues(alpha: 0.7)
                     : isDark
                         ? Colors.grey[400]
@@ -167,7 +166,6 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
       body: SafeArea(
         child: Column(
           children: [
-            // Disclaimer banner
             Container(
               margin: const EdgeInsets.all(12),
               padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
@@ -191,9 +189,9 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                     child: Text(
                       'This chat is for marketplace transactions only',
                       style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                        color: AppColors.info,
-                        fontWeight: FontWeight.w500,
-                      ),
+                            color: AppColors.info,
+                            fontWeight: FontWeight.w500,
+                          ),
                     ),
                   ),
                 ],
@@ -212,16 +210,21 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.error_outline, 
-                            size: 48, 
+                          Icon(
+                            Icons.error_outline,
+                            size: 48,
                             color: Theme.of(context).colorScheme.error,
                           ),
                           const SizedBox(height: 16),
                           Text(
                             'Something went wrong',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                            ),
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(alpha: 0.6),
+                                    ),
                           ),
                         ],
                       ),
@@ -236,21 +239,34 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                           Icon(
                             Icons.chat_bubble_outline,
                             size: 64,
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.2),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.2),
                           ),
                           const SizedBox(height: 16),
                           Text(
                             'No messages yet',
-                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.6),
-                            ),
+                            style:
+                                Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                      color: Theme.of(context)
+                                          .colorScheme
+                                          .onSurface
+                                          .withValues(alpha: 0.6),
+                                    ),
                           ),
                           const SizedBox(height: 8),
                           Text(
                             'Send a message to start the conversation',
-                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.4),
-                            ),
+                            style: Theme.of(context)
+                                .textTheme
+                                .bodyMedium
+                                ?.copyWith(
+                                  color: Theme.of(context)
+                                      .colorScheme
+                                      .onSurface
+                                      .withValues(alpha: 0.4),
+                                ),
                           ),
                         ],
                       ),
@@ -262,19 +278,21 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                   return ListView.builder(
                     controller: _scrollCtrl,
                     reverse: true,
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 12, vertical: 16),
                     itemCount: messages.length,
                     itemBuilder: (_, i) {
-                      final msgData = messages[i].data() as Map<String, dynamic>;
+                      final msgData =
+                          messages[i].data() as Map<String, dynamic>;
                       final senderId = msgData['senderId'] ?? '';
                       final text = msgData['message'] ?? '';
                       final timestamp = msgData['timestamp'] as Timestamp?;
                       final isMe = senderId == chatController.currentUserId;
 
-                      // Check if this is the last message in a group from the same sender
                       bool isLastInGroup = true;
                       if (i > 0) {
-                        final nextMsgData = messages[i - 1].data() as Map<String, dynamic>;
+                        final nextMsgData =
+                            messages[i - 1].data() as Map<String, dynamic>;
                         final nextSenderId = nextMsgData['senderId'] ?? '';
                         isLastInGroup = nextSenderId != senderId;
                       }
@@ -327,7 +345,10 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                           decoration: InputDecoration(
                             hintText: 'Message...',
                             hintStyle: TextStyle(
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: 0.5),
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
@@ -346,7 +367,8 @@ class _ChatThreadPageState extends State<ChatThreadPage> {
                       ),
                       child: IconButton(
                         onPressed: _send,
-                        icon: const Icon(Icons.send_rounded, color: Colors.white),
+                        icon:
+                            const Icon(Icons.send_rounded, color: Colors.white),
                         padding: const EdgeInsets.all(10),
                         constraints: const BoxConstraints(),
                       ),

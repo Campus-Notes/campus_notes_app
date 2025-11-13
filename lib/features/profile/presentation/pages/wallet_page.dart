@@ -21,7 +21,7 @@ class WalletPage extends StatefulWidget {
 class _WalletPageState extends State<WalletPage> {
   final WalletService _walletService = WalletService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
-  
+
   double _balance = 0.0;
   double _points = 0.0;
   bool _isLoading = true;
@@ -38,13 +38,13 @@ class _WalletPageState extends State<WalletPage> {
 
   Future<void> _loadWalletData() async {
     setState(() => _isLoading = true);
-    
+
     try {
       final currentUser = _auth.currentUser;
       if (currentUser != null) {
         final balance = await _walletService.getWalletBalance(currentUser.uid);
         final points = await _walletService.getPointsBalance(currentUser.uid);
-        
+
         if (mounted) {
           setState(() {
             _balance = balance;
@@ -67,7 +67,7 @@ class _WalletPageState extends State<WalletPage> {
 
   Future<void> _loadWalletHistory() async {
     setState(() => _isLoadingHistory = true);
-    
+
     try {
       final currentUser = _auth.currentUser;
       if (currentUser != null) {
@@ -75,7 +75,7 @@ class _WalletPageState extends State<WalletPage> {
           userId: currentUser.uid,
           limit: 50,
         );
-        
+
         if (mounted) {
           setState(() {
             _walletHistory = history;
@@ -102,7 +102,6 @@ class _WalletPageState extends State<WalletPage> {
       return;
     }
 
-    // Check minimum withdrawal amount
     if (_balance < 100) {
       _showErrorDialog(
         'Minimum withdrawal amount is ₹100\n\nYour current balance: ₹${_balance.toStringAsFixed(0)}',
@@ -110,16 +109,14 @@ class _WalletPageState extends State<WalletPage> {
       return;
     }
 
-    // Get user details
     final authController = context.read<AuthController>();
     final userModel = await authController.getCurrentUser();
-    
+
     if (userModel == null) {
       _showErrorDialog('Unable to load user details. Please try again.');
       return;
     }
 
-    // Check if payment details are provided
     if (!userModel.isUPIProvided && !userModel.isBankDetailsProvided) {
       _showErrorDialog(
         'Please add your payment details (UPI or Bank Account) in Payment Details section before withdrawing.',
@@ -127,32 +124,29 @@ class _WalletPageState extends State<WalletPage> {
       return;
     }
 
-    // Show confirmation dialog
     final confirmed = await _showWithdrawalConfirmation(userModel);
     if (!confirmed) return;
 
     setState(() => _isWithdrawing = true);
 
     try {
-      // Save withdrawal amount before processing
       final withdrawalAmount = _balance;
-      
-      // Send withdrawal request email FIRST (before DB update)
-      final emailSuccess = await _sendWithdrawalRequest(userModel, withdrawalAmount);
-      
-      // If email failed, show manual option and stop
+
+      final emailSuccess =
+          await _sendWithdrawalRequest(userModel, withdrawalAmount);
+
       if (!emailSuccess) {
         setState(() => _isWithdrawing = false);
         _showManualWithdrawalOption(userModel, withdrawalAmount);
         return;
       }
 
-      // Process withdrawal in database AFTER email is sent
-      final withdrawalMethod = userModel.isUPIProvided ? 'UPI' : 'Bank Transfer';
-      final withdrawalDetails = userModel.isUPIProvided 
-          ? userModel.upiId 
+      final withdrawalMethod =
+          userModel.isUPIProvided ? 'UPI' : 'Bank Transfer';
+      final withdrawalDetails = userModel.isUPIProvided
+          ? userModel.upiId
           : '${userModel.bankAccountNumber} (${userModel.ifscCode})';
-      
+
       final dbSuccess = await _walletService.processWithdrawal(
         userId: currentUser.uid,
         amount: withdrawalAmount,
@@ -166,17 +160,14 @@ class _WalletPageState extends State<WalletPage> {
         return;
       }
 
-      // Update local balance immediately
       setState(() {
         _balance = 0.0;
       });
 
-      // Reload wallet history
       await _loadWalletHistory();
-      
+
       setState(() => _isWithdrawing = false);
 
-      // Show success dialog after everything is complete
       _showSuccessDialog();
     } catch (e) {
       setState(() => _isWithdrawing = false);
@@ -190,82 +181,84 @@ class _WalletPageState extends State<WalletPage> {
         : 'Bank Account: ${userModel.bankAccountNumber}\nIFSC: ${userModel.ifscCode}';
 
     return await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Confirm Withdrawal'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Withdrawal Amount',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              '₹${_balance.toStringAsFixed(0)}',
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                color: AppColors.primary,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 16),
-            Text(
-              'Payment Method',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Theme.of(context).colorScheme.onSurface,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(paymentInfo),
-            const SizedBox(height: 16),
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: AppColors.primary.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(8),
-              ),
-              child: const Row(
-                children: [
-                  Icon(
-                    Icons.info_outline,
-                    size: 20,
-                    color: AppColors.primary,
+          context: context,
+          builder: (context) => AlertDialog(
+            title: const Text('Confirm Withdrawal'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Withdrawal Amount',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
                   ),
-                  SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      'Request will be processed within 5-6 hours',
-                      style: TextStyle(
-                        fontSize: 12,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  '₹${_balance.toStringAsFixed(0)}',
+                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  'Payment Method',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(paymentInfo),
+                const SizedBox(height: 16),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.primary.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Row(
+                    children: [
+                      Icon(
+                        Icons.info_outline,
+                        size: 20,
                         color: AppColors.primary,
                       ),
-                    ),
+                      SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                          'Request will be processed within 5-6 hours',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppColors.primary,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancel'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Cancel'),
+              ),
+              ElevatedButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Confirm'),
+              ),
+            ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Confirm'),
-          ),
-        ],
-      ),
-    ) ?? false;
+        ) ??
+        false;
   }
 
-  Future<bool> _sendWithdrawalRequest(dynamic userModel, double withdrawalAmount) async {
+  Future<bool> _sendWithdrawalRequest(
+      dynamic userModel, double withdrawalAmount) async {
     final currentUser = _auth.currentUser;
     if (currentUser == null) return false;
 
@@ -273,7 +266,8 @@ class _WalletPageState extends State<WalletPage> {
         ? 'UPI ID: ${userModel.upiId}'
         : 'Bank Account: ${userModel.bankAccountNumber}\nIFSC Code: ${userModel.ifscCode}';
 
-    final emailSubject = Uri.encodeComponent('Withdrawal Request - ${userModel.fullName}');
+    final emailSubject =
+        Uri.encodeComponent('Withdrawal Request - ${userModel.fullName}');
     final emailBody = Uri.encodeComponent('''
 Dear CampusNotes+ Team,
 
@@ -298,12 +292,13 @@ Thank you,
 ${userModel.fullName}
 ''');
 
-    final emailUri = Uri.parse('mailto:teamcampusnotes@gmail.com?subject=$emailSubject&body=$emailBody');
-    
+    final emailUri = Uri.parse(
+        'mailto:teamcampusnotes@gmail.com?subject=$emailSubject&body=$emailBody');
+
     try {
       final canLaunch = await canLaunchUrl(emailUri);
       debugPrint('Can launch email: $canLaunch');
-      
+
       if (canLaunch) {
         final launched = await launchUrl(
           emailUri,
@@ -312,7 +307,6 @@ ${userModel.fullName}
         debugPrint('Email launched: $launched');
         return launched;
       } else {
-        // Fallback: try to launch without checking
         try {
           final launched = await launchUrl(
             emailUri,
@@ -326,7 +320,6 @@ ${userModel.fullName}
       }
     } catch (e) {
       debugPrint('Error launching email: $e');
-      // Try alternative approach - just the email address
       try {
         final simpleUri = Uri.parse('mailto:teamcampusnotes@gmail.com');
         final launched = await launchUrl(
@@ -334,11 +327,11 @@ ${userModel.fullName}
           mode: LaunchMode.externalApplication,
         );
         if (launched) {
-          // Show user to manually add details
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(
-                content: Text('Email app opened. Please include your withdrawal details manually.'),
+                content: Text(
+                    'Email app opened. Please include your withdrawal details manually.'),
                 duration: Duration(seconds: 4),
               ),
             );
@@ -383,7 +376,8 @@ ${userModel.fullName}
                 children: [
                   Row(
                     children: [
-                      Icon(Icons.access_time, size: 16, color: AppColors.primary),
+                      Icon(Icons.access_time,
+                          size: 16, color: AppColors.primary),
                       SizedBox(width: 8),
                       Text(
                         'Processing Time',
@@ -463,10 +457,14 @@ $paymentDetails
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceVariant.withOpacity(0.5),
+                  color: Theme.of(context)
+                      .colorScheme
+                      .surfaceVariant
+                      .withOpacity(0.5),
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(
-                    color: Theme.of(context).colorScheme.outline.withOpacity(0.3),
+                    color:
+                        Theme.of(context).colorScheme.outline.withOpacity(0.3),
                   ),
                 ),
                 child: SelectableText(
@@ -483,7 +481,8 @@ $paymentDetails
                 ),
                 child: const Row(
                   children: [
-                    Icon(Icons.info_outline, size: 16, color: AppColors.primary),
+                    Icon(Icons.info_outline,
+                        size: 16, color: AppColors.primary),
                     SizedBox(width: 8),
                     Expanded(
                       child: Text(
@@ -508,7 +507,6 @@ $paymentDetails
           ElevatedButton(
             onPressed: () {
               Navigator.of(context).pop();
-              // Try to open email app with just the address
               final simpleUri = Uri.parse('mailto:teamcampusnotes@gmail.com');
               launchUrl(simpleUri, mode: LaunchMode.externalApplication);
             },
@@ -563,17 +561,10 @@ $paymentDetails
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Balance Card
                     WalletBalanceCard(balance: _balance),
-                    
                     const SizedBox(height: 16),
-                    
-                    // Withdrawal Info
                     const WalletWithdrawalInfo(),
-                    
                     const SizedBox(height: 24),
-                    
-                    // Withdraw Button
                     SizedBox(
                       width: double.infinity,
                       height: 56,
@@ -586,7 +577,7 @@ $paymentDetails
                           shadowColor: AppColors.primary.withOpacity(0.4),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(12),
-                          ), 
+                          ),
                         ),
                         child: _isWithdrawing
                             ? const SizedBox(
@@ -600,7 +591,8 @@ $paymentDetails
                             : Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  const Icon(Icons.account_balance_wallet_outlined),
+                                  const Icon(
+                                      Icons.account_balance_wallet_outlined),
                                   const SizedBox(width: 12),
                                   Text(
                                     'Withdraw ₹${_balance.toStringAsFixed(0)}',
@@ -613,15 +605,11 @@ $paymentDetails
                               ),
                       ),
                     ),
-                    
                     const SizedBox(height: 32),
-                    
-                    // Transaction History
                     WalletTransactionList(
                       transactions: _walletHistory,
                       isLoading: _isLoadingHistory,
                     ),
-                    
                     const SizedBox(height: 16),
                   ],
                 ),

@@ -28,7 +28,6 @@ class _SecurePdfViewerPageState extends State<SecurePdfViewerPage> {
   @override
   void initState() {
     super.initState();
-    // Add a small delay to show the PDF
     Future.delayed(const Duration(milliseconds: 300), () {
       if (mounted) {
         setState(() => _isLoading = false);
@@ -79,7 +78,8 @@ class _SecurePdfViewerPageState extends State<SecurePdfViewerPage> {
                 } else {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Please enter a page between 1 and $_totalPages'),
+                      content: Text(
+                          'Please enter a page between 1 and $_totalPages'),
                     ),
                   );
                 }
@@ -95,7 +95,7 @@ class _SecurePdfViewerPageState extends State<SecurePdfViewerPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -122,14 +122,16 @@ class _SecurePdfViewerPageState extends State<SecurePdfViewerPage> {
             icon: const Icon(Icons.zoom_in),
             tooltip: 'Zoom In',
             onPressed: () {
-              _pdfViewerController.zoomLevel = _pdfViewerController.zoomLevel + 0.25;
+              _pdfViewerController.zoomLevel =
+                  _pdfViewerController.zoomLevel + 0.25;
             },
           ),
           IconButton(
             icon: const Icon(Icons.zoom_out),
             tooltip: 'Zoom Out',
             onPressed: () {
-              _pdfViewerController.zoomLevel = _pdfViewerController.zoomLevel - 0.25;
+              _pdfViewerController.zoomLevel =
+                  _pdfViewerController.zoomLevel - 0.25;
             },
           ),
           IconButton(
@@ -141,7 +143,6 @@ class _SecurePdfViewerPageState extends State<SecurePdfViewerPage> {
       ),
       body: Stack(
         children: [
-          // PDF Viewer
           SfPdfViewer.memory(
             widget.pdfBytes,
             controller: _pdfViewerController,
@@ -160,8 +161,6 @@ class _SecurePdfViewerPageState extends State<SecurePdfViewerPage> {
               });
             },
           ),
-
-          // Loading indicator
           if (_isLoading)
             Container(
               color: theme.brightness == Brightness.dark
@@ -178,8 +177,6 @@ class _SecurePdfViewerPageState extends State<SecurePdfViewerPage> {
                 ),
               ),
             ),
-
-          // Security watermark (optional - subtle reminder)
           Positioned(
             bottom: 16,
             right: 16,

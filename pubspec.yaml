@@ -18,6 +18,10 @@ dependencies:
   firebase_auth: ^6.1.2
   cloud_firestore: ^6.1.0
   firebase_app_check: ^0.4.1+2
+  firebase_messaging: ^16.0.4
+  
+  # Local Notifications
+  flutter_local_notifications: ^18.0.0
 
   # State management
   provider: ^6.1.2

@@ -13,16 +13,15 @@ class WalletTransactionCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isPositive = transaction.amount > 0;
-    final icon = transaction.type == 'withdrawal' 
+    final icon = transaction.type == 'withdrawal'
         ? Icons.arrow_upward
         : Icons.arrow_downward;
     final color = isPositive ? AppColors.success : AppColors.error;
-    
-    // Format date
+
     final now = DateTime.now();
     final difference = now.difference(transaction.creditedAt);
     final String timeAgo;
-    
+
     if (difference.inDays > 0) {
       timeAgo = '${difference.inDays}d ago';
     } else if (difference.inHours > 0) {
@@ -62,7 +61,8 @@ class WalletTransactionCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  transaction.description ?? _getTransactionTitle(transaction.type),
+                  transaction.description ??
+                      _getTransactionTitle(transaction.type),
                   style: const TextStyle(
                     fontWeight: FontWeight.w600,
                     fontSize: 14,

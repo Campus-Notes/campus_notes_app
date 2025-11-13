@@ -19,7 +19,7 @@ class QuickAccessCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
+
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -27,11 +27,11 @@ class QuickAccessCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: isDark ? AppColors.surfaceDark : AppColors.surfaceLight,
           borderRadius: BorderRadius.circular(12),
-          border: isDark 
+          border: isDark
               ? Border.all(color: AppColors.borderDark.withValues(alpha: 0.3))
               : null,
-          boxShadow: isDark 
-              ? null 
+          boxShadow: isDark
+              ? null
               : [
                   BoxShadow(
                     color: Colors.black.withValues(alpha: 0.05),
@@ -43,31 +43,31 @@ class QuickAccessCard extends StatelessWidget {
         child: Column(
           children: [
             Icon(
-              icon, 
-              size: 28, 
-              color: isDark 
-                  ? AppColors.textSecondaryDark 
+              icon,
+              size: 28,
+              color: isDark
+                  ? AppColors.textSecondaryDark
                   : AppColors.textSecondaryLight,
             ),
             const SizedBox(height: 8),
             Text(
               label,
               style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                color: isDark 
-                    ? AppColors.textSecondaryDark 
-                    : AppColors.textSecondaryLight,
-              ),
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.textSecondaryLight,
+                  ),
             ),
             if (value != null) ...[
               const SizedBox(height: 4),
               Text(
                 value!,
                 style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                  color: isDark 
-                      ? AppColors.textPrimaryDark 
-                      : AppColors.textPrimaryLight,
-                  fontWeight: FontWeight.bold,
-                ),
+                      color: isDark
+                          ? AppColors.textPrimaryDark
+                          : AppColors.textPrimaryLight,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
             ],
           ],

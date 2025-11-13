@@ -41,13 +41,11 @@ class _DonationsPageState extends State<DonationsPage> {
         return;
       }
 
-      // Get all notes by the current user
-      final myNotes = await _noteDatabaseService.getUserNotes(currentUser.uid, limit: 100);
+      final myNotes =
+          await _noteDatabaseService.getUserNotes(currentUser.uid, limit: 100);
 
-      // Filter only donation notes
       final donatedNotes = myNotes.where((note) => note.isDonation).toList();
 
-      // Sort by most recent
       donatedNotes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
 
       setState(() {
@@ -157,7 +155,9 @@ class _DonationsPageState extends State<DonationsPage> {
                 'Share your knowledge by donating free notes',
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.textSecondaryLight,
                 ),
               ),
             ],
@@ -188,7 +188,6 @@ class _DonationsPageState extends State<DonationsPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header with title
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -216,7 +215,8 @@ class _DonationsPageState extends State<DonationsPage> {
                   ),
                 ),
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
                     color: AppColors.info.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
@@ -243,10 +243,7 @@ class _DonationsPageState extends State<DonationsPage> {
                 ),
               ],
             ),
-
             const SizedBox(height: 12),
-
-            // Stats row
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
@@ -265,7 +262,9 @@ class _DonationsPageState extends State<DonationsPage> {
                           'Accessed By',
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                            color: isDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondaryLight,
                           ),
                         ),
                         const SizedBox(height: 4),
@@ -283,7 +282,8 @@ class _DonationsPageState extends State<DonationsPage> {
                   Container(
                     width: 1,
                     height: 40,
-                    color: isDark ? AppColors.borderDark : AppColors.borderLight,
+                    color:
+                        isDark ? AppColors.borderDark : AppColors.borderLight,
                   ),
                   const SizedBox(width: 16),
                   Expanded(
@@ -294,13 +294,16 @@ class _DonationsPageState extends State<DonationsPage> {
                           'Rating',
                           style: TextStyle(
                             fontSize: 12,
-                            color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                            color: isDark
+                                ? AppColors.textSecondaryDark
+                                : AppColors.textSecondaryLight,
                           ),
                         ),
                         const SizedBox(height: 4),
                         Row(
                           children: [
-                            const Icon(Icons.star, color: Colors.amber, size: 18),
+                            const Icon(Icons.star,
+                                color: Colors.amber, size: 18),
                             const SizedBox(width: 4),
                             Text(
                               note.rating.toStringAsFixed(1),
@@ -317,23 +320,24 @@ class _DonationsPageState extends State<DonationsPage> {
                 ],
               ),
             ),
-
             const SizedBox(height: 12),
-
-            // Upload date and pages
             Row(
               children: [
                 Icon(
                   Icons.calendar_today,
                   size: 14,
-                  color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                  color: isDark
+                      ? AppColors.textSecondaryDark
+                      : AppColors.textSecondaryLight,
                 ),
                 const SizedBox(width: 4),
                 Text(
                   'Uploaded: ${_formatDate(note.createdAt)}',
                   style: TextStyle(
                     fontSize: 12,
-                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.textSecondaryLight,
                   ),
                 ),
                 const Spacer(),
@@ -341,14 +345,18 @@ class _DonationsPageState extends State<DonationsPage> {
                   Icon(
                     Icons.description,
                     size: 14,
-                    color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                    color: isDark
+                        ? AppColors.textSecondaryDark
+                        : AppColors.textSecondaryLight,
                   ),
                   const SizedBox(width: 4),
                   Text(
                     '${note.pageCount} pages',
                     style: TextStyle(
                       fontSize: 12,
-                      color: isDark ? AppColors.textSecondaryDark : AppColors.textSecondaryLight,
+                      color: isDark
+                          ? AppColors.textSecondaryDark
+                          : AppColors.textSecondaryLight,
                     ),
                   ),
                 ],

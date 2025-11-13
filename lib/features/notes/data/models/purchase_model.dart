@@ -27,7 +27,8 @@ class PurchaseModel {
       purchaseId: map['purchaseId'] ?? docId,
       uid: map['uid'] ?? '',
       name: map['name'] ?? '',
-      purchasedAt: (map['purchasedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      purchasedAt:
+          (map['purchasedAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 

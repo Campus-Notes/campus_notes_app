@@ -1,5 +1,3 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'package:campus_notes_app/features/notes/presentation/pages/cart_checkout_section.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -139,185 +137,180 @@ class _CartPageState extends State<CartPage> {
     );
   }
 
-Future<void> _handleCheckout(
-    BuildContext context, CartController cart, double finalAmount) async {
-  final user = _auth.currentUser;
-  if (user == null) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Please log in to complete purchase')),
-    );
-    return;
-  }
-
-  if (finalAmount <= 0) {
-    if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Invalid amount')),
-    );
-    return;
-  }
-
-  setState(() => _isProcessing = true);
-  
-  try {
-    // Get user details for Razorpay
-    final userDoc = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.uid)
-        .get();
-    
-    final userData = userDoc.data() ?? {};
-    final userName = '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim();
-    final userEmail = user.email ?? '';
-    final userPhone = userData['phone'] ?? '';
-
-    // Create pending transactions for all items
-    final List<String> transactionIds = [];
-    for (final note in cart.cartNotes) {
-      final txn = await _transactionService.createTransaction(
-        buyerId: user.uid,
-        sellerId: note.ownerUid,
-        noteId: note.noteId,
-        salePrice: note.price ?? 0.0,
-        paymentMethod: _pointsToRedeem > 0 ? 'points+razorpay' : 'razorpay',
+  Future<void> _handleCheckout(
+      BuildContext context, CartController cart, double finalAmount) async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in to complete purchase')),
       );
-      transactionIds.add(txn.transactionId);
+      return;
     }
 
-    // Initiate Razorpay payment
-    if (_razorpayService == null) {
-      throw Exception('Razorpay service not initialized');
+    if (finalAmount <= 0) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Invalid amount')),
+      );
+      return;
     }
 
-    await _razorpayService!.payForCart(
-      amount: finalAmount,
-      itemCount: cart.cartNotes.length,
-      userName: userName,
-      userEmail: userEmail,
-      userPhone: userPhone,
-      onSuccess: (paymentId, orderId) async {
-        // Payment successful, complete all transactions
-        try {
+    setState(() => _isProcessing = true);
+
+    try {
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      final userData = userDoc.data() ?? {};
+      final userName =
+          '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim();
+      final userEmail = user.email ?? '';
+      final userPhone = userData['phone'] ?? '';
+
+      final List<String> transactionIds = [];
+      for (final note in cart.cartNotes) {
+        final txn = await _transactionService.createTransaction(
+          buyerId: user.uid,
+          sellerId: note.ownerUid,
+          noteId: note.noteId,
+          salePrice: note.price ?? 0.0,
+          paymentMethod: _pointsToRedeem > 0 ? 'points+razorpay' : 'razorpay',
+        );
+        transactionIds.add(txn.transactionId);
+      }
+
+      if (_razorpayService == null) {
+        throw Exception('Razorpay service not initialized');
+      }
+
+      await _razorpayService!.payForCart(
+        amount: finalAmount,
+        itemCount: cart.cartNotes.length,
+        userName: userName,
+        userEmail: userEmail,
+        userPhone: userPhone,
+        onSuccess: (paymentId, orderId) async {
+          try {
+            for (final transactionId in transactionIds) {
+              await _transactionService.completeTransaction(
+                transactionId: transactionId,
+                paymentId: paymentId,
+              );
+            }
+
+            if (mounted) {
+              cart.clearCart();
+              await _loadUserPoints();
+
+              setState(() {
+                _isProcessing = false;
+                _pointsToRedeem = 0.0;
+              });
+
+              _showSuccessDialog();
+            }
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(
+                      'Payment completed but failed to process: ${e.toString()}'),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+              setState(() => _isProcessing = false);
+            }
+          }
+        },
+        onError: (error) async {
           for (final transactionId in transactionIds) {
-            await _transactionService.completeTransaction(
-              transactionId: transactionId,
-              paymentId: paymentId,
+            await _transactionService.cancelTransaction(
+              transactionId,
+              'Payment failed: $error',
             );
           }
 
           if (mounted) {
-            cart.clearCart();
-            await _loadUserPoints();
-            
-            setState(() {
-              _isProcessing = false;
-              _pointsToRedeem = 0.0;
-            });
-            
-            _showSuccessDialog();
-          }
-        } catch (e) {
-          if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text('Payment completed but failed to process: ${e.toString()}'),
+                content: Text('Payment failed: $error'),
                 backgroundColor: AppColors.error,
               ),
             );
             setState(() => _isProcessing = false);
           }
-        }
-      },
-      onError: (error) async {
-        // Payment failed, cancel all transactions
-        for (final transactionId in transactionIds) {
-          await _transactionService.cancelTransaction(
-            transactionId,
-            'Payment failed: $error',
-          );
-        }
-        
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text('Payment failed: $error'),
-              backgroundColor: AppColors.error,
-            ),
-          );
-          setState(() => _isProcessing = false);
-        }
-      },
-      onCancel: () async {
-        // Payment cancelled, cancel all transactions
-        for (final transactionId in transactionIds) {
-          await _transactionService.cancelTransaction(
-            transactionId,
-            'Payment cancelled by user',
-          );
-        }
-        
-        if (mounted) {
-          setState(() => _isProcessing = false);
-        }
-      },
-    );
-  } catch (e) {
+        },
+        onCancel: () async {
+          for (final transactionId in transactionIds) {
+            await _transactionService.cancelTransaction(
+              transactionId,
+              'Payment cancelled by user',
+            );
+          }
+
+          if (mounted) {
+            setState(() => _isProcessing = false);
+          }
+        },
+      );
+    } catch (e) {
+      if (!mounted) return;
+
+      setState(() => _isProcessing = false);
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Checkout failed: $e'),
+          backgroundColor: AppColors.error,
+        ),
+      );
+    }
+  }
+
+  void _showSuccessDialog() {
     if (!mounted) return;
-    
-    setState(() => _isProcessing = false);
-    
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('Checkout failed: $e'),
-        backgroundColor: AppColors.error,
+
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.check_circle, color: AppColors.success),
+            SizedBox(width: 8),
+            Text('Purchase Successful!'),
+          ],
+        ),
+        content: const Text('Your notes have been added to your library.'),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pop(context);
+            },
+            child: const Text('Continue Shopping'),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.pushReplacementNamed(context, '/library');
+            },
+            child: const Text('View Library'),
+          ),
+        ],
       ),
     );
   }
-}
-
-// Also update _showSuccessDialog to check mounted
-void _showSuccessDialog() {
-  if (!mounted) return;
-  
-  showDialog(
-    context: context,
-    builder: (_) => AlertDialog(
-      title: const Row(
-        children: [
-          Icon(Icons.check_circle, color: AppColors.success),
-          SizedBox(width: 8),
-          Text('Purchase Successful!'),
-        ],
-      ),
-      content: const Text('Your notes have been added to your library.'),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.pop(context);
-          },
-          child: const Text('Continue Shopping'),
-        ),
-        ElevatedButton(
-          onPressed: () {
-            Navigator.pop(context);
-            Navigator.pushReplacementNamed(context, '/library');
-          },
-          child: const Text('View Library'),
-        ),
-      ],
-    ),
-  );
-}
 
   void _showClearCartDialog(BuildContext context, CartController cart) {
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
         title: const Text('Clear Cart'),
-        content:
-            const Text('Are you sure you want to remove all items from your cart?'),
+        content: const Text(
+            'Are you sure you want to remove all items from your cart?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
@@ -331,7 +324,8 @@ void _showSuccessDialog() {
                 const SnackBar(content: Text('Cart cleared')),
               );
             },
-            child: const Text('Clear', style: TextStyle(color: AppColors.error)),
+            child:
+                const Text('Clear', style: TextStyle(color: AppColors.error)),
           ),
         ],
       ),

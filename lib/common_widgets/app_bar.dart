@@ -40,9 +40,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     final screenWidth = MediaQuery.of(context).size.width;
     final isTablet = screenWidth > 600;
 
-    final effectiveBackgroundColor = backgroundColor ?? 
+    final effectiveBackgroundColor = backgroundColor ??
         (isDark ? AppColors.backgroundDark : AppColors.backgroundLight);
-    final effectiveTextColor = textColor ?? 
+    final effectiveTextColor = textColor ??
         (isDark ? AppColors.textPrimaryDark : AppColors.textPrimaryLight);
 
     return Container(
@@ -66,7 +66,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Back button
                 if (showBackButton)
                   GestureDetector(
                     onTap: onBackPressed ?? () => _handleBackPress(context),
@@ -74,7 +73,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                       padding: const EdgeInsets.all(8.0),
                       decoration: usePremiumBackIcon
                           ? BoxDecoration(
-                              color: isDark 
+                              color: isDark
                                   ? AppColors.primary.withValues(alpha: 0.1)
                                   : AppColors.primary.withValues(alpha: 0.05),
                               borderRadius: BorderRadius.circular(12),
@@ -85,11 +84,11 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                             )
                           : null,
                       child: Icon(
-                        usePremiumBackIcon 
+                        usePremiumBackIcon
                             ? Icons.arrow_back_ios_new
                             : Icons.chevron_left,
                         size: isTablet ? 24 : 20,
-                        color: usePremiumBackIcon 
+                        color: usePremiumBackIcon
                             ? AppColors.primary
                             : effectiveTextColor,
                       ),
@@ -97,13 +96,14 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                   )
                 else
                   const SizedBox(width: 40),
-
                 Expanded(
                   child: centerTitle
-                      ? Center(child: _buildTitleSection(context, effectiveTextColor, isTablet, containerHeight))
-                      : _buildTitleSection(context, effectiveTextColor, isTablet, containerHeight),
+                      ? Center(
+                          child: _buildTitleSection(context, effectiveTextColor,
+                              isTablet, containerHeight))
+                      : _buildTitleSection(context, effectiveTextColor,
+                          isTablet, containerHeight),
                 ),
-
                 SizedBox(
                   width: 40,
                   child: trailing ??
@@ -113,9 +113,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                               child: Container(
                                 padding: const EdgeInsets.all(8.0),
                                 decoration: BoxDecoration(
-                                  color: isDark 
+                                  color: isDark
                                       ? AppColors.primary.withValues(alpha: 0.1)
-                                      : AppColors.primary.withValues(alpha: 0.05),
+                                      : AppColors.primary
+                                          .withValues(alpha: 0.05),
                                   borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Icon(
@@ -135,10 +136,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
     );
   }
 
-  Widget _buildTitleSection(BuildContext context, Color textColor, bool isTablet, double containerHeight) {
+  Widget _buildTitleSection(BuildContext context, Color textColor,
+      bool isTablet, double containerHeight) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      crossAxisAlignment: centerTitle ? CrossAxisAlignment.center : CrossAxisAlignment.start,
+      crossAxisAlignment:
+          centerTitle ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
         Text(
           text,
@@ -171,7 +174,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
 
   void _handleBackPress(BuildContext context) {
     final currentRoute = ModalRoute.of(context)?.settings.name;
-    
+
     if (currentRoute == AppRoutes.userProfile) {
       Navigator.of(context).popUntil((route) {
         return route.settings.name == AppRoutes.profile || route.isFirst;

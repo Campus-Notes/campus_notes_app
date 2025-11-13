@@ -28,9 +28,11 @@ class CheckoutPage extends StatelessWidget {
           children: [
             ListTile(
               contentPadding: EdgeInsets.zero,
-              title: Text(note.title, style: const TextStyle(fontWeight: FontWeight.w700)),
+              title: Text(note.title,
+                  style: const TextStyle(fontWeight: FontWeight.w700)),
               subtitle: Text(note.subject),
-              trailing: Text('₹${note.price.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.w800)),
+              trailing: Text('₹${note.price.toStringAsFixed(0)}',
+                  style: const TextStyle(fontWeight: FontWeight.w800)),
             ),
             const Divider(),
             const SizedBox(height: 12),
@@ -53,9 +55,11 @@ class CheckoutPage extends StatelessWidget {
             const Divider(),
             Row(
               children: [
-                const Text('Total', style: TextStyle(fontWeight: FontWeight.w700)),
+                const Text('Total',
+                    style: TextStyle(fontWeight: FontWeight.w700)),
                 const Spacer(),
-                Text('₹${total.toStringAsFixed(0)}', style: const TextStyle(fontWeight: FontWeight.w800)),
+                Text('₹${total.toStringAsFixed(0)}',
+                    style: const TextStyle(fontWeight: FontWeight.w800)),
               ],
             ),
             const Spacer(),

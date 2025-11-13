@@ -85,9 +85,8 @@ class ChatThreadTile extends StatelessWidget {
   Widget build(BuildContext context) {
     final lastMessage = chatData['lastMessage'] ?? '';
     final lastMessageTime = chatData['lastMessageTime'] as Timestamp?;
-    final time = lastMessageTime != null
-        ? _formatTime(lastMessageTime.toDate())
-        : '';
+    final time =
+        lastMessageTime != null ? _formatTime(lastMessageTime.toDate()) : '';
 
     return ListTile(
       leading: CircleAvatar(
@@ -95,9 +94,7 @@ class ChatThreadTile extends StatelessWidget {
         backgroundColor: peerPhoto == null ? AppColors.primary : null,
         child: peerPhoto == null
             ? Text(
-                peerName.isNotEmpty
-                    ? peerName[0].toUpperCase()
-                    : '?',
+                peerName.isNotEmpty ? peerName[0].toUpperCase() : '?',
                 style: const TextStyle(
                   color: Colors.white,
                   fontWeight: FontWeight.bold,
@@ -114,10 +111,8 @@ class ChatThreadTile extends StatelessWidget {
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: TextStyle(
-          color:
-              unreadCount > 0 ? AppColors.textPrimaryLight : AppColors.muted,
-          fontWeight:
-              unreadCount > 0 ? FontWeight.w500 : FontWeight.normal,
+          color: unreadCount > 0 ? AppColors.textPrimaryLight : AppColors.muted,
+          fontWeight: unreadCount > 0 ? FontWeight.w500 : FontWeight.normal,
         ),
       ),
       trailing: Column(
@@ -127,11 +122,9 @@ class ChatThreadTile extends StatelessWidget {
           Text(
             time,
             style: TextStyle(
-              color:
-                  unreadCount > 0 ? AppColors.primary : AppColors.muted,
+              color: unreadCount > 0 ? AppColors.primary : AppColors.muted,
               fontSize: 12,
-              fontWeight:
-                  unreadCount > 0 ? FontWeight.w600 : FontWeight.normal,
+              fontWeight: unreadCount > 0 ? FontWeight.w600 : FontWeight.normal,
             ),
           ),
           if (unreadCount > 0) ...[

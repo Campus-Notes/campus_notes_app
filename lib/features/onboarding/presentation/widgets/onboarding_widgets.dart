@@ -6,7 +6,7 @@ class OnboardingSlide extends StatelessWidget {
   final String description;
   final String imagePath;
   final Color? backgroundColor;
-  
+
   const OnboardingSlide({
     super.key,
     required this.title,
@@ -14,7 +14,7 @@ class OnboardingSlide extends StatelessWidget {
     required this.imagePath,
     this.backgroundColor,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -49,18 +49,18 @@ class OnboardingSlide extends StatelessWidget {
           Text(
             title,
             style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: AppColors.textPrimaryLight,
-            ),
+                  fontWeight: FontWeight.bold,
+                  color: AppColors.textPrimaryLight,
+                ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: 16),
           Text(
             description,
             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-              color: AppColors.muted,
-              height: 1.5,
-            ),
+                  color: AppColors.muted,
+                  height: 1.5,
+                ),
             textAlign: TextAlign.center,
           ),
           const Spacer(),
@@ -73,13 +73,13 @@ class OnboardingSlide extends StatelessWidget {
 class OnboardingDots extends StatelessWidget {
   final int totalDots;
   final int currentIndex;
-  
+
   const OnboardingDots({
     super.key,
     required this.totalDots,
     required this.currentIndex,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -105,7 +105,7 @@ class OnboardingButtons extends StatelessWidget {
   final VoidCallback? onNext;
   final VoidCallback? onSkip;
   final VoidCallback? onGetStarted;
-  
+
   const OnboardingButtons({
     super.key,
     required this.isLastPage,
@@ -113,7 +113,7 @@ class OnboardingButtons extends StatelessWidget {
     this.onSkip,
     this.onGetStarted,
   });
-  
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -128,12 +128,12 @@ class OnboardingButtons extends StatelessWidget {
             )
           else
             const SizedBox.shrink(),
-          
           if (isLastPage)
             ElevatedButton(
               onPressed: onGetStarted,
               style: ElevatedButton.styleFrom(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
               ),
               child: const Text('Get Started'),
             )

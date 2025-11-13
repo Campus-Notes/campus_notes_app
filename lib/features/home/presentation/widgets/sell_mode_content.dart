@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../controller/sell_mode_controller.dart';
 import '../../../notes/presentation/pages/sell_note.dart';
+import '../../../notes/presentation/pages/uploaded_note_preview_page.dart';
 import '../../../notes/presentation/widgets/sold_note_card.dart';
 
 class SellModeContent extends StatefulWidget {
@@ -50,7 +51,10 @@ class _SellModeContentState extends State<SellModeContent> {
                     gradient: LinearGradient(
                       colors: [
                         Theme.of(context).colorScheme.primary,
-                        Theme.of(context).colorScheme.primary.withValues(alpha: 0.8)
+                        Theme.of(context)
+                            .colorScheme
+                            .primary
+                            .withValues(alpha: 0.8)
                       ],
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
@@ -104,11 +108,14 @@ class _SellModeContentState extends State<SellModeContent> {
                         width: double.infinity,
                         child: ElevatedButton(
                           onPressed: () => Navigator.of(context).push(
-                            MaterialPageRoute(builder: (_) => const UploadPage()),
+                            MaterialPageRoute(
+                                builder: (_) => const UploadPage()),
                           ),
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-                            foregroundColor: Theme.of(context).colorScheme.primary,
+                            backgroundColor:
+                                Theme.of(context).scaffoldBackgroundColor,
+                            foregroundColor:
+                                Theme.of(context).colorScheme.primary,
                             padding: const EdgeInsets.symmetric(vertical: 12),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(12),
@@ -117,7 +124,9 @@ class _SellModeContentState extends State<SellModeContent> {
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.add, size: 20, color: Theme.of(context).colorScheme.primary),
+                              Icon(Icons.add,
+                                  size: 20,
+                                  color: Theme.of(context).colorScheme.primary),
                               const SizedBox(width: 8),
                               Text(
                                 'Sell New Note',
@@ -134,9 +143,8 @@ class _SellModeContentState extends State<SellModeContent> {
                     ],
                   ),
                 ),
-
                 Text(
-                  'My Sold Notes',  
+                  'My Uploaded Notes',
                   style: TextStyle(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -144,8 +152,6 @@ class _SellModeContentState extends State<SellModeContent> {
                   ),
                 ),
                 const SizedBox(height: 16),
-                
-                // Sold notes list
                 if (soldNotes.isEmpty)
                   Center(
                     child: Container(
@@ -155,23 +161,32 @@ class _SellModeContentState extends State<SellModeContent> {
                           Icon(
                             Icons.note_add_outlined,
                             size: 64,
-                            color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                            color: Theme.of(context)
+                                .colorScheme
+                                .onSurface
+                                .withValues(alpha: 0.5),
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            'No notes uploaded yet', 
+                            'No notes uploaded yet',
                             style: TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.w600,
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.7),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: 0.7),
                             ),
                           ),
                           const SizedBox(height: 8),
                           Text(
-                            'Start by uploading your first note!', 
+                            'Start by uploading your first note!',
                             style: TextStyle(
                               fontSize: 14,
-                              color: Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.5),
+                              color: Theme.of(context)
+                                  .colorScheme
+                                  .onSurface
+                                  .withValues(alpha: 0.5),
                             ),
                           ),
                         ],
@@ -179,10 +194,30 @@ class _SellModeContentState extends State<SellModeContent> {
                     ),
                   )
                 else
-                  ...soldNotes.map((note) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: SoldNoteCard(note: note),
-                  )),
+                  ...List.generate(
+                    soldNotes.length,
+                    (index) {
+                      final noteData = soldNotes[index];
+                      final noteModel = sellModeController.userNotes[index];
+
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 12),
+                        child: SoldNoteCard(
+                          note: noteData,
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => UploadedNotePreviewPage(
+                                  note: noteModel,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
               ],
             ),
           ),

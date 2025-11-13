@@ -43,11 +43,9 @@ class LibraryNoteCard extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // --- HEADER SECTION ---
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Left: Title + Subject
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,10 +80,10 @@ class LibraryNoteCard extends StatelessWidget {
                       ],
                     ),
                   ),
-
                   if (isDownloaded)
                     Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 4),
                       decoration: BoxDecoration(
                         color: AppColors.success.withOpacity(0.15),
                         borderRadius: BorderRadius.circular(20),
@@ -93,7 +91,8 @@ class LibraryNoteCard extends StatelessWidget {
                       child: const Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Icon(Icons.offline_pin, size: 16, color: AppColors.success),
+                          Icon(Icons.offline_pin,
+                              size: 16, color: AppColors.success),
                           SizedBox(width: 4),
                           Text(
                             'Offline',
@@ -108,15 +107,14 @@ class LibraryNoteCard extends StatelessWidget {
                     ),
                 ],
               ),
-
               const SizedBox(height: 14),
-
               Row(
                 children: [
                   CircleAvatar(
                     radius: 12,
                     backgroundColor: AppColors.primary.withOpacity(0.1),
-                    child: const Icon(Icons.person, size: 14, color: AppColors.primary),
+                    child: const Icon(Icons.person,
+                        size: 14, color: AppColors.primary),
                   ),
                   const SizedBox(width: 6),
                   Expanded(
@@ -144,7 +142,8 @@ class LibraryNoteCard extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: 12),
-                  Icon(Icons.calendar_month, size: 14, color: Colors.grey.shade500),
+                  Icon(Icons.calendar_month,
+                      size: 14, color: Colors.grey.shade500),
                   const SizedBox(width: 4),
                   Text(
                     _formatDate(noteData.purchase.purchasedAt),
@@ -155,12 +154,9 @@ class LibraryNoteCard extends StatelessWidget {
                   ),
                 ],
               ),
-
               const SizedBox(height: 16),
               Divider(color: Colors.grey.shade300, height: 1),
               const SizedBox(height: 14),
-
-              // --- ACTION BUTTONS ---
               Row(
                 children: [
                   Expanded(
@@ -184,14 +180,19 @@ class LibraryNoteCard extends StatelessWidget {
                     child: OutlinedButton.icon(
                       onPressed: onDownloadOrDelete,
                       icon: Icon(
-                        isDownloaded ? Icons.delete_outline_rounded : Icons.download_rounded,
+                        isDownloaded
+                            ? Icons.delete_outline_rounded
+                            : Icons.download_rounded,
                         size: 18,
                       ),
                       label: Text(isDownloaded ? 'Remove' : 'Download'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: isDownloaded ? AppColors.error : AppColors.primary,
+                        foregroundColor:
+                            isDownloaded ? AppColors.error : AppColors.primary,
                         side: BorderSide(
-                          color: isDownloaded ? AppColors.error : AppColors.primary,
+                          color: isDownloaded
+                              ? AppColors.error
+                              : AppColors.primary,
                           width: 1.2,
                         ),
                         padding: const EdgeInsets.symmetric(vertical: 12),

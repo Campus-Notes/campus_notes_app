@@ -7,7 +7,7 @@ class NoteDatabaseService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   static const String _notesCollection = 'notes';
   static const String _purchasesSubcollection = 'purchases';
-  
+
   Future<NoteModel> uploadNote({
     required String title,
     required String subject,
@@ -39,11 +39,10 @@ class NoteDatabaseService {
         updatedAt: now,
         viewCount: 0,
         purchaseCount: 0,
-        isVerified: false, 
+        isVerified: false,
         pageCount: pageCount,
       );
 
-      // Store in Firestore
       await _firestore
           .collection(_notesCollection)
           .doc(noteId)
@@ -57,10 +56,8 @@ class NoteDatabaseService {
 
   Future<NoteModel?> getNoteById(String noteId) async {
     try {
-      final doc = await _firestore
-          .collection(_notesCollection)
-          .doc(noteId)
-          .get();
+      final doc =
+          await _firestore.collection(_notesCollection).doc(noteId).get();
 
       if (!doc.exists) {
         return null;
@@ -82,11 +79,9 @@ class NoteDatabaseService {
           .where('ownerUid', isEqualTo: ownerUid)
           .get();
 
-      final notes = querySnapshot.docs
-          .map((doc) => NoteModel.fromSnapshot(doc))
-          .toList();
-      
-      // Sort by createdAt in memory, then take the limit
+      final notes =
+          querySnapshot.docs.map((doc) => NoteModel.fromSnapshot(doc)).toList();
+
       notes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
       return notes.take(limit).toList();
     } catch (e) {
@@ -112,7 +107,8 @@ class NoteDatabaseService {
             final data = doc.data();
             final title = (data['title'] ?? '').toString().toLowerCase();
             final subject = (data['subject'] ?? '').toString().toLowerCase();
-            final description = (data['description'] ?? '').toString().toLowerCase();
+            final description =
+                (data['description'] ?? '').toString().toLowerCase();
 
             return title.contains(lowerQuery) ||
                 subject.contains(lowerQuery) ||
@@ -193,12 +189,31 @@ class NoteDatabaseService {
     }
   }
 
+  Future<void> verifyNote(String noteId) async {
+    try {
+      await _firestore.collection(_notesCollection).doc(noteId).update({
+        'isVerified': true,
+        'updatedAt': Timestamp.now(),
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<void> unverifyNote(String noteId) async {
+    try {
+      await _firestore.collection(_notesCollection).doc(noteId).update({
+        'isVerified': false,
+        'updatedAt': Timestamp.now(),
+      });
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future<void> deleteNote(String noteId) async {
     try {
-      await _firestore
-          .collection(_notesCollection)
-          .doc(noteId)
-          .delete();
+      await _firestore.collection(_notesCollection).doc(noteId).delete();
     } catch (e) {
       rethrow;
     }
@@ -223,9 +238,9 @@ class NoteDatabaseService {
       rethrow;
     }
   }
+
   Future<List<NoteModel>> getTrendingNotes({int limit = 20}) async {
     try {
-      // First try to get by purchaseCount, if that fails fallback to createdAt
       try {
         final querySnapshot = await _firestore
             .collection(_notesCollection)
@@ -237,7 +252,6 @@ class NoteDatabaseService {
             .map((doc) => NoteModel.fromSnapshot(doc))
             .toList();
       } catch (indexError) {
-        // Fallback to sorting by creation date if purchaseCount index doesn't exist
         final querySnapshot = await _firestore
             .collection(_notesCollection)
             .orderBy('createdAt', descending: true)
@@ -253,27 +267,24 @@ class NoteDatabaseService {
     }
   }
 
-  /// Get trending notes excluding the current user's own notes
   Future<List<NoteModel>> getTrendingNotesExcludingOwn({
     required String currentUserUid,
     int limit = 20,
   }) async {
     try {
-      // First try to get by purchaseCount, if that fails fallback to createdAt
       try {
         final querySnapshot = await _firestore
             .collection(_notesCollection)
             .orderBy('purchaseCount', descending: true)
-            .limit(limit * 3) // Get more to account for filtering
+            .limit(limit * 3)
             .get();
 
         return querySnapshot.docs
             .map((doc) => NoteModel.fromSnapshot(doc))
-            .where((note) => note.ownerUid != currentUserUid && note.isVerified) // Exclude own notes and unverified
-            .take(limit) // Take only the requested amount after filtering
+            .where((note) => note.ownerUid != currentUserUid && note.isVerified)
+            .take(limit)
             .toList();
       } catch (indexError) {
-        // Fallback to sorting by creation date if purchaseCount index doesn't exist
         return await getAllNotesExcludingOwn(
           currentUserUid: currentUserUid,
           limit: limit,
@@ -284,7 +295,6 @@ class NoteDatabaseService {
     }
   }
 
-  /// Get all notes excluding the current user's own notes
   Future<List<NoteModel>> getAllNotesExcludingOwn({
     required String currentUserUid,
     int limit = 20,
@@ -293,13 +303,13 @@ class NoteDatabaseService {
       final querySnapshot = await _firestore
           .collection(_notesCollection)
           .orderBy('createdAt', descending: true)
-          .limit(limit * 3) // Get more to account for filtering
+          .limit(limit * 3)
           .get();
 
       return querySnapshot.docs
           .map((doc) => NoteModel.fromSnapshot(doc))
-          .where((note) => note.ownerUid != currentUserUid && note.isVerified) // Exclude own notes and unverified
-          .take(limit) // Take only the requested amount after filtering
+          .where((note) => note.ownerUid != currentUserUid && note.isVerified)
+          .take(limit)
           .toList();
     } catch (e) {
       rethrow;
@@ -311,29 +321,24 @@ class NoteDatabaseService {
     int limit = 20,
   }) async {
     try {
-      // Use a simple query without orderBy to avoid index requirements
       final querySnapshot = await _firestore
           .collection(_notesCollection)
           .where('isDonation', isEqualTo: true)
           .get();
 
-      // Filter, sort, and limit in memory
       final notes = querySnapshot.docs
           .map((doc) => NoteModel.fromSnapshot(doc))
-          .where((note) => note.ownerUid != currentUserUid && note.isVerified) // Exclude own notes and unverified
+          .where((note) => note.ownerUid != currentUserUid && note.isVerified)
           .toList();
-      
-      // Sort by createdAt in descending order
+
       notes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      
-      // Return only the requested limit
+
       return notes.take(limit).toList();
     } catch (e) {
       rethrow;
     }
   }
 
-  /// Search notes excluding the current user's own notes
   Future<List<NoteModel>> searchNotesExcludingOwn(
     String query, {
     required String currentUserUid,
@@ -345,7 +350,7 @@ class NoteDatabaseService {
       final querySnapshot = await _firestore
           .collection(_notesCollection)
           .orderBy('createdAt', descending: true)
-          .limit(limit * 3) // Get more to account for filtering
+          .limit(limit * 3)
           .get();
 
       return querySnapshot.docs
@@ -353,7 +358,8 @@ class NoteDatabaseService {
             final data = doc.data();
             final title = (data['title'] ?? '').toString().toLowerCase();
             final subject = (data['subject'] ?? '').toString().toLowerCase();
-            final description = (data['description'] ?? '').toString().toLowerCase();
+            final description =
+                (data['description'] ?? '').toString().toLowerCase();
             final ownerUid = data['ownerUid'] ?? '';
             final isVerified = data['isVerified'] ?? false;
 
@@ -361,39 +367,34 @@ class NoteDatabaseService {
                 subject.contains(lowerQuery) ||
                 description.contains(lowerQuery);
 
-            return matchesQuery && ownerUid != currentUserUid && isVerified; // Exclude own notes and unverified
+            return matchesQuery && ownerUid != currentUserUid && isVerified;
           })
           .map((doc) => NoteModel.fromSnapshot(doc))
-          .take(limit) // Take only the requested amount after filtering
+          .take(limit)
           .toList();
     } catch (e) {
       rethrow;
     }
   }
 
-  /// Get notes by subject excluding the current user's own notes
   Future<List<NoteModel>> getNotesBySubjectExcludingOwn(
     String subject, {
     required String currentUserUid,
     int limit = 20,
   }) async {
     try {
-      // Use a simple query without orderBy to avoid index requirements
       final querySnapshot = await _firestore
           .collection(_notesCollection)
           .where('subject', isEqualTo: subject)
           .get();
 
-      // Filter, sort, and limit in memory
       final notes = querySnapshot.docs
           .map((doc) => NoteModel.fromSnapshot(doc))
-          .where((note) => note.ownerUid != currentUserUid && note.isVerified) // Exclude own notes and unverified
+          .where((note) => note.ownerUid != currentUserUid && note.isVerified)
           .toList();
-      
-      // Sort by createdAt in descending order
+
       notes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-      
-      // Return only the requested limit
+
       return notes.take(limit).toList();
     } catch (e) {
       rethrow;
@@ -406,15 +407,12 @@ class NoteDatabaseService {
         .where('ownerUid', isEqualTo: ownerUid)
         .snapshots()
         .map((snapshot) {
-          final notes = snapshot.docs
-              .map((doc) => NoteModel.fromSnapshot(doc))
-              .toList();
-          // Sort by createdAt in memory
-          notes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
-          return notes;
-        });
+      final notes =
+          snapshot.docs.map((doc) => NoteModel.fromSnapshot(doc)).toList();
+      notes.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+      return notes;
+    });
   }
-
 
   Stream<List<NoteModel>> getAllNotesStream({int limit = 20}) {
     return _firestore
@@ -426,7 +424,6 @@ class NoteDatabaseService {
             snapshot.docs.map((doc) => NoteModel.fromSnapshot(doc)).toList());
   }
 
-  /// Stream of all notes excluding the current user's own notes
   Stream<List<NoteModel>> getAllNotesStreamExcludingOwn({
     required String currentUserUid,
     int limit = 20,
@@ -434,18 +431,15 @@ class NoteDatabaseService {
     return _firestore
         .collection(_notesCollection)
         .orderBy('createdAt', descending: true)
-        .limit(limit * 3) // Get more to account for filtering
+        .limit(limit * 3)
         .snapshots()
         .map((snapshot) => snapshot.docs
             .map((doc) => NoteModel.fromSnapshot(doc))
-            .where((note) => note.ownerUid != currentUserUid && note.isVerified) // Exclude own notes and unverified
-            .take(limit) // Take only the requested amount after filtering
+            .where((note) => note.ownerUid != currentUserUid && note.isVerified)
+            .take(limit)
             .toList());
   }
 
-  // ==================== Purchase Management Methods ====================
-
-  /// Add a purchase record to a note's purchases subcollection
   Future<void> addPurchase({
     required String noteId,
     required String uid,
@@ -454,7 +448,7 @@ class NoteDatabaseService {
     try {
       const uuid = Uuid();
       final purchaseId = uuid.v4();
-      
+
       final purchase = PurchaseModel(
         purchaseId: purchaseId,
         uid: uid,
@@ -469,14 +463,12 @@ class NoteDatabaseService {
           .doc(purchaseId)
           .set(purchase.toMap());
 
-      // Also increment the purchase count on the note
       await incrementPurchaseCount(noteId);
     } catch (e) {
       rethrow;
     }
   }
 
-  /// Get all purchases for a specific note
   Future<List<PurchaseModel>> getNotePurchases(String noteId) async {
     try {
       final querySnapshot = await _firestore
@@ -494,7 +486,6 @@ class NoteDatabaseService {
     }
   }
 
-  /// Check if a user has purchased a specific note
   Future<bool> hasUserPurchased(String noteId, String uid) async {
     try {
       final querySnapshot = await _firestore
@@ -513,9 +504,7 @@ class NoteDatabaseService {
 
   Future<List<String>> getUserPurchasedNoteIds(String uid) async {
     try {
-      final notesSnapshot = await _firestore
-          .collection(_notesCollection)
-          .get();
+      final notesSnapshot = await _firestore.collection(_notesCollection).get();
 
       List<String> purchasedNoteIds = [];
 
@@ -537,7 +526,6 @@ class NoteDatabaseService {
     }
   }
 
-  /// Stream of purchases for a specific note
   Stream<List<PurchaseModel>> getNotePurchasesStream(String noteId) {
     return _firestore
         .collection(_notesCollection)
@@ -545,7 +533,8 @@ class NoteDatabaseService {
         .collection(_purchasesSubcollection)
         .orderBy('purchasedAt', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => PurchaseModel.fromSnapshot(doc)).toList());
+        .map((snapshot) => snapshot.docs
+            .map((doc) => PurchaseModel.fromSnapshot(doc))
+            .toList());
   }
 }

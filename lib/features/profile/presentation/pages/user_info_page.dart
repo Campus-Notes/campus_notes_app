@@ -17,7 +17,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   late TextEditingController _firstNameController;
   late TextEditingController _mobileController;
   late TextEditingController _universityController;
-  
+
   UserModel? _currentUser;
   bool _isLoading = true;
 
@@ -41,7 +41,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
   Future<void> _loadUserData() async {
     final auth = Provider.of<AuthController>(context, listen: false);
     final user = await auth.getCurrentUser();
-    
+
     if (user != null && mounted) {
       setState(() {
         _currentUser = user;
@@ -59,11 +59,11 @@ class _UserProfilePageState extends State<UserProfilePage> {
 
   Future<void> _saveProfile() async {
     if (!_formKey.currentState!.validate()) return;
-    
+
     final auth = Provider.of<AuthController>(context, listen: false);
     final result = await auth.updateProfile(
       firstName: _firstNameController.text.trim(),
-      lastName: '', // Keep empty since we don't collect it during registration
+      lastName: '',
       mobile: _mobileController.text.trim(),
       university: _universityController.text.trim(),
     );
@@ -132,7 +132,6 @@ class _UserProfilePageState extends State<UserProfilePage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               const SizedBox(height: 12),
-
               Center(
                 child: Stack(
                   alignment: Alignment.bottomRight,
@@ -174,20 +173,18 @@ class _UserProfilePageState extends State<UserProfilePage> {
                         ],
                       ),
                       child: IconButton(
-                        icon: const Icon(Icons.camera_alt, color: Colors.white, size: 22),
-                        onPressed: () {
-                        },
+                        icon: const Icon(Icons.camera_alt,
+                            color: Colors.white, size: 22),
+                        onPressed: () {},
                       ),
                     ),
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // Display read-only info
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
                 decoration: BoxDecoration(
                   color: theme.cardColor,
                   borderRadius: BorderRadius.circular(18),
@@ -211,17 +208,17 @@ class _UserProfilePageState extends State<UserProfilePage> {
                     ),
                     const SizedBox(height: 16),
                     _readOnlyField("Email", _currentUser!.email),
-                    _readOnlyField("Wallet Balance", "₹${_currentUser!.walletBalance.toStringAsFixed(2)}"),
-                    _readOnlyField("Rewards Points", "${_currentUser!.points} pts"),
+                    _readOnlyField("Wallet Balance",
+                        "₹${_currentUser!.walletBalance.toStringAsFixed(2)}"),
+                    _readOnlyField(
+                        "Rewards Points", "${_currentUser!.points} pts"),
                   ],
                 ),
               ),
-
               const SizedBox(height: 20),
-
-              // Editable fields
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 18, vertical: 22),
                 decoration: BoxDecoration(
                   color: theme.cardColor,
                   borderRadius: BorderRadius.circular(18),
@@ -244,15 +241,20 @@ class _UserProfilePageState extends State<UserProfilePage> {
                       ),
                     ),
                     const SizedBox(height: 16),
-                    _editableField("Full Name", _firstNameController, Icons.person_outline),
-                    _editableField("Mobile Number (Optional)", _mobileController, Icons.phone_outlined, TextInputType.phone, false),
-                    _editableField("University", _universityController, Icons.school_outlined),
+                    _editableField("Full Name", _firstNameController,
+                        Icons.person_outline),
+                    _editableField(
+                        "Mobile Number (Optional)",
+                        _mobileController,
+                        Icons.phone_outlined,
+                        TextInputType.phone,
+                        false),
+                    _editableField("University", _universityController,
+                        Icons.school_outlined),
                   ],
                 ),
               ),
-
               const SizedBox(height: 24),
-
               Consumer<AuthController>(
                 builder: (context, auth, child) {
                   return SizedBox(
@@ -303,22 +305,24 @@ class _UserProfilePageState extends State<UserProfilePage> {
           Text(
             label,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
+                  fontWeight: FontWeight.w500,
+                ),
           ),
           Text(
             value,
             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.primary,
-              fontWeight: FontWeight.w600,
-            ),
+                  color: AppColors.primary,
+                  fontWeight: FontWeight.w600,
+                ),
           ),
         ],
       ),
     );
   }
 
-  Widget _editableField(String label, TextEditingController controller, IconData icon, [TextInputType? keyboardType, bool isRequired = true]) {
+  Widget _editableField(
+      String label, TextEditingController controller, IconData icon,
+      [TextInputType? keyboardType, bool isRequired = true]) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
       child: TextFormField(
@@ -329,7 +333,8 @@ class _UserProfilePageState extends State<UserProfilePage> {
           prefixIcon: Icon(icon, color: AppColors.primary),
           filled: true,
           fillColor: Colors.grey.withValues(alpha: 0.07),
-          contentPadding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+          contentPadding:
+              const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(14),
             borderSide: BorderSide.none,
@@ -343,7 +348,9 @@ class _UserProfilePageState extends State<UserProfilePage> {
           if (isRequired && v?.trim().isEmpty == true) {
             return 'Enter $label';
           }
-          if (label == 'Mobile' && v?.trim().isNotEmpty == true && v!.length < 10) {
+          if (label == 'Mobile' &&
+              v?.trim().isNotEmpty == true &&
+              v!.length < 10) {
             return 'Enter valid mobile number';
           }
           return null;

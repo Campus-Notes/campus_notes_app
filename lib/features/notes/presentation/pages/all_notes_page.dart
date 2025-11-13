@@ -9,7 +9,7 @@ import 'note_detail_page.dart';
 
 class AllNotesPage extends StatelessWidget {
   final String title;
-  final String sortBy; // 'popular', 'recent', 'trending'
+  final String sortBy;
 
   const AllNotesPage({
     super.key,
@@ -169,14 +169,11 @@ class AllNotesPage extends StatelessWidget {
     switch (sortBy) {
       case 'trending':
       case 'popular':
-        // Sort by purchaseCount (highest first)
         notes.sort((a, b) => b.purchaseCount.compareTo(a.purchaseCount));
         break;
       case 'recent':
-        // Already in reverse chronological order
         break;
       default:
-        // Default to purchaseCount
         notes.sort((a, b) => b.purchaseCount.compareTo(a.purchaseCount));
     }
 

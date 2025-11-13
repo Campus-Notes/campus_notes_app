@@ -12,7 +12,7 @@ class AuthController extends ChangeNotifier {
   bool _justLoggedIn = false;
   bool _justRegistered = false;
   bool _justLoggedOut = false;
-  
+
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   bool get isLoggedIn => _isLoggedIn;
@@ -51,7 +51,6 @@ class AuthController extends ChangeNotifier {
 
   void _setLoading(bool loading) {
     _isLoading = loading;
-    // DON'T clear error message here - let the methods handle it
     notifyListeners();
   }
 
@@ -61,7 +60,7 @@ class AuthController extends ChangeNotifier {
   }
 
   Future<void> login(String email, String password) async {
-    _errorMessage = null; // Clear previous errors before attempting login
+    _errorMessage = null;
     _setLoading(true);
     _justLoggedIn = false;
 
@@ -70,9 +69,9 @@ class AuthController extends ChangeNotifier {
     if (result == null) {
       _isLoggedIn = true;
       _justLoggedIn = true;
-      _errorMessage = null; // Ensure no error on success
+      _errorMessage = null;
     } else {
-      _errorMessage = result; // Set the error message
+      _errorMessage = result;
     }
 
     _setLoading(false);
@@ -87,7 +86,7 @@ class AuthController extends ChangeNotifier {
     required String password,
     required String confirmPassword,
   }) async {
-    _errorMessage = null; // Clear previous errors
+    _errorMessage = null;
     _setLoading(true);
     _justRegistered = false;
 
@@ -141,7 +140,6 @@ class AuthController extends ChangeNotifier {
       debugPrint('Firebase: reset link sent');
       _setLoading(false);
       return true;
-
     } on FirebaseAuthException catch (e) {
       debugPrint('Firebase error: ${e.code} - ${e.message}');
       _errorMessage = _mapFirebaseError(e);
@@ -164,7 +162,6 @@ class AuthController extends ChangeNotifier {
       );
       _setLoading(false);
       return true;
-
     } on FirebaseAuthException catch (e) {
       _errorMessage = _mapFirebaseError(e);
       _setLoading(false);
