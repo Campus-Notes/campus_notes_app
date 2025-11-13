@@ -2,11 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-/// Controller for managing chat functionality
-/// Handles all chat operations like sending messages, fetching chats, etc.
-/// 
-/// Usage: Wrap your app with ChangeNotifierProvider<ChatController>()
-/// Access with: context.read<ChatController>() or context.watch<ChatController>()
 class ChatController extends ChangeNotifier {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -23,12 +18,6 @@ class ChatController extends ChangeNotifier {
   /// Get current user email
   String? get currentUserEmail => _auth.currentUser?.email;
   
-  /// Send a message to a specific chat thread
-  /// 
-  /// Parameters:
-  /// - chatId: The ID of the chat thread
-  /// - message: The text message to send
-  /// - receiverId: The ID of the user receiving the message
   Future<void> sendMessage({
     required String chatId,
     required String message,
@@ -43,7 +32,7 @@ class ChatController extends ChangeNotifier {
       final user = _auth.currentUser;
       if (user == null) throw Exception('User not authenticated');
       
-      // Create message document in the messages subcollection
+      // Create message d
       await _firestore
           .collection('chats')
           .doc(chatId)
@@ -57,8 +46,7 @@ class ChatController extends ChangeNotifier {
         'isRead': false,
       });
       
-      // Update chat metadata (last message, timestamp) and increment unread count
-      // This helps in showing chat previews in the chat list
+      // Update chat metadata 
       await _firestore.collection('chats').doc(chatId).set({
         'participants': [user.uid, receiverId],
         'lastMessage': message.trim(),
@@ -93,8 +81,6 @@ class ChatController extends ChangeNotifier {
   }
   
   /// Get messages for a specific chat thread
-  /// Returns a stream that updates in real-time
-  /// Messages are ordered newest first (for reverse ListView)
   Stream<QuerySnapshot> getChatMessages(String chatId) {
     return _firestore
         .collection('chats')
@@ -105,9 +91,6 @@ class ChatController extends ChangeNotifier {
   }
   
   /// Create or get existing chat between two users
-  /// 
-  /// Returns the chat ID if successful, null otherwise
-  /// If chat already exists between users, returns existing chat ID
   Future<String?> createOrGetChat(String otherUserId) async {
     try {
       _setLoading(true);
@@ -117,14 +100,12 @@ class ChatController extends ChangeNotifier {
       if (userId == null) throw Exception('User not authenticated');
       
       // Create a consistent chat ID based on user IDs
-      // This ensures same chat is used regardless of who initiates
       final chatId = _generateChatId(userId, otherUserId);
       
       // Check if chat exists
       final chatDoc = await _firestore.collection('chats').doc(chatId).get();
       
       if (!chatDoc.exists) {
-        // Create new chat document
         await _firestore.collection('chats').doc(chatId).set({
           'participants': [userId, otherUserId],
           'createdAt': FieldValue.serverTimestamp(),
@@ -143,13 +124,12 @@ class ChatController extends ChangeNotifier {
   }
   
   /// Mark messages as read in a chat
-  /// Call this when user opens a chat thread
   Future<void> markMessagesAsRead(String chatId) async {
     try {
       final userId = currentUserId;
       if (userId == null) return;
       
-      // Get all unread messages where current user is the receiver
+      // Get all unread messages
       final messages = await _firestore
           .collection('chats')
           .doc(chatId)
@@ -158,14 +138,14 @@ class ChatController extends ChangeNotifier {
           .where('isRead', isEqualTo: false)
           .get();
       
-      // Update all unread messages in a batch
+      // Update all unread messages
       final batch = _firestore.batch();
       for (var doc in messages.docs) {
         batch.update(doc.reference, {'isRead': true});
       }
       await batch.commit();
       
-      // Reset unread count for current user in chat document
+      // Reset unread count 
       await _firestore.collection('chats').doc(chatId).update({
         'unreadCount.$userId': 0,
       });

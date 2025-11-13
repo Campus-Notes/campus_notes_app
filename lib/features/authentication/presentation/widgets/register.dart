@@ -44,12 +44,11 @@ class _RegisterWidgetState extends State<RegisterWidget> {
 
     final auth = Provider.of<AuthController>(context, listen: false);
 
-    // Fixed: Use named parameters, not positional
     auth.register(
       firstName: _firstNameController.text.trim(),
-      lastName: '', // optional or required by backend
+      lastName: '', 
       email: _emailController.text.trim(),
-      mobile: '',   // optional or required by backend
+      mobile: '',   
       university: _universityController.text.trim(),
       password: _passwordController.text,
       confirmPassword: _confirmController.text,
@@ -65,7 +64,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
           child: SingleChildScrollView(
             child: Column(
               children: [
-                // First Name
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -98,7 +96,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                 ),
                 const SizedBox(height: 16),
 
-                // Email
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -136,7 +133,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                 ),
                 const SizedBox(height: 16),
 
-                // University
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -169,7 +165,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                 ),
                 const SizedBox(height: 16),
 
-                // Password
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -211,7 +206,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                 ),
                 const SizedBox(height: 16),
 
-                // Confirm Password
                 Container(
                   decoration: BoxDecoration(
                     color: Theme.of(context).colorScheme.surface,
@@ -253,7 +247,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                 ),
                 const SizedBox(height: 16),
 
-                // Terms & Conditions
                 Row(
                   children: [
                     Checkbox(
@@ -276,7 +269,6 @@ class _RegisterWidgetState extends State<RegisterWidget> {
                 ),
                 const SizedBox(height: 20),
 
-                // Create Account Button
                 SizedBox(
                   width: double.infinity,
                   height: 50,

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-/// Predefined subjects for note categorization
 const List<String> subjects = [
   'Computer Science',
   'Biology',
@@ -22,7 +21,6 @@ class SubjectCategory {
   });
 }
 
-/// Subject categories with corresponding icons
 final List<SubjectCategory> subjectCategories = [
   const SubjectCategory(name: 'Computer Science', icon: Icons.computer),
   const SubjectCategory(name: 'Mathematics', icon: Icons.calculate),
@@ -34,7 +32,6 @@ final List<SubjectCategory> subjectCategories = [
   const SubjectCategory(name: 'Other', icon: Icons.more_horiz),
 ];
 
-/// Get icon for a subject
 IconData getSubjectIcon(String subject) {
   final category = subjectCategories.firstWhere(
     (cat) => cat.name.toLowerCase() == subject.toLowerCase(),

@@ -35,7 +35,7 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text(auth.errorMessage!)),
       );
-      auth.clearError(); // Clear after showing
+      auth.clearError(); 
     }
   }
 
@@ -60,7 +60,6 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
           padding: const EdgeInsets.all(24),
           child: Consumer<AuthController>(
             builder: (context, auth, child) {
-              // Show error once via SnackBar (only if not already in success state)
               if (auth.errorMessage != null && !_emailSent) {
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   if (!mounted) return;
