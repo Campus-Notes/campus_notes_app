@@ -75,6 +75,31 @@ class _LibraryPageState extends State<LibraryPage> {
 
   Future<void> _viewNote(PurchasedNoteData noteData) async {
     try {
+      final isDownloaded = _downloadStatus[noteData.note.noteId] ?? false;
+      
+      // If not downloaded, check if we have the data to display
+      if (!isDownloaded && noteData.note.fileEncodedData.isEmpty) {
+        // Show dialog prompting user to download when online
+        if (!mounted) return;
+        showDialog(
+          context: context,
+          builder: (context) => AlertDialog(
+            icon: const Icon(Icons.cloud_off, size: 48, color: AppColors.warning),
+            title: const Text('No Internet Connection'),
+            content: const Text(
+              'This note is not available offline. Please download it when you have an internet connection to view it offline.',
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('OK'),
+              ),
+            ],
+          ),
+        );
+        return;
+      }
+      
       // Show loading dialog
       if (!mounted) return;
       showDialog(
@@ -99,7 +124,6 @@ class _LibraryPageState extends State<LibraryPage> {
 
       // Try to load from downloaded file first
       Uint8List pdfBytes;
-      final isDownloaded = _downloadStatus[noteData.note.noteId] ?? false;
       
       if (isDownloaded) {
         try {
@@ -107,13 +131,16 @@ class _LibraryPageState extends State<LibraryPage> {
             noteData.note.noteId,
             noteData.note.fileName,
           );
+          debugPrint('✅ Loaded PDF from offline storage');
         } catch (e) {
+          debugPrint('⚠️ Failed to load from offline storage, trying online: $e');
           // If loading fails, decode from base64
           pdfBytes = _libraryService.decodePdfData(noteData.note.fileEncodedData);
         }
       } else {
-        // Decode from base64
+        // Decode from base64 (requires initial load from Firestore)
         pdfBytes = _libraryService.decodePdfData(noteData.note.fileEncodedData);
+        debugPrint('✅ Loaded PDF from cached data');
       }
 
       if (!mounted) return;
@@ -134,10 +161,39 @@ class _LibraryPageState extends State<LibraryPage> {
       if (!mounted) return;
       Navigator.pop(context); // Close loading dialog
       
+      // Show user-friendly error message
+      final isDownloaded = _downloadStatus[noteData.note.noteId] ?? false;
+      final errorMessage = isDownloaded 
+          ? 'Failed to open downloaded PDF. Please try re-downloading.'
+          : 'Unable to load PDF. Please check your internet connection or download for offline access.';
+      
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Failed to open PDF: ${e.toString()}'),
+          content: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Row(
+                children: [
+                  const Icon(Icons.error_outline, color: Colors.white),
+                  const SizedBox(width: 8),
+                  const Expanded(child: Text('Failed to Open PDF')),
+                ],
+              ),
+              const SizedBox(height: 4),
+              Text(
+                errorMessage,
+                style: const TextStyle(fontSize: 12),
+              ),
+            ],
+          ),
           backgroundColor: AppColors.error,
+          duration: const Duration(seconds: 5),
+          action: !isDownloaded ? SnackBarAction(
+            label: 'DOWNLOAD',
+            textColor: Colors.white,
+            onPressed: () => _downloadNote(noteData),
+          ) : null,
         ),
       );
     }

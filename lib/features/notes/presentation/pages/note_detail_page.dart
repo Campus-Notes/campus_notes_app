@@ -1,6 +1,7 @@
 import 'package:campus_notes_app/features/notes/data/models/note_model.dart';
 import 'package:campus_notes_app/features/notes/data/services/note_database_service.dart';
 import 'package:campus_notes_app/features/payment/data/services/transaction_service.dart';
+import 'package:campus_notes_app/features/payment/data/services/razorpay_service.dart';
 import 'package:campus_notes_app/features/chat/presentation/pages/chat_thread_page.dart';
 import 'package:campus_notes_app/features/chat/presentation/controller/chat_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -31,6 +32,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   final TransactionService _transactionService = TransactionService();
   final NoteDatabaseService _noteDatabaseService = NoteDatabaseService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  RazorpayService? _razorpayService;
   
   bool _isLoading = true; 
   bool _isOwnNote = false;
@@ -40,6 +42,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   @override
   void initState() {
     super.initState();
+    _razorpayService = RazorpayService();
     
     if (widget.note is NoteModel) {
       final noteModel = widget.note as NoteModel;
@@ -50,6 +53,12 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     }
     
     _checkNoteOwnershipAndPurchase();
+  }
+
+  @override
+  void dispose() {
+    _razorpayService?.dispose();
+    super.dispose();
   }
 
   Future<String> _getSellerName(String sellerId) async {
@@ -127,6 +136,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       final notePrice = _getNotePrice();
       final noteId = _getNoteId();
       final sellerId = _getSellerId();
+      final noteTitle = _getNoteTitle();
 
       debugPrint('💳 Purchase attempt:');
       debugPrint('   - Note ID: "$noteId" (isEmpty: ${noteId.isEmpty})');
@@ -148,28 +158,93 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
         return;
       }
 
+      // Get user details for Razorpay
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.uid)
+          .get();
+      
+      final userData = userDoc.data() ?? {};
+      final userName = '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim();
+      final userEmail = currentUser.email ?? '';
+      final userPhone = userData['phone'] ?? '';
+
+      // Create a pending transaction
       final transaction = await _transactionService.createTransaction(
         buyerId: currentUser.uid,
         sellerId: sellerId,
         noteId: noteId,
         salePrice: notePrice,
-        paymentMethod: 'dummy',
+        paymentMethod: 'razorpay',
       );
 
-      final success = await _transactionService.completeTransaction(
-        transactionId: transaction.transactionId,
-        paymentId: 'dummy_payment_${DateTime.now().millisecondsSinceEpoch}',
-      );
-
-      if (success) {
-        setState(() {
-          _hasAlreadyPurchased = true;
-        });
-
-        _showSuccessDialog();
-      } else {
-        throw Exception('Payment processing failed');
+      // Initiate Razorpay payment
+      if (_razorpayService == null) {
+        throw Exception('Razorpay service not initialized');
       }
+
+      await _razorpayService!.payForNote(
+        amount: notePrice,
+        noteTitle: noteTitle,
+        userName: userName,
+        userEmail: userEmail,
+        userPhone: userPhone,
+        onSuccess: (paymentId, orderId) async {
+          // Payment successful, complete the transaction
+          try {
+            final success = await _transactionService.completeTransaction(
+              transactionId: transaction.transactionId,
+              paymentId: paymentId,
+            );
+
+            if (success && mounted) {
+              setState(() {
+                _hasAlreadyPurchased = true;
+                _isPurchasing = false;
+              });
+              _showSuccessDialog();
+            }
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text('Payment completed but failed to process: ${e.toString()}'),
+                  backgroundColor: AppColors.error,
+                ),
+              );
+              setState(() => _isPurchasing = false);
+            }
+          }
+        },
+        onError: (error) async {
+          // Payment failed
+          await _transactionService.cancelTransaction(
+            transaction.transactionId,
+            'Payment failed: $error',
+          );
+          
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Payment failed: $error'),
+                backgroundColor: AppColors.error,
+              ),
+            );
+            setState(() => _isPurchasing = false);
+          }
+        },
+        onCancel: () async {
+          // Payment cancelled by user
+          await _transactionService.cancelTransaction(
+            transaction.transactionId,
+            'Payment cancelled by user',
+          );
+          
+          if (mounted) {
+            setState(() => _isPurchasing = false);
+          }
+        },
+      );
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -179,9 +254,6 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
             duration: const Duration(seconds: 5),
           ),
         );
-      }
-    } finally {
-      if (mounted) {
         setState(() => _isPurchasing = false);
       }
     }

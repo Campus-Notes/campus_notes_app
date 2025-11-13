@@ -2,6 +2,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart'; 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:campus_notes_app/data/dummy_data.dart';
 import 'package:campus_notes_app/services/theme_service.dart';
@@ -33,12 +34,17 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   // -------------------------------------------------
-  // 1. Security: Disable screenshots and screen recording
+  // 1. Load environment variables
+  // -------------------------------------------------
+  await dotenv.load(fileName: ".env");
+
+  // -------------------------------------------------
+  // 2. Security: Disable screenshots and screen recording
   // -------------------------------------------------
   await SecurityService.disableScreenshots();
 
   // -------------------------------------------------
-  // 2. Firebase initialization
+  // 3. Firebase initialization
   // -------------------------------------------------
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
