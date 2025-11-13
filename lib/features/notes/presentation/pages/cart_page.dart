@@ -1,11 +1,15 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:campus_notes_app/features/notes/presentation/pages/cart_checkout_section.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../common_widgets/app_bar.dart';
 import '../../../../theme/app_theme.dart';
 import '../../../payment/data/services/wallet_service.dart';
 import '../../../payment/data/services/transaction_service.dart';
+import '../../../payment/data/services/razorpay_service.dart';
 import '../controller/cart_controller.dart';
 import '../widgets/cart_card.dart';
 import '../widgets/cart_empty_view.dart';
@@ -22,6 +26,7 @@ class _CartPageState extends State<CartPage> {
   final WalletService _walletService = WalletService();
   final TransactionService _transactionService = TransactionService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  RazorpayService? _razorpayService;
 
   double _userPoints = 0.0;
   double _pointsToRedeem = 0.0;
@@ -31,7 +36,14 @@ class _CartPageState extends State<CartPage> {
   @override
   void initState() {
     super.initState();
+    _razorpayService = RazorpayService();
     _loadUserPoints();
+  }
+
+  @override
+  void dispose() {
+    _razorpayService?.dispose();
+    super.dispose();
   }
 
   Future<void> _loadUserPoints() async {
@@ -138,42 +150,123 @@ Future<void> _handleCheckout(
     return;
   }
 
+  if (finalAmount <= 0) {
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Invalid amount')),
+    );
+    return;
+  }
+
   setState(() => _isProcessing = true);
   
   try {
+    // Get user details for Razorpay
+    final userDoc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+    
+    final userData = userDoc.data() ?? {};
+    final userName = '${userData['firstName'] ?? ''} ${userData['lastName'] ?? ''}'.trim();
+    final userEmail = user.email ?? '';
+    final userPhone = userData['phone'] ?? '';
+
+    // Create pending transactions for all items
+    final List<String> transactionIds = [];
     for (final note in cart.cartNotes) {
       final txn = await _transactionService.createTransaction(
         buyerId: user.uid,
         sellerId: note.ownerUid,
         noteId: note.noteId,
         salePrice: note.price ?? 0.0,
-        paymentMethod: _pointsToRedeem > 0 ? 'points+payment' : 'payment',
+        paymentMethod: _pointsToRedeem > 0 ? 'points+razorpay' : 'razorpay',
       );
-      await _transactionService.completeTransaction(
-        transactionId: txn.transactionId,
-        paymentId: 'payment_${DateTime.now().millisecondsSinceEpoch}',
-      );
+      transactionIds.add(txn.transactionId);
     }
-    
-    cart.clearCart();
-    await _loadUserPoints();
-    
-    if (!mounted) return;
-    
-    setState(() {
-      _isProcessing = false;
-      _pointsToRedeem = 0.0;
-    });
-    
-    // Store context validity before showing dialog
-    _showSuccessDialog();
-    
-  }   catch (e) {
+
+    // Initiate Razorpay payment
+    if (_razorpayService == null) {
+      throw Exception('Razorpay service not initialized');
+    }
+
+    await _razorpayService!.payForCart(
+      amount: finalAmount,
+      itemCount: cart.cartNotes.length,
+      userName: userName,
+      userEmail: userEmail,
+      userPhone: userPhone,
+      onSuccess: (paymentId, orderId) async {
+        // Payment successful, complete all transactions
+        try {
+          for (final transactionId in transactionIds) {
+            await _transactionService.completeTransaction(
+              transactionId: transactionId,
+              paymentId: paymentId,
+            );
+          }
+
+          if (mounted) {
+            cart.clearCart();
+            await _loadUserPoints();
+            
+            setState(() {
+              _isProcessing = false;
+              _pointsToRedeem = 0.0;
+            });
+            
+            _showSuccessDialog();
+          }
+        } catch (e) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Payment completed but failed to process: ${e.toString()}'),
+                backgroundColor: AppColors.error,
+              ),
+            );
+            setState(() => _isProcessing = false);
+          }
+        }
+      },
+      onError: (error) async {
+        // Payment failed, cancel all transactions
+        for (final transactionId in transactionIds) {
+          await _transactionService.cancelTransaction(
+            transactionId,
+            'Payment failed: $error',
+          );
+        }
+        
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Payment failed: $error'),
+              backgroundColor: AppColors.error,
+            ),
+          );
+          setState(() => _isProcessing = false);
+        }
+      },
+      onCancel: () async {
+        // Payment cancelled, cancel all transactions
+        for (final transactionId in transactionIds) {
+          await _transactionService.cancelTransaction(
+            transactionId,
+            'Payment cancelled by user',
+          );
+        }
+        
+        if (mounted) {
+          setState(() => _isProcessing = false);
+        }
+      },
+    );
+  } catch (e) {
     if (!mounted) return;
     
     setState(() => _isProcessing = false);
     
-    // ignore: use_build_context_synchronously
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('Checkout failed: $e'),

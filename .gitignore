@@ -12,6 +12,12 @@
 .swiftpm/
 migrate_working_dir/
 
+# Environment variables - NEVER commit sensitive keys!
+.env
+.env.local
+.env.production
+.env.*.local
+
 # IntelliJ related
 *.iml
 *.ipr

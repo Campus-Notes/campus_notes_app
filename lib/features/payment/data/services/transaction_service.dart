@@ -24,6 +24,7 @@ class TransactionService {
     required String noteId,
     required double salePrice,
     String? paymentMethod,
+    String? razorpayOrderId,
   }) async {
     try {
       if (buyerId.isEmpty) throw Exception('Buyer ID cannot be empty');
@@ -46,7 +47,8 @@ class TransactionService {
         buyerPoints: amounts['buyerPoints']!,
         transactionDate: DateTime.now(),
         status: 'pending',
-        paymentMethod: paymentMethod,
+        paymentMethod: paymentMethod ?? 'razorpay',
+        razorpayOrderId: razorpayOrderId,
       );
 
       await _firestore

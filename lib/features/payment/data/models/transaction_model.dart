@@ -13,6 +13,7 @@ class TransactionModel {
   final String status; // 'pending', 'completed', 'failed'
   final String? paymentMethod;
   final String? paymentId;
+  final String? razorpayOrderId;
 
   TransactionModel({
     required this.transactionId,
@@ -27,6 +28,7 @@ class TransactionModel {
     this.status = 'pending',
     this.paymentMethod,
     this.paymentId,
+    this.razorpayOrderId,
   });
 
   Map<String, dynamic> toMap() {
@@ -43,6 +45,7 @@ class TransactionModel {
       'status': status,
       'paymentMethod': paymentMethod,
       'paymentId': paymentId,
+      'razorpayOrderId': razorpayOrderId,
     };
   }
 
@@ -60,6 +63,7 @@ class TransactionModel {
       status: map['status'] ?? 'pending',
       paymentMethod: map['paymentMethod'],
       paymentId: map['paymentId'],
+      razorpayOrderId: map['razorpayOrderId'],
     );
   }
 
@@ -74,6 +78,7 @@ class TransactionModel {
     String? status,
     String? paymentMethod,
     String? paymentId,
+    String? razorpayOrderId,
   }) {
     return TransactionModel(
       transactionId: transactionId,
@@ -88,6 +93,7 @@ class TransactionModel {
       status: status ?? this.status,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       paymentId: paymentId ?? this.paymentId,
+      razorpayOrderId: razorpayOrderId ?? this.razorpayOrderId,
     );
   }
 
