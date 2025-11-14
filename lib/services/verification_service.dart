@@ -13,6 +13,7 @@ class VerificationService extends ChangeNotifier {
   String? _listeningUserId;
 
   final Map<String, bool> _previousVerificationState = {};
+  final Map<String, bool> _previousCopyrightState = {};
 
   VerificationService({required NotificationService notificationService})
       : _notificationService = notificationService;
@@ -36,17 +37,23 @@ class VerificationService extends ChangeNotifier {
       for (var doc in snapshot.docs) {
         final noteData = doc.data();
         final isVerified = noteData['isVerified'] ?? false;
+        final isCopyrighted = noteData['isCopyrighted'] ?? false;
+        final copyrightReason = noteData['copyrightReason'] as String?;
         final noteTitle = noteData['title'] ?? 'Your note';
         final noteId = doc.id;
 
         if (isFirstSnapshot) {
           _previousVerificationState[noteId] = isVerified;
+          _previousCopyrightState[noteId] = isCopyrighted;
           debugPrint(
               '📝 Initializing verification state for "$noteTitle": $isVerified');
+          debugPrint(
+              '📝 Initializing copyright state for "$noteTitle": $isCopyrighted');
           continue;
         }
 
         final wasVerified = _previousVerificationState[noteId] ?? false;
+        final wasCopyrighted = _previousCopyrightState[noteId] ?? false;
 
         if (isVerified && !wasVerified && !_notifiedNoteIds.contains(noteId)) {
           _notifiedNoteIds.add(noteId);
@@ -55,7 +62,14 @@ class VerificationService extends ChangeNotifier {
           _sendVerificationNotification(noteTitle);
         }
 
+        if (isCopyrighted && !wasCopyrighted) {
+          debugPrint(
+              '⚠️ Note "$noteTitle" (ID: $noteId) has been marked as COPYRIGHTED!');
+          _sendCopyrightNotification(noteTitle, copyrightReason);
+        }
+
         _previousVerificationState[noteId] = isVerified;
+        _previousCopyrightState[noteId] = isCopyrighted;
       }
 
       if (isFirstSnapshot) {
@@ -74,6 +88,21 @@ class VerificationService extends ChangeNotifier {
       debugPrint('✅ Verification notification sent for: $noteTitle');
     } catch (e) {
       debugPrint('❌ Error sending verification notification: $e');
+    }
+  }
+
+  Future<void> _sendCopyrightNotification(
+    String noteTitle,
+    String? copyrightReason,
+  ) async {
+    try {
+      await _notificationService.sendCopyrightNotification(
+        noteTitle: noteTitle,
+        copyrightReason: copyrightReason,
+      );
+      debugPrint('⚠️ Copyright notification sent for: $noteTitle');
+    } catch (e) {
+      debugPrint('❌ Error sending copyright notification: $e');
     }
   }
 

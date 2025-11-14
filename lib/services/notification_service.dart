@@ -161,6 +161,37 @@ class NotificationService extends ChangeNotifier {
     }
   }
 
+  Future<void> sendCopyrightNotification({
+    required String noteTitle,
+    required String? copyrightReason,
+  }) async {
+    if (!_notificationsEnabled) {
+      debugPrint('⏸️ Notifications disabled - not sending copyright notification');
+      return;
+    }
+
+    try {
+      final reason = copyrightReason ?? 'Your note contains copyrighted content';
+      debugPrint('📤 Sending copyright notification for note: $noteTitle');
+
+      int notificationId =
+          DateTime.now().millisecondsSinceEpoch.remainder(100000);
+
+      await _showLocalNotification(
+        id: notificationId,
+        title: '⚠️ Copyright Notice',
+        body: '$noteTitle - $reason',
+        payload: 'copyright',
+      );
+
+      debugPrint('✅ Copyright notification sent');
+      debugPrint('   Note: $noteTitle');
+      debugPrint('   Reason: $reason');
+    } catch (e) {
+      debugPrint('Error sending copyright notification: $e');
+    }
+  }
+
   Future<void> _showLocalNotification({
     required int id,
     required String title,

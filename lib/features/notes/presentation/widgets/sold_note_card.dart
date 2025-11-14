@@ -15,6 +15,7 @@ class SoldNoteCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final isDonation = note['isDonation'] ?? false;
     final isVerified = note['isVerified'] ?? false;
+    final isCopyrighted = note['isCopyrighted'] ?? false;
 
     return GestureDetector(
       onTap: onTap,
@@ -73,10 +74,76 @@ class SoldNoteCard extends StatelessWidget {
                               const Padding(
                                 padding: EdgeInsets.only(right: 8.0),
                                 child: VerifiedBadge(),
+                              )
+                            else
+                              Padding(
+                                padding: const EdgeInsets.only(right: 8.0),
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.orange.withValues(alpha: 0.2),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.pending_actions,
+                                        size: 12,
+                                        color: Colors.orange[700],
+                                      ),
+                                      const SizedBox(width: 3),
+                                      Text(
+                                        'Not Verified',
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          fontWeight: FontWeight.w500,
+                                          color: Colors.orange[700],
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                           ],
                         ),
                         const SizedBox(height: 4),
+                        if (isCopyrighted)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.red.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: Colors.red.withValues(alpha: 0.5),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.copyright,
+                                  size: 12,
+                                  color: Colors.red[700],
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Copyrighted',
+                                  style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.red[700],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         Row(
                           children: [
                             Text(
