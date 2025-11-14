@@ -6,6 +6,7 @@ class NoteHeaderWidget extends StatelessWidget {
   final double rating;
   final double price;
   final bool isDonation;
+  final bool isVerified;
 
   const NoteHeaderWidget({
     super.key,
@@ -13,6 +14,7 @@ class NoteHeaderWidget extends StatelessWidget {
     required this.rating,
     required this.price,
     required this.isDonation,
+    this.isVerified = false,
   });
 
   @override
@@ -75,7 +77,7 @@ class NoteHeaderWidget extends StatelessWidget {
                     ),
                   ),
                 )
-              else
+              else if (isVerified)
                 const VerifiedBadge(
                   fontSize: 12,
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),

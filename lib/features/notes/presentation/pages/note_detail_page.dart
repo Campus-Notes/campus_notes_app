@@ -490,6 +490,13 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
     return _getNotePrice() == 0.0;
   }
 
+  bool _isNoteVerified() {
+    if (widget.note is NoteModel) {
+      return (widget.note as NoteModel).isVerified;
+    }
+    return false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -533,6 +540,7 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                   rating: _getNoteRating(),
                   price: _getNotePrice(),
                   isDonation: _isDonation(),
+                  isVerified: _isNoteVerified(),
                 ),
                 const SizedBox(height: 16),
                 StatusIndicatorsWidget(

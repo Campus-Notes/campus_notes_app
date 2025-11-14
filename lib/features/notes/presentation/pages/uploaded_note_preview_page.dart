@@ -1,10 +1,12 @@
 import 'package:campus_notes_app/features/notes/data/models/note_model.dart';
 import 'package:campus_notes_app/common_widgets/app_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../widgets/pdf_preview.dart';
 import '../widgets/note_header.dart';
 import '../widgets/note_details.dart';
 import '../widgets/reviews_section.dart';
+import '../../../../services/notification_service.dart';
 
 class UploadedNotePreviewPage extends StatefulWidget {
   final NoteModel note;
@@ -20,6 +22,21 @@ class UploadedNotePreviewPage extends StatefulWidget {
 }
 
 class _UploadedNotePreviewPageState extends State<UploadedNotePreviewPage> {
+  @override
+  void initState() {
+    super.initState();
+    // Trigger copyright notification if note is copyrighted
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (widget.note.isCopyrighted) {
+        final notificationService = context.read<NotificationService>();
+        notificationService.sendCopyrightNotification(
+          noteTitle: widget.note.title,
+          copyrightReason: widget.note.copyrightReason,
+        );
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -45,6 +62,7 @@ class _UploadedNotePreviewPageState extends State<UploadedNotePreviewPage> {
             rating: widget.note.rating,
             price: widget.note.price ?? 0.0,
             isDonation: widget.note.isDonation,
+            isVerified: widget.note.isVerified,
           ),
           const SizedBox(height: 16),
           NoteDetailsWidget(
@@ -165,6 +183,56 @@ class _UploadedNotePreviewPageState extends State<UploadedNotePreviewPage> {
   }
 
   Widget _buildVerificationSection(BuildContext context) {
+    final isCopyrighted = widget.note.isCopyrighted;
+    final copyrightReason = widget.note.copyrightReason;
+
+    if (isCopyrighted) {
+      return Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.red.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: Colors.red.withValues(alpha: 0.5),
+            ),
+          ),
+          child: Row(
+            children: [
+              const Icon(
+                Icons.copyright,
+                color: Colors.red,
+                size: 24,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      'Copyrighted Content',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.red,
+                          ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      copyrightReason ?? 'This note has been marked as copyrighted content',
+                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                            color: Colors.red.shade700,
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0),
       child: Container(

@@ -4,6 +4,7 @@ import '../controller/sell_mode_controller.dart';
 import '../../../notes/presentation/pages/sell_note.dart';
 import '../../../notes/presentation/pages/uploaded_note_preview_page.dart';
 import '../../../notes/presentation/widgets/sold_note_card.dart';
+import '../../../../services/notification_service.dart';
 
 class SellModeContent extends StatefulWidget {
   const SellModeContent({super.key});
@@ -30,6 +31,18 @@ class _SellModeContentState extends State<SellModeContent> {
             child: CircularProgressIndicator(),
           );
         }
+
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          final notificationService = context.read<NotificationService>();
+          for (final note in sellModeController.userNotes) {
+            if (note.isCopyrighted) {
+              notificationService.sendCopyrightNotification(
+                noteTitle: note.title,
+                copyrightReason: note.copyrightReason,
+              );
+            }
+          }
+        });
 
         final soldNotes = sellModeController.soldNotesData;
         final totalEarnings = sellModeController.totalEarnings;

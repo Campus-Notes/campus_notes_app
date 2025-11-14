@@ -95,6 +95,8 @@ class SellModeController with ChangeNotifier {
         'rating': note.rating,
         'isDonation': note.isDonation,
         'isVerified': note.isVerified,
+        'isCopyrighted': note.isCopyrighted,
+        'copyrightReason': note.copyrightReason,
       });
     }
 
