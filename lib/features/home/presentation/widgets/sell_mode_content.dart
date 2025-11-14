@@ -32,7 +32,6 @@ class _SellModeContentState extends State<SellModeContent> {
           );
         }
 
-        // Trigger copyright notifications for copyrighted notes
         WidgetsBinding.instance.addPostFrameCallback((_) {
           final notificationService = context.read<NotificationService>();
           for (final note in sellModeController.userNotes) {
