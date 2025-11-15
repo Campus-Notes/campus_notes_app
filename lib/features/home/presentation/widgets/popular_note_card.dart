@@ -7,12 +7,14 @@ class PopularNoteCard extends StatelessWidget {
   final NoteItem note;
   final VoidCallback? onTap;
   final VoidCallback? onAddToCart;
+  final bool hasAlreadyPurchased;
 
   const PopularNoteCard({
     super.key,
     required this.note,
     this.onTap,
     this.onAddToCart,
+    this.hasAlreadyPurchased = false,
   });
 
   @override
@@ -140,26 +142,31 @@ class PopularNoteCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Text(
-                      '₹${note.price.toStringAsFixed(0)}',
-                      style: const TextStyle(
+                      hasAlreadyPurchased ? 'Purchased' : '₹${note.price.toStringAsFixed(0)}',
+                      style: TextStyle(
                         fontWeight: FontWeight.w800,
                         fontSize: 16,
+                        color: hasAlreadyPurchased ? AppColors.success : null,
                       ),
                     ),
                     const SizedBox(height: 8),
                     InkWell(
-                      onTap: onAddToCart,
+                      onTap: hasAlreadyPurchased ? null : onAddToCart,
                       borderRadius: BorderRadius.circular(8),
                       child: Container(
                         width: 32,
                         height: 32,
                         decoration: BoxDecoration(
-                          color: AppColors.primary,
+                          color: hasAlreadyPurchased 
+                              ? AppColors.success.withValues(alpha: 0.3)
+                              : AppColors.primary,
                           borderRadius: BorderRadius.circular(8),
                         ),
                         child: Icon(
-                          Icons.add,
-                          color: Theme.of(context).colorScheme.onPrimary,
+                          hasAlreadyPurchased ? Icons.check : Icons.add,
+                          color: hasAlreadyPurchased
+                              ? AppColors.success
+                              : Theme.of(context).colorScheme.onPrimary,
                           size: 18,
                         ),
                       ),

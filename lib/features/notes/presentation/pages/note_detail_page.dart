@@ -345,6 +345,26 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
       final cartController = context.read<CartController>();
       final noteModel = widget.note as NoteModel;
 
+      // Check if note has already been purchased
+      if (_hasAlreadyPurchased) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.check_circle, color: Colors.white),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text('${noteModel.title} already purchased'),
+                ),
+              ],
+            ),
+            backgroundColor: AppColors.success,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        return;
+      }
+
       if (cartController.isInCart(noteModel.noteId)) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
