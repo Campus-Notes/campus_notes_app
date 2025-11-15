@@ -1,12 +1,10 @@
 import 'package:campus_notes_app/features/notes/data/models/note_model.dart';
 import 'package:campus_notes_app/common_widgets/app_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import '../widgets/pdf_preview.dart';
 import '../widgets/note_header.dart';
 import '../widgets/note_details.dart';
 import '../widgets/reviews_section.dart';
-import '../../../../services/notification_service.dart';
 
 class UploadedNotePreviewPage extends StatefulWidget {
   final NoteModel note;
@@ -25,16 +23,6 @@ class _UploadedNotePreviewPageState extends State<UploadedNotePreviewPage> {
   @override
   void initState() {
     super.initState();
-    // Trigger copyright notification if note is copyrighted
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (widget.note.isCopyrighted) {
-        final notificationService = context.read<NotificationService>();
-        notificationService.sendCopyrightNotification(
-          noteTitle: widget.note.title,
-          copyrightReason: widget.note.copyrightReason,
-        );
-      }
-    });
   }
 
   @override

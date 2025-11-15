@@ -4,18 +4,25 @@ import '../../../notes/presentation/controller/notes_controller.dart';
 import '../../../notes/presentation/controller/cart_controller.dart';
 import '../../../notes/presentation/pages/note_detail_page.dart';
 import '../../../notes/presentation/pages/all_notes_page.dart';
+import '../../../notes/data/services/note_database_service.dart';
 import '../../../../data/dummy_data.dart';
 import '../../../../services/connectivity_service.dart';
 import '../../../../routes/route_names.dart';
 import '../../../../theme/app_theme.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'featured_note_card.dart';
 import 'popular_note_card.dart';
 import 'section_header.dart';
 import 'notes_shimmer_loading.dart';
 
-class BuyModeContent extends StatelessWidget {
+class BuyModeContent extends StatefulWidget {
   const BuyModeContent({super.key});
 
+  @override
+  State<BuyModeContent> createState() => _BuyModeContentState();
+}
+
+class _BuyModeContentState extends State<BuyModeContent> {
   @override
   Widget build(BuildContext context) {
     return Consumer2<NotesController, ConnectivityService>(
@@ -138,17 +145,8 @@ class BuyModeContent extends StatelessWidget {
                 for (final note in _getTrendingNotes(notes).take(3))
                   Padding(
                     padding: const EdgeInsets.only(bottom: 12),
-                    child: PopularNoteCard(
-                      note: NoteItem(
-                        id: note.noteId,
-                        title: note.title,
-                        subject: note.subject,
-                        seller: 'Anonymous',
-                        price: note.price ?? 0.0,
-                        rating: note.rating,
-                        pages: 0,
-                        tags: [note.subject],
-                      ),
+                    child: _PopularNoteCardWrapper(
+                      note: note,
                       onTap: () {
                         Navigator.push(
                           context,
@@ -158,34 +156,7 @@ class BuyModeContent extends StatelessWidget {
                         );
                       },
                       onAddToCart: () {
-                        final cart = context.read<CartController>();
-                        if (cart.isInCart(note.noteId)) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: const Text('Already in cart'),
-                              action: SnackBarAction(
-                                label: 'VIEW CART',
-                                onPressed: () {
-                                  Navigator.pushNamed(context, '/cart');
-                                },
-                              ),
-                            ),
-                          );
-                        } else {
-                          cart.addToCart(note);
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text('${note.title} added to cart'),
-                              action: SnackBarAction(
-                                label: 'VIEW CART',
-                                onPressed: () {
-                                  Navigator.pushNamed(context, '/cart');
-                                },
-                              ),
-                              duration: const Duration(seconds: 2),
-                            ),
-                          );
-                        }
+                        _handleAddToCart(context, note);
                       },
                     ),
                   ),
@@ -209,17 +180,8 @@ class BuyModeContent extends StatelessWidget {
               for (final note in notes.reversed.take(3))
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: PopularNoteCard(
-                    note: NoteItem(
-                      id: note.noteId,
-                      title: note.title,
-                      subject: note.subject,
-                      seller: 'Anonymous',
-                      price: note.price ?? 0.0,
-                      rating: note.rating,
-                      pages: 0,
-                      tags: [note.subject],
-                    ),
+                  child: _PopularNoteCardWrapper(
+                    note: note,
                     onTap: () {
                       Navigator.push(
                         context,
@@ -229,34 +191,7 @@ class BuyModeContent extends StatelessWidget {
                       );
                     },
                     onAddToCart: () {
-                      final cart = context.read<CartController>();
-                      if (cart.isInCart(note.noteId)) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: const Text('Already in cart'),
-                            action: SnackBarAction(
-                              label: 'VIEW CART',
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/cart');
-                              },
-                            ),
-                          ),
-                        );
-                      } else {
-                        cart.addToCart(note);
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text('${note.title} added to cart'),
-                            action: SnackBarAction(
-                              label: 'VIEW CART',
-                              onPressed: () {
-                                Navigator.pushNamed(context, '/cart');
-                              },
-                            ),
-                            duration: const Duration(seconds: 2),
-                          ),
-                        );
-                      }
+                      _handleAddToCart(context, note);
                     },
                   ),
                 ),
@@ -265,6 +200,37 @@ class BuyModeContent extends StatelessWidget {
         );
       },
     );
+  }
+
+  void _handleAddToCart(BuildContext context, dynamic note) {
+    final cart = context.read<CartController>();
+    if (cart.isInCart(note.noteId)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Text('Already in cart'),
+          action: SnackBarAction(
+            label: 'VIEW CART',
+            onPressed: () {
+              Navigator.pushNamed(context, '/cart');
+            },
+          ),
+        ),
+      );
+    } else {
+      cart.addToCart(note);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('${note.title} added to cart'),
+          action: SnackBarAction(
+            label: 'VIEW CART',
+            onPressed: () {
+              Navigator.pushNamed(context, '/cart');
+            },
+          ),
+          duration: const Duration(seconds: 2),
+        ),
+      );
+    }
   }
 
   List<dynamic> _getTrendingNotes(List<dynamic> notes) {
@@ -338,3 +304,71 @@ class BuyModeContent extends StatelessWidget {
     );
   }
 }
+
+class _PopularNoteCardWrapper extends StatefulWidget {
+  final dynamic note;
+  final VoidCallback? onTap;
+  final VoidCallback? onAddToCart;
+
+  const _PopularNoteCardWrapper({
+    required this.note,
+    this.onTap,
+    this.onAddToCart,
+  });
+
+  @override
+  State<_PopularNoteCardWrapper> createState() => _PopularNoteCardWrapperState();
+}
+
+class _PopularNoteCardWrapperState extends State<_PopularNoteCardWrapper> {
+  final NoteDatabaseService _noteDatabaseService = NoteDatabaseService();
+  late Future<bool> _purchasedFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _purchasedFuture = _checkIfPurchased();
+  }
+
+  Future<bool> _checkIfPurchased() async {
+    try {
+      final currentUser = FirebaseAuth.instance.currentUser;
+      if (currentUser == null) {
+        return false;
+      }
+
+      return await _noteDatabaseService.hasUserPurchased(
+          widget.note.noteId, currentUser.uid);
+    } catch (e) {
+      debugPrint('Error checking purchase status: $e');
+      return false;
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<bool>(
+      future: _purchasedFuture,
+      builder: (context, snapshot) {
+        final isPurchased = snapshot.data ?? false;
+
+        return PopularNoteCard(
+          note: NoteItem(
+            id: widget.note.noteId,
+            title: widget.note.title,
+            subject: widget.note.subject,
+            seller: 'Anonymous',
+            price: widget.note.price ?? 0.0,
+            rating: widget.note.rating,
+            pages: 0,
+            tags: [widget.note.subject],
+          ),
+          hasAlreadyPurchased: isPurchased,
+          onTap: widget.onTap,
+          onAddToCart: isPurchased ? null : widget.onAddToCart,
+        );
+      },
+    );
+  }
+}
+
